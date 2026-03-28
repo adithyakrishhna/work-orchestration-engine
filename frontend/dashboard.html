@@ -589,6 +589,27 @@
           max-width: 100%;
         }
       }
+
+      .member-list { max-height: 150px; overflow-y: auto; padding: 10px; background: var(--bg); border-radius: 8px; border: 1px solid var(--border); }
+      .member-list label { display: flex; align-items: center; gap: 10px; padding: 6px 4px; font-size: 12px; cursor: pointer; border-radius: 4px; transition: background 0.1s; }
+      .member-list label:hover { background: var(--surface-hover); }
+      .member-list input[type="checkbox"] { width: 16px; height: 16px; min-width: 16px; accent-color: var(--accent); cursor: pointer; margin: 0; }
+            
+      #page-tasks, #page-dashboard, #page-users, #page-teams, #page-organizations, #page-workflows, #page-transitions, #page-ai, #page-audit, #page-comments {
+        animation: fadeIn 0.15s ease;
+        }
+      @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+      /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+        * { scrollbar-width: thin; scrollbar-color: var(--border-light) transparent; }
+        .sidebar::-webkit-scrollbar { width: 4px; }
+        .member-list::-webkit-scrollbar { width: 4px; }
+
+      select { text-overflow: ellipsis; max-width: 100%; }
     </style>
   </head>
   <body>
@@ -1449,7 +1470,16 @@
               .join(" ") || "—";
           const comments = detail.comments || [];
           let h = `<div class="card" style="margin-top:14px"><div style="display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap;gap:8px"><h3 style="font-size:14px;font-weight:700;color:var(--accent)">${task.task_key}</h3><button class="btn btn-outline" style="padding:4px 12px;font-size:14px" onclick="$('task-detail-panel').innerHTML=''">×</button></div><p style="font-size:13px;font-weight:500;margin:8px 0 4px">${task.title}</p>${detail.description ? `<p style="font-size:11px;color:var(--text-dim);margin-bottom:14px">${detail.description}</p>` : ""}
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px"><div class="detail-row"><span class="detail-label">State</span>${badge(task.current_state, STATE_COLORS)}</div><div class="detail-row"><span class="detail-label">Priority</span>${badge(task.priority, PRIORITY_COLORS)}</div><div class="detail-row"><span class="detail-label">Type</span><span class="detail-value">${task.task_type}</span></div><div class="detail-row"><span class="detail-label">SLA</span><span style="color:${task.sla_breached ? "var(--red)" : "var(--green)"}">${task.sla_breached ? "BREACHED" : "OK"}</span></div><div class="detail-row"><span class="detail-label">Assignee</span><span style="color:${task.assigned_to_name ? "var(--text)" : "var(--text-muted)"}">${task.assigned_to_name || "Unassigned"}</span></div><div class="detail-row"><span class="detail-label">Created by</span><span class="detail-value">${task.created_by_name || "—"}</span></div><div class="detail-row"><span class="detail-label">AI Score</span><span class="detail-value">${task.ai_priority_score != null ? (task.ai_priority_score * 100).toFixed(0) + "%" : "—"}</span></div><div class="detail-row"><span class="detail-label">Est Hours</span><span class="detail-value">${detail.ai_estimated_hours || "—"}</span></div><div class="detail-row"><span class="detail-label">Due Date</span><span class="detail-value">${detail.due_date ? formatDate(detail.due_date) : "Not set"}</span></div><div class="detail-row"><span class="detail-label">Created</span><span class="detail-value">${formatDate(task.created_at)}</span></div></div><div style="margin-top:10px"><span class="detail-label" style="font-size:11px">Tags: </span>${tags}</div>`;
+         <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px"><div class="detail-row"><span class="detail-label">State</span>${badge(task.current_state, STATE_COLORS)}</div><div class="detail-row"><span class="detail-label">Priority</span>${badge(task.priority, PRIORITY_COLORS)}</div><div class="detail-row"><span class="detail-label">Type</span><span class="detail-value">${task.task_type}</span></div><div class="detail-row"><span class="detail-label">SLA</span><span style="color:${task.sla_breached ? "var(--red)" : "var(--green)"}">${task.sla_breached ? "BREACHED" : "OK"}</span></div><div class="detail-row"><span class="detail-label">Assignee</span><span style="color:${task.assigned_to_name ? "var(--text)" : "var(--text-muted)"}">${task.assigned_to_name || "Unassigned"}</span></div><div class="detail-row"><span class="detail-label">Created by</span><span class="detail-value">${task.created_by_name || "—"}</span></div><div class="detail-row"><span class="detail-label">AI Score</span><span class="detail-value">${task.ai_priority_score != null ? (task.ai_priority_score * 100).toFixed(0) + "%" : "—"}</span></div><div class="detail-row"><span class="detail-label">Est Hours</span><span class="detail-value">${detail.ai_estimated_hours || "—"}</span></div><div class="detail-row"><span class="detail-label">Due Date</span><span class="detail-value">${detail.due_date ? formatDate(detail.due_date) : "Not set"}</span></div><div class="detail-row"><span class="detail-label">Created</span><span class="detail-value">${formatDate(task.created_at)}</span></div></div>
+         <div style="margin-top:10px"><span class="detail-label" style="font-size:11px">Tags: </span>${tags}</div>`;
+    h+=`<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)"><h4 class="section-title">Edit Task</h4>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:4px">Priority</label><select id="edit-priority" style="font-size:12px">${PRIORITIES.map(p=>`<option value="${p}" ${detail.priority===p?'selected':''}>${p}</option>`).join('')}</select></div>
+            <div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:4px">Due Date</label><input id="edit-due" type="datetime-local" value="${detail.due_date?new Date(detail.due_date).toISOString().slice(0,16):''}" style="font-size:12px"></div>
+            <div style="grid-column:1/-1"><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:4px">Tags</label><input id="edit-tags" value="${(detail.tags||[]).join(', ')}" placeholder="backend, urgent" style="font-size:12px"></div>
+        </div>
+        <button class="btn btn-sm" style="background:var(--accent);color:#fff;margin-top:10px" onclick="saveTaskEdit('${taskId}')">SAVE CHANGES</button>
+        <div id="edit-task-msg" style="margin-top:6px"></div></div>`;
           if (isManagerOrAbove())
             h += `<div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--border)"><h4 class="section-title">Assign Task</h4><div style="display:flex;gap:8px;flex-wrap:wrap"><select id="assign-user" style="flex:1;min-width:200px;max-width:100%"><option value="">Select engineer...</option>${uOpts}</select><button class="btn btn-sm" style="background:var(--purple);color:#fff" onclick="doAssign('${taskId}')">ASSIGN</button></div><div id="assign-msg" style="margin-top:8px"></div></div>`;
           if (avail.length > 0)
@@ -1461,6 +1491,13 @@
           showErrorModal("Error", "Failed to load task");
         }
       }
+
+      async function saveTaskEdit(id){
+        const body={priority:$('edit-priority').value,tags:$('edit-tags').value?$('edit-tags').value.split(',').map(s=>s.trim()).filter(Boolean):[]};
+        const due=$('edit-due').value;
+        if(due)body.due_date=new Date(due).toISOString();else body.due_date=null;
+        try{await apiCall(`/tasks/${id}/`,'PATCH',body);showSuccessModal('Saved','Task updated!');await loadGlobalData();setTimeout(()=>showTaskDetail(id),300)}catch(e){showErrorModal('Error',e.message)}
+    }
 
       async function doAssign(id) {
         const uid = $("assign-user").value;
@@ -1480,6 +1517,14 @@
           showErrorModal("Failed", e.message);
         }
       }
+
+      async function saveTaskEdit(id){
+        const body={priority:$('edit-priority').value,tags:$('edit-tags').value?$('edit-tags').value.split(',').map(s=>s.trim()).filter(Boolean):[]};
+        const due=$('edit-due').value;
+        if(due)body.due_date=new Date(due).toISOString();else body.due_date=null;
+        try{await apiCall(`/tasks/${id}/`,'PATCH',body);showSuccessModal('Saved','Task updated!');await loadGlobalData();setTimeout(()=>showTaskDetail(id),300)}catch(e){showErrorModal('Error',e.message)}
+    }
+
       async function doTransition(id, to) {
         showModal(
           "Confirm Transition",
@@ -1655,12 +1700,9 @@
         const uOpts = ALL_USERS.map(
           (u) => `<option value="${u.id}">${u.username} (${u.role})</option>`,
         ).join("");
-        const mCb = ALL_USERS.map(
-          (u) =>
-            `<label style="display:flex;align-items:center;gap:6px;padding:4px 0;font-size:11px;cursor:pointer"><input type="checkbox" value="${u.id}" class="tm-cb"> ${u.username}</label>`,
-        ).join("");
+        const mCb=ALL_USERS.map(u=>`<label><input type="checkbox" value="${u.id}" class="tm-cb"> ${u.username} <span style="color:var(--text-muted)">(${u.role})</span></label>`).join('');
         $("create-team-area").innerHTML =
-          `<div class="card" style="margin-top:14px"><h3 style="font-size:12px;font-weight:600;margin:0 0 14px;color:var(--accent)">Create Team</h3><div class="grid-2" style="gap:12px"><input id="nt-name" placeholder="Team name"><select id="nt-org">${ORGS.map((o) => `<option value="${o.id}">${o.name}</option>`).join("")}</select><div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">Lead</label><select id="nt-lead"><option value="">Select...</option>${uOpts}</select></div><div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">Members</label><div style="max-height:120px;overflow-y:auto;padding:8px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">${mCb}</div></div></div><div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-sm" style="background:var(--accent);color:#fff" onclick="createTeam()">CREATE</button><button class="btn btn-sm btn-outline" onclick="$('create-team-area').innerHTML=''">CANCEL</button></div></div>`;
+          `<div class="card" style="margin-top:14px"><h3 style="font-size:12px;font-weight:600;margin:0 0 14px;color:var(--accent)">Create Team</h3><div class="grid-2" style="gap:12px"><input id="nt-name" placeholder="Team name"><select id="nt-org">${ORGS.map((o) => `<option value="${o.id}">${o.name}</option>`).join("")}</select><div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">Lead</label><select id="nt-lead"><option value="">Select...</option>${uOpts}</select></div><div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">Members</label><div class="member-list">${mCb}</div></div></div><div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-sm" style="background:var(--accent);color:#fff" onclick="createTeam()">CREATE</button><button class="btn btn-sm btn-outline" onclick="$('create-team-area').innerHTML=''">CANCEL</button></div></div>`;
       }
       async function createTeam() {
         const m = [...document.querySelectorAll(".tm-cb:checked")].map(
@@ -1687,13 +1729,10 @@
           (u) =>
             `<option value="${u.id}" ${u.id === t.lead ? "selected" : ""}>${u.username}</option>`,
         ).join("");
-        const mCb = ALL_USERS.map(
-          (u) =>
-            `<label style="display:flex;align-items:center;gap:6px;padding:4px 0;font-size:11px;cursor:pointer"><input type="checkbox" value="${u.id}" class="etm-cb" ${(t.members || []).includes(u.id) ? "checked" : ""}> ${u.username}</label>`,
-        ).join("");
+        const mCb=ALL_USERS.map(u=>`<label><input type="checkbox" value="${u.id}" class="etm-cb" ${(t.members||[]).includes(u.id)?'checked':''}> ${u.username} <span style="color:var(--text-muted)">(${u.role})</span></label>`).join('');
         showModal(
           "Edit Team",
-          `<div class="grid-2" style="gap:12px"><div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">Name</label><input id="et-name" value="${t.name}"></div><div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">Lead</label><select id="et-lead"><option value="">None</option>${uOpts}</select></div><div style="grid-column:1/-1"><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">Members</label><div style="max-height:150px;overflow-y:auto;padding:8px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">${mCb}</div></div></div>`,
+          `<div class="grid-2" style="gap:12px"><div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">Name</label><input id="et-name" value="${t.name}"></div><div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">Lead</label><select id="et-lead"><option value="">None</option>${uOpts}</select></div><div style="grid-column:1/-1"><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">Members</label><div class="member-list">${mCb}</div></div></div>`,
           [
             {
               label: "CANCEL",
@@ -1821,7 +1860,7 @@
                 `<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid rgba(30,41,59,0.05);font-size:11px;flex-wrap:wrap"><span style="color:${STATE_COLORS[t.from_state] || "var(--text-dim)"};min-width:70px">${t.from_state.replace(/_/g, " ")}</span><span style="color:var(--text-muted)">→</span><span style="color:${STATE_COLORS[t.to_state] || "var(--text-dim)"};min-width:70px">${t.to_state.replace(/_/g, " ")}</span><span>${(t.allowed_roles || []).map((r) => badge(r, ROLE_COLORS)).join(" ")}</span></div>`,
             )
             .join("");
-          h += `<div class="card" style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px"><h3 style="font-size:14px;font-weight:600">${w.name}</h3><div style="display:flex;gap:6px">${w.is_default ? '<span class="badge" style="background:rgba(16,185,129,0.1);color:var(--green);border:1px solid rgba(16,185,129,0.2)">DEFAULT</span>' : ""}${isAdmin() ? `<button class="btn btn-sm btn-outline" onclick='showEditWorkflow(${JSON.stringify(w).replace(/'/g, "&#39;")})'>✏</button><button class="btn btn-sm btn-danger" onclick="deleteWorkflow('${w.id}','${w.name}')">✕</button>` : ""}</div></div><div style="margin-bottom:14px"><span class="section-title" style="display:block;margin-bottom:8px">States (▶ initial · ■ final)</span><div style="display:flex;flex-wrap:wrap;gap:4px;align-items:center">${stH}</div></div><div><span class="section-title" style="display:block;margin-bottom:8px">Transitions (${w.transitions?.length || 0})</span>${trH || '<div class="empty-state">None</div>'}</div></div>`;
+          h += `<div class="card" style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px"><h3 style="font-size:14px;font-weight:600">${w.name}</h3><div style="display:flex;gap:6px">${w.is_default?'<span class="badge" style="background:rgba(16,185,129,0.1);color:var(--green);border:1px solid rgba(16,185,129,0.2);display:flex;align-items:center;justify-content:center;padding:5px 14px">DEFAULT</span>':''}${isAdmin() ? `<button class="btn btn-sm btn-outline" onclick='showEditWorkflow(${JSON.stringify(w).replace(/'/g, "&#39;")})'>✏</button><button class="btn btn-sm btn-danger" onclick="deleteWorkflow('${w.id}','${w.name}')">✕</button>` : ""}</div></div><div style="margin-bottom:14px"><span class="section-title" style="display:block;margin-bottom:8px">States (▶ initial · ■ final)</span><div style="display:flex;flex-wrap:wrap;gap:4px;align-items:center">${stH}</div></div><div><span class="section-title" style="display:block;margin-bottom:8px">Transitions (${w.transitions?.length || 0})</span>${trH || '<div class="empty-state">None</div>'}</div></div>`;
         });
         h += `</div>`;
         $("page-workflows").innerHTML = h;
@@ -2024,10 +2063,7 @@
 
       // =================== AI ===================
       function loadAIPage() {
-        const tOpts = TASKS.map(
-          (t) =>
-            `<option value="${t.id}">${t.task_key} — ${t.title} ${t.assigned_to_name ? "(→ " + t.assigned_to_name + ")" : "(unassigned)"}</option>`,
-        ).join("");
+        const tOpts=TASKS.map(t=>{const short=t.title.length>30?t.title.slice(0,30)+'…':t.title;return`<option value="${t.id}">${t.task_key} · ${short} ${t.assigned_to_name?'['+t.assigned_to_name+']':'[—]'}</option>`}).join('');
         $("page-ai").innerHTML =
           `<h2 class="page-title">AI ENGINE</h2><p class="page-sub">Priority scoring, task routing, natural language queries</p><div class="card" style="margin-top:20px"><h3 style="font-size:12px;font-weight:600;margin:0 0 12px;color:var(--purple)">⚡ Natural Language Query</h3><p style="color:var(--text-muted);font-size:11px;margin-bottom:12px">Ask: "critical bugs", "unassigned tasks", "tasks assigned to dev_alice"</p><div style="display:flex;gap:10px;flex-wrap:wrap"><input id="nl-input" style="flex:1;min-width:200px" placeholder='Try: "high priority bugs"'><button class="btn btn-sm" style="background:var(--purple);color:#fff" onclick="doNLQuery()">QUERY</button></div><div id="nl-result"></div></div><div class="grid-2" style="margin-top:14px"><div class="card" style="overflow:hidden"><h3 style="font-size:12px;font-weight:600;margin:0 0 12px;color:var(--amber)">🎯 Priority Scoring</h3><select id="score-task" style="margin-bottom:10px"><option value="">Select task...</option>${tOpts}</select><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-sm" style="background:var(--amber);color:#fff" onclick="doScore()">SCORE</button><button class="btn btn-sm" style="background:transparent;border:1px solid var(--amber);color:var(--amber)" onclick="doScoreAll()">SCORE ALL</button></div><div id="score-result"></div></div><div class="card" style="overflow:hidden"><h3 style="font-size:12px;font-weight:600;margin:0 0 12px;color:var(--green)">🤖 Smart Routing</h3><select id="route-task" style="margin-bottom:10px"><option value="">Select task...</option>${tOpts}</select><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-sm" style="background:var(--green);color:#fff" onclick="doRoute()">RECOMMEND</button>${isManagerOrAbove() ? `<button class="btn btn-sm" style="background:transparent;border:1px solid var(--green);color:var(--green)" onclick="doAutoAssign()">AUTO-ASSIGN</button>` : ""}</div><div id="route-result"></div></div></div>`;
         $("nl-input").addEventListener("keydown", (e) => {
@@ -2202,7 +2238,7 @@
                       `<span style="color:var(--green)">${k}:</span> ${v}`,
                   )
                   .join("<br>");
-              h += `<div class="card" style="margin-bottom:8px;padding:14px 20px"><div style="display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap;gap:8px;margin-bottom:10px"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font-size:16px">${icon}</span><span class="link" style="font-size:12px" onclick="goToTask('${l.task}')">${tk?.task_key || "—"}</span><span class="badge" style="background:${ac}18;color:${ac};border:1px solid ${ac}30">${l.action.replace(/_/g, " ")}</span></div><div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><span style="font-size:11px;color:var(--text-dim)">by <strong>${l.performed_by_name || "System"}</strong></span><span style="font-size:10px;color:var(--text-muted)">${formatDate(l.timestamp)}</span></div></div><div class="grid-2"><div style="padding:10px;background:rgba(239,68,68,0.04);border-radius:6px;border:1px solid rgba(239,68,68,0.08)"><div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--red);margin-bottom:6px;font-weight:600">Previous</div><div style="font-size:11px;line-height:1.6;word-break:break-word">${oH}</div></div><div style="padding:10px;background:rgba(16,185,129,0.04);border-radius:6px;border:1px solid rgba(16,185,129,0.08)"><div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--green);margin-bottom:6px;font-weight:600">New</div><div style="font-size:11px;line-height:1.6;word-break:break-word">${nH}</div></div></div>${l.reason ? `<div style="margin-top:8px;font-size:11px;color:var(--text-dim)">↳ ${l.reason}</div>` : ""}</div>`;
+              h+=`<div class="card" style="margin-bottom:8px;padding:14px 20px"><div style="display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap;gap:8px;margin-bottom:10px"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font-size:16px">${icon}</span><span class="link" style="font-size:12px" onclick="goToTask('${l.task}')">${tk?.task_key||'—'}</span></div><div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><span class="badge" style="background:${ac}18;color:${ac};border:1px solid ${ac}30">${l.action.replace(/_/g,' ')}</span><span style="font-size:11px;color:var(--text-dim)">by <strong>${l.performed_by_name||'System'}</strong></span><span style="font-size:10px;color:var(--text-muted)">${formatDate(l.timestamp)}</span></div></div><div class="grid-2"><div style="padding:10px;background:rgba(239,68,68,0.04);border-radius:6px;border:1px solid rgba(239,68,68,0.08)"><div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--red);margin-bottom:6px;font-weight:600">Previous</div><div style="font-size:11px;line-height:1.6;word-break:break-word">${oH}</div></div><div style="padding:10px;background:rgba(16,185,129,0.04);border-radius:6px;border:1px solid rgba(16,185,129,0.08)"><div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--green);margin-bottom:6px;font-weight:600">New</div><div style="font-size:11px;line-height:1.6;word-break:break-word">${nH}</div></div></div>${l.reason ? `<div style="margin-top:8px;font-size:11px;color:var(--text-dim)">↳ ${l.reason}</div>` : ""}</div>`;
             });
           h += `</div>`;
           $("page-audit").innerHTML = h;

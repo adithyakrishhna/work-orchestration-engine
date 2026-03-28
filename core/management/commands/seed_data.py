@@ -8,8 +8,8 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         # Create Organization
         org, _ = Organization.objects.get_or_create(
-            slug='acme',
-            defaults={'name': 'Acme Corporation'}
+            slug='sunshine',
+            defaults={'name': 'Sunshine Corporation'}
         )
         self.stdout.write(f"Organization: {org.name}")
 

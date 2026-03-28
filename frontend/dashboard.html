@@ -1,187 +1,782 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Work Orchestrator — Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root {
-            --bg: #0a0e17; --surface: #111827; --surface-hover: #1a2234;
-            --border: #1e293b; --border-light: #334155;
-            --accent: #3b82f6; --accent-glow: rgba(59,130,246,0.15);
-            --green: #10b981; --red: #ef4444; --amber: #f59e0b; --purple: #8b5cf6; --cyan: #06b6d4;
-            --text: #e2e8f0; --text-dim: #94a3b8; --text-muted: #64748b;
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      :root {
+        --bg: #0a0e17;
+        --surface: #111827;
+        --surface-hover: #1a2234;
+        --border: #1e293b;
+        --border-light: #334155;
+        --accent: #3b82f6;
+        --accent-glow: rgba(59, 130, 246, 0.15);
+        --green: #10b981;
+        --red: #ef4444;
+        --amber: #f59e0b;
+        --purple: #8b5cf6;
+        --cyan: #06b6d4;
+        --text: #e2e8f0;
+        --text-dim: #94a3b8;
+        --text-muted: #64748b;
+      }
+      body {
+        font-family: "JetBrains Mono", monospace;
+        background: var(--bg);
+        color: var(--text);
+        font-size: 13px;
+      }
+      .hidden {
+        display: none !important;
+      }
+      .login-wrap {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background:
+          radial-gradient(
+            ellipse at 30% 20%,
+            var(--accent-glow),
+            transparent 50%
+          ),
+          var(--bg);
+        padding: 20px;
+      }
+      .login-box {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 48px 40px;
+        width: 380px;
+        max-width: 100%;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+      }
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 10px 14px;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        color: var(--text);
+        font-size: 13px;
+        font-family: inherit;
+        outline: none;
+      }
+      input:focus,
+      select:focus,
+      textarea:focus {
+        border-color: var(--accent);
+      }
+      input[type="datetime-local"] {
+        color-scheme: dark;
+      }
+      .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        font-size: 11px;
+        font-weight: 600;
+        cursor: pointer;
+        font-family: inherit;
+        letter-spacing: 0.5px;
+        transition: opacity 0.15s;
+      }
+      .btn:hover {
+        opacity: 0.85;
+      }
+      .btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+      }
+      .btn-primary {
+        background: var(--accent);
+        color: #fff;
+      }
+      .btn-sm {
+        padding: 7px 16px;
+        font-size: 11px;
+      }
+      .btn-outline {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--text-dim);
+      }
+      .btn-danger {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--red);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+      }
+      .sidebar {
+        width: 220px;
+        background: var(--surface);
+        border-right: 1px solid var(--border);
+        height: 100vh;
+        position: fixed;
+        left: 0;
+        top: 0;
+        display: flex;
+        flex-direction: column;
+        z-index: 20;
+        overflow-y: auto;
+        transition: transform 0.3s;
+      }
+      .main {
+        margin-left: 220px;
+        padding: 28px 32px;
+        min-height: 100vh;
+        transition: margin-left 0.3s;
+      }
+      .menu-toggle {
+        display: none;
+        position: fixed;
+        top: 12px;
+        left: 12px;
+        z-index: 30;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        color: var(--text);
+        font-size: 20px;
+        padding: 6px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-family: inherit;
+      }
+      .sidebar-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 15;
+      }
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 18px;
+        cursor: pointer;
+        border-radius: 8px;
+        margin: 2px 10px;
+        color: var(--text-dim);
+        font-size: 12px;
+        transition: all 0.15s;
+        border: 1px solid transparent;
+      }
+      .nav-item:hover {
+        background: var(--surface-hover);
+      }
+      .nav-item.active {
+        background: var(--accent-glow);
+        color: var(--accent);
+        font-weight: 600;
+        border-color: rgba(59, 130, 246, 0.13);
+      }
+      .nav-section {
+        font-size: 9px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: var(--text-muted);
+        padding: 16px 18px 6px;
+        font-weight: 600;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 20px;
+      }
+      .stat-card {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        cursor: pointer;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+      }
+      .stat-card:hover {
+        border-color: var(--accent);
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.08);
+      }
+      .stat-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        flex-shrink: 0;
+      }
+      .stat-value {
+        font-size: 22px;
+        font-weight: 700;
+        line-height: 1.1;
+      }
+      .stat-label {
+        font-size: 10px;
+        color: var(--text-muted);
+        margin-top: 3px;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+      }
+      .badge {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        white-space: nowrap;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th {
+        padding: 10px 14px;
+        text-align: left;
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        color: var(--text-muted);
+        border-bottom: 1px solid var(--border);
+        font-weight: 600;
+        cursor: pointer;
+        user-select: none;
+        white-space: nowrap;
+      }
+      th:hover {
+        color: var(--accent);
+      }
+      th.no-sort {
+        cursor: default;
+      }
+      th.no-sort:hover {
+        color: var(--text-muted);
+      }
+      td {
+        padding: 12px 14px;
+        border-bottom: 1px solid rgba(30, 41, 59, 0.03);
+        vertical-align: middle;
+      }
+      tr.clickable {
+        cursor: pointer;
+        transition: background 0.1s;
+      }
+      tr.clickable:hover {
+        background: var(--surface-hover);
+      }
+      .table-wrap {
+        overflow-x: auto;
+      }
+      .section-title {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-muted);
+        margin: 0 0 14px;
+        font-weight: 600;
+      }
+      .page-title {
+        font-size: 16px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+      }
+      .page-sub {
+        color: var(--text-muted);
+        font-size: 11px;
+        margin-top: 4px;
+      }
+      .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .grid-5 {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 14px;
+      }
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+      }
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      .progress-bg {
+        height: 6px;
+        background: var(--bg);
+        border-radius: 3px;
+        overflow: hidden;
+      }
+      .progress-fill {
+        height: 100%;
+        border-radius: 3px;
+        transition: width 0.6s ease;
+      }
+      .activity-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 8px 0;
+      }
+      .activity-item + .activity-item {
+        border-top: 1px solid rgba(30, 41, 59, 0.03);
+      }
+      .msg {
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-size: 12px;
+        margin-bottom: 12px;
+      }
+      .msg-error {
+        background: rgba(239, 68, 68, 0.08);
+        border: 1px solid rgba(239, 68, 68, 0.15);
+        color: var(--red);
+      }
+      .msg-success {
+        background: rgba(16, 185, 129, 0.08);
+        border: 1px solid rgba(16, 185, 129, 0.15);
+        color: var(--green);
+      }
+      .msg-info {
+        background: rgba(139, 92, 246, 0.06);
+        border: 1px solid rgba(139, 92, 246, 0.13);
+        color: var(--purple);
+      }
+      .score-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 4px;
+      }
+      .score-bar-label {
+        font-size: 10px;
+        color: var(--text-muted);
+        width: 100px;
+      }
+      .score-bar-track {
+        flex: 1;
+        height: 4px;
+        background: var(--border);
+        border-radius: 2px;
+      }
+      .score-bar-fill {
+        height: 100%;
+        border-radius: 2px;
+      }
+      .score-bar-value {
+        font-size: 10px;
+        color: var(--text-dim);
+        width: 30px;
+        text-align: right;
+      }
+      .transition-btn {
+        padding: 5px 12px;
+        border-radius: 6px;
+        font-size: 11px;
+        cursor: pointer;
+        font-family: inherit;
+        background: transparent;
+        color: var(--text-dim);
+        border: 1px solid var(--border);
+        transition: all 0.15s;
+      }
+      .transition-btn:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      .rec-card {
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 8px;
+        border: 1px solid var(--border);
+        background: var(--bg);
+        overflow: hidden;
+      }
+      .rec-card.top {
+        background: rgba(16, 185, 129, 0.04);
+        border-color: rgba(16, 185, 129, 0.13);
+      }
+      .detail-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid rgba(30, 41, 59, 0.05);
+        font-size: 12px;
+      }
+      .detail-label {
+        color: var(--text-muted);
+      }
+      .detail-value {
+        color: var(--text);
+        font-weight: 500;
+        text-align: right;
+        max-width: 60%;
+        word-break: break-all;
+      }
+      .tag {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 10px;
+        background: var(--accent-glow);
+        color: var(--accent);
+        margin: 2px;
+        border: 1px solid rgba(59, 130, 246, 0.15);
+      }
+      .empty-state {
+        color: var(--text-muted);
+        font-size: 12px;
+        text-align: center;
+        padding: 40px 20px;
+      }
+      .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .modal-box {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 28px;
+        width: 480px;
+        max-width: 100%;
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+      .modal-title {
+        font-size: 14px;
+        font-weight: 700;
+        margin-bottom: 14px;
+      }
+      .modal-body {
+        font-size: 12px;
+        color: var(--text-dim);
+        margin-bottom: 20px;
+        line-height: 1.6;
+      }
+      .modal-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+      }
+      .clickable-bar {
+        cursor: pointer;
+        transition: opacity 0.15s;
+      }
+      .clickable-bar:hover {
+        opacity: 0.8;
+      }
+      .search-bar {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .search-bar input {
+        max-width: 250px;
+      }
+      .pagination {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        justify-content: center;
+        margin-top: 16px;
+        flex-wrap: wrap;
+      }
+      .pagination button {
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-size: 11px;
+        cursor: pointer;
+        font-family: inherit;
+        background: transparent;
+        color: var(--text-dim);
+        border: 1px solid var(--border);
+        transition: all 0.15s;
+      }
+      .pagination button:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      .pagination button.active {
+        background: var(--accent);
+        color: #fff;
+        border-color: var(--accent);
+      }
+      .pagination button:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+      }
+      .link {
+        color: var(--accent);
+        cursor: pointer;
+        text-decoration: underline;
+        font-weight: 600;
+      }
+      @media (max-width: 1400px) {
+        .grid-5 {
+          grid-template-columns: repeat(3, 1fr);
         }
-        body { font-family: 'JetBrains Mono', monospace; background: var(--bg); color: var(--text); font-size: 13px; }
-        .hidden { display: none !important; }
-
-        .login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: radial-gradient(ellipse at 30% 20%, var(--accent-glow), transparent 50%), var(--bg); padding: 20px; }
-        .login-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 48px 40px; width: 380px; max-width: 100%; box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
-
-        input, select, textarea { width: 100%; padding: 10px 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 13px; font-family: inherit; outline: none; }
-        input:focus, select:focus, textarea:focus { border-color: var(--accent); }
-        .btn { padding: 10px 20px; border: none; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: inherit; letter-spacing: 0.5px; transition: opacity 0.15s; }
-        .btn:hover { opacity: 0.85; }
-        .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-        .btn-primary { background: var(--accent); color: #fff; }
-        .btn-sm { padding: 7px 16px; font-size: 11px; }
-        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-dim); }
-
-        .sidebar { width: 220px; background: var(--surface); border-right: 1px solid var(--border); height: 100vh; position: fixed; left: 0; top: 0; display: flex; flex-direction: column; z-index: 20; overflow-y: auto; transition: transform 0.3s; }
-        .main { margin-left: 220px; padding: 28px 32px; min-height: 100vh; transition: margin-left 0.3s; }
-        .menu-toggle { display: none; position: fixed; top: 12px; left: 12px; z-index: 30; background: var(--surface); border: 1px solid var(--border); color: var(--text); font-size: 20px; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-family: inherit; }
-        .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 15; }
-
-        .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 18px; cursor: pointer; border-radius: 8px; margin: 2px 10px; color: var(--text-dim); font-size: 12px; transition: all 0.15s; border: 1px solid transparent; }
-        .nav-item:hover { background: var(--surface-hover); }
-        .nav-item.active { background: var(--accent-glow); color: var(--accent); font-weight: 600; border-color: rgba(59,130,246,0.13); }
-        .nav-section { font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); padding: 16px 18px 6px; font-weight: 600; }
-
-        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; }
-        .stat-card { display: flex; align-items: center; gap: 16px; cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s; }
-        .stat-card:hover { border-color: var(--accent); box-shadow: 0 0 20px rgba(59,130,246,0.08); }
-        .stat-icon { width: 42px; height: 42px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
-        .stat-value { font-size: 22px; font-weight: 700; line-height: 1.1; }
-        .stat-label { font-size: 10px; color: var(--text-muted); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.8px; }
-
-        .badge { display: inline-block; padding: 3px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; letter-spacing: 0.3px; white-space: nowrap; }
-
-        table { width: 100%; border-collapse: collapse; }
-        th { padding: 10px 14px; text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-muted); border-bottom: 1px solid var(--border); font-weight: 600; }
-        td { padding: 12px 14px; border-bottom: 1px solid rgba(30,41,59,0.03); vertical-align: middle; }
-        tr.clickable { cursor: pointer; transition: background 0.1s; }
-        tr.clickable:hover { background: var(--surface-hover); }
-        .table-wrap { overflow-x: auto; }
-
-        .section-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin: 0 0 14px; font-weight: 600; }
-        .page-title { font-size: 16px; font-weight: 700; letter-spacing: 0.5px; }
-        .page-sub { color: var(--text-muted); font-size: 11px; margin-top: 4px; }
-        .page-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-
-        .grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
-        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-
-        .progress-bg { height: 6px; background: var(--bg); border-radius: 3px; overflow: hidden; }
-        .progress-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
-
-        .activity-item { display: flex; align-items: center; gap: 12px; padding: 8px 0; }
-        .activity-item + .activity-item { border-top: 1px solid rgba(30,41,59,0.03); }
-
-        .msg { padding: 10px 14px; border-radius: 8px; font-size: 12px; margin-bottom: 12px; }
-        .msg-error { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.15); color: var(--red); }
-        .msg-success { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.15); color: var(--green); }
-        .msg-info { background: rgba(139,92,246,0.06); border: 1px solid rgba(139,92,246,0.13); color: var(--purple); }
-
-        .score-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
-        .score-bar-label { font-size: 10px; color: var(--text-muted); width: 100px; }
-        .score-bar-track { flex: 1; height: 4px; background: var(--border); border-radius: 2px; }
-        .score-bar-fill { height: 100%; border-radius: 2px; }
-        .score-bar-value { font-size: 10px; color: var(--text-dim); width: 30px; text-align: right; }
-
-        .transition-btn { padding: 5px 12px; border-radius: 6px; font-size: 11px; cursor: pointer; font-family: inherit; background: transparent; color: var(--text-dim); border: 1px solid var(--border); transition: all 0.15s; }
-        .transition-btn:hover { border-color: var(--accent); color: var(--accent); }
-
-        .rec-card { padding: 12px; border-radius: 8px; margin-bottom: 8px; border: 1px solid var(--border); background: var(--bg); }
-        .ai-card select { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
-        .rec-card.top { background: rgba(16,185,129,0.04); border-color: rgba(16,185,129,0.13); }
-
-        .detail-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(30,41,59,0.05); font-size: 12px; }
-        .detail-label { color: var(--text-muted); }
-        .detail-value { color: var(--text); font-weight: 500; text-align: right; max-width: 60%; word-break: break-all; }
-
-        .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; background: var(--accent-glow); color: var(--accent); margin: 2px; border: 1px solid rgba(59,130,246,0.15); }
-        .empty-state { color: var(--text-muted); font-size: 12px; text-align: center; padding: 40px 20px; }
-
-        /* Modal */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; }
-        .modal-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; width: 420px; max-width: 100%; box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
-        .modal-title { font-size: 14px; font-weight: 700; margin-bottom: 14px; }
-        .modal-body { font-size: 12px; color: var(--text-dim); margin-bottom: 20px; line-height: 1.6; }
-        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
-
-        .clickable-bar { cursor: pointer; transition: opacity 0.15s; }
-        .clickable-bar:hover { opacity: 0.8; }
-
-        @media (max-width: 1400px) { .grid-5 { grid-template-columns: repeat(3, 1fr); } }
-        @media (max-width: 1024px) {
-            .grid-5 { grid-template-columns: repeat(2, 1fr); }
-            .grid-3 { grid-template-columns: 1fr 1fr; }
-            .sidebar { transform: translateX(-100%); }
-            .sidebar.open { transform: translateX(0); }
-            .sidebar-overlay.open { display: block; }
-            .main { margin-left: 0; padding: 20px 16px; padding-top: 56px; }
-            .menu-toggle { display: block; }
+      }
+      @media (max-width: 1024px) {
+        .grid-5 {
+          grid-template-columns: repeat(2, 1fr);
         }
-        @media (max-width: 640px) {
-            .grid-5, .grid-3, .grid-2 { grid-template-columns: 1fr; }
-            .page-header { flex-direction: column; align-items: flex-start; }
-            .login-box { padding: 32px 24px; }
+        .grid-3 {
+          grid-template-columns: 1fr 1fr;
         }
+        .sidebar {
+          transform: translateX(-100%);
+        }
+        .sidebar.open {
+          transform: translateX(0);
+        }
+        .sidebar-overlay.open {
+          display: block;
+        }
+        .main {
+          margin-left: 0;
+          padding: 20px 16px;
+          padding-top: 56px;
+        }
+        .menu-toggle {
+          display: block;
+        }
+      }
+      @media (max-width: 640px) {
+        .grid-5,
+        .grid-3,
+        .grid-2 {
+          grid-template-columns: 1fr;
+        }
+        .page-header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .login-box {
+          padding: 32px 24px;
+        }
+        .search-bar input {
+          max-width: 100%;
+        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
+    <div id="modal-container"></div>
+    <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+    <div
+      class="sidebar-overlay"
+      id="sidebar-overlay"
+      onclick="toggleSidebar()"
+    ></div>
 
-<div id="modal-container"></div>
-<button class="menu-toggle" onclick="toggleSidebar()">☰</button>
-<div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
-
-<!-- LOGIN -->
-<div id="login-screen" class="login-wrap">
-    <div class="login-box">
-        <div style="text-align:center;margin-bottom:32px">
-            <div style="font-size:28px;margin-bottom:6px">⚡</div>
-            <h1 style="font-size:18px;font-weight:700;letter-spacing:1px">WORK ORCHESTRATOR</h1>
-            <p style="color:var(--text-muted);font-size:11px;margin-top:8px;letter-spacing:0.5px">AI-POWERED WORKFLOW ENGINE</p>
+    <div id="login-screen" class="login-wrap">
+      <div class="login-box">
+        <div style="text-align: center; margin-bottom: 32px">
+          <div style="font-size: 28px; margin-bottom: 6px">⚡</div>
+          <h1 style="font-size: 18px; font-weight: 700; letter-spacing: 1px">
+            WORK ORCHESTRATOR
+          </h1>
+          <p
+            style="
+              color: var(--text-muted);
+              font-size: 11px;
+              margin-top: 8px;
+              letter-spacing: 0.5px;
+            "
+          >
+            AI-POWERED WORKFLOW ENGINE
+          </p>
         </div>
         <div id="login-error" class="msg msg-error hidden"></div>
-        <div style="margin-bottom:14px">
-            <label style="display:block;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:6px">Username</label>
-            <input id="login-user" placeholder="admin_user">
+        <div style="margin-bottom: 14px">
+          <label
+            style="
+              display: block;
+              font-size: 10px;
+              text-transform: uppercase;
+              letter-spacing: 1px;
+              color: var(--text-muted);
+              margin-bottom: 6px;
+            "
+            >Username</label
+          ><input id="login-user" placeholder="admin_user" />
         </div>
-        <div style="margin-bottom:24px">
-            <label style="display:block;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:6px">Password</label>
-            <input id="login-pass" type="password" placeholder="••••••••">
+        <div style="margin-bottom: 24px">
+          <label
+            style="
+              display: block;
+              font-size: 10px;
+              text-transform: uppercase;
+              letter-spacing: 1px;
+              color: var(--text-muted);
+              margin-bottom: 6px;
+            "
+            >Password</label
+          ><input id="login-pass" type="password" placeholder="••••••••" />
         </div>
-        <button class="btn btn-primary" style="width:100%" onclick="doLogin()">SIGN IN →</button>
-        <p style="text-align:center;color:var(--text-muted);font-size:10px;margin-top:20px">Test: admin_user / testpass123</p>
-    </div>
-</div>
-
-<!-- APP -->
-<div id="app-shell" class="hidden">
-    <div class="sidebar" id="sidebar">
-        <div style="padding:22px 18px 20px;border-bottom:1px solid var(--border)">
-            <div style="font-size:13px;font-weight:700;letter-spacing:1px">⚡ ORCHESTRATOR</div>
-            <div style="font-size:10px;color:var(--text-muted);margin-top:4px;letter-spacing:0.5px">WORKFLOW ENGINE v1.0</div>
-        </div>
-        <div style="padding:10px 0;flex:1">
-            <div class="nav-section">Overview</div>
-            <div class="nav-item active" data-page="dashboard" onclick="switchPage('dashboard')"><span>◆</span> Dashboard</div>
-            <div class="nav-section" style="margin-top:8px">Management</div>
-            <div class="nav-item" data-page="tasks" onclick="switchPage('tasks')"><span>☰</span> Tasks</div>
-            <div class="nav-item" data-page="users" onclick="switchPage('users')"><span>👥</span> Users</div>
-            <div class="nav-item" data-page="teams" onclick="switchPage('teams')"><span>🏢</span> Teams</div>
-            <div class="nav-item" data-page="organizations" onclick="switchPage('organizations')"><span>🏛</span> Organizations</div>
-            <div class="nav-section" style="margin-top:8px">Configuration</div>
-            <div class="nav-item" data-page="workflows" onclick="switchPage('workflows')"><span>🔀</span> Workflows</div>
-            <div class="nav-item" data-page="transitions" onclick="switchPage('transitions')"><span>→</span> Transitions</div>
-            <div class="nav-section" style="margin-top:8px">Intelligence</div>
-            <div class="nav-item" data-page="ai" onclick="switchPage('ai')"><span>⚡</span> AI Engine</div>
-            <div class="nav-section" style="margin-top:8px">History</div>
-            <div class="nav-item" data-page="audit" onclick="switchPage('audit')"><span>📜</span> Audit Logs</div>
-            <div class="nav-item" data-page="comments" onclick="switchPage('comments')"><span>💬</span> Comments</div>
-        </div>
-        <div style="padding:16px 18px;border-top:1px solid var(--border)">
-            <div style="font-size:11px;color:var(--text-dim);margin-bottom:4px"><span style="color:var(--green)">●</span> <span id="current-user"></span></div>
-            <div style="font-size:10px;color:var(--text-muted);margin-bottom:8px" id="current-role"></div>
-            <button class="btn btn-outline" style="width:100%;padding:7px;font-size:10px;letter-spacing:0.5px" onclick="doLogout()">SIGN OUT</button>
-        </div>
+        <button class="btn btn-primary" style="width: 100%" onclick="doLogin()">
+          SIGN IN →
+        </button>
+        <p
+          style="
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 10px;
+            margin-top: 20px;
+          "
+        >
+          Test: admin_user / testpass123
+        </p>
+      </div>
     </div>
 
-    <div class="main" id="main-content">
+    <div id="app-shell" class="hidden">
+      <div class="sidebar" id="sidebar">
+        <div
+          style="
+            padding: 22px 18px 20px;
+            border-bottom: 1px solid var(--border);
+          "
+        >
+          <div style="font-size: 13px; font-weight: 700; letter-spacing: 1px">
+            ⚡ ORCHESTRATOR
+          </div>
+          <div
+            style="
+              font-size: 10px;
+              color: var(--text-muted);
+              margin-top: 4px;
+              letter-spacing: 0.5px;
+            "
+          >
+            WORKFLOW ENGINE v1.0
+          </div>
+        </div>
+        <div style="padding: 10px 0; flex: 1">
+          <div class="nav-section">Overview</div>
+          <div
+            class="nav-item active"
+            data-page="dashboard"
+            onclick="switchPage('dashboard')"
+          >
+            <span>◆</span> Dashboard
+          </div>
+          <div class="nav-section" style="margin-top: 8px">Management</div>
+          <div class="nav-item" data-page="tasks" onclick="switchPage('tasks')">
+            <span>☰</span> Tasks
+          </div>
+          <div class="nav-item" data-page="users" onclick="switchPage('users')">
+            <span>👥</span> Users
+          </div>
+          <div class="nav-item" data-page="teams" onclick="switchPage('teams')">
+            <span>🏢</span> Teams
+          </div>
+          <div
+            class="nav-item"
+            data-page="organizations"
+            onclick="switchPage('organizations')"
+          >
+            <span>🏛</span> Organizations
+          </div>
+          <div class="nav-section" style="margin-top: 8px">Configuration</div>
+          <div
+            class="nav-item"
+            data-page="workflows"
+            onclick="switchPage('workflows')"
+          >
+            <span>🔀</span> Workflows
+          </div>
+          <div
+            class="nav-item"
+            data-page="transitions"
+            onclick="switchPage('transitions')"
+          >
+            <span>→</span> Transitions
+          </div>
+          <div class="nav-section" style="margin-top: 8px">Intelligence</div>
+          <div class="nav-item" data-page="ai" onclick="switchPage('ai')">
+            <span>⚡</span> AI Engine
+          </div>
+          <div class="nav-section" style="margin-top: 8px">History</div>
+          <div class="nav-item" data-page="audit" onclick="switchPage('audit')">
+            <span>📜</span> Audit Logs
+          </div>
+          <div
+            class="nav-item"
+            data-page="comments"
+            onclick="switchPage('comments')"
+          >
+            <span>💬</span> Comments
+          </div>
+        </div>
+        <div style="padding: 16px 18px; border-top: 1px solid var(--border)">
+          <div
+            style="font-size: 11px; color: var(--text-dim); margin-bottom: 4px"
+          >
+            <span style="color: var(--green)">●</span>
+            <span id="current-user"></span>
+          </div>
+          <div
+            style="
+              font-size: 10px;
+              color: var(--text-muted);
+              margin-bottom: 8px;
+            "
+            id="current-role"
+          ></div>
+          <button
+            class="btn btn-sm btn-outline"
+            style="width: 100%; margin-bottom: 6px"
+            onclick="showEditProfile()"
+          >
+            ✏ Profile
+          </button>
+          <button
+            class="btn btn-outline"
+            style="
+              width: 100%;
+              padding: 7px;
+              font-size: 10px;
+              letter-spacing: 0.5px;
+            "
+            onclick="doLogout()"
+          >
+            SIGN OUT
+          </button>
+        </div>
+      </div>
+      <div class="main" id="main-content">
         <div id="global-msg"></div>
         <div id="page-dashboard"></div>
         <div id="page-tasks" class="hidden"></div>
@@ -193,623 +788,1453 @@
         <div id="page-ai" class="hidden"></div>
         <div id="page-audit" class="hidden"></div>
         <div id="page-comments" class="hidden"></div>
+      </div>
     </div>
-</div>
 
-<script>
-const API = 'http://127.0.0.1:8000/api/v1';
-let TOKEN = null;
-let TASKS=[], WORKFLOWS=[], ALL_USERS=[], TEAMS=[], ORGS=[], CURRENT_USER={};
-let PENDING_FILTER = null;
+    <script>
+      const API = "http://127.0.0.1:8000/api/v1";
+      let TOKEN = null,
+        TASKS = [],
+        WORKFLOWS = [],
+        ALL_USERS = [],
+        TEAMS = [],
+        ORGS = [],
+        CURRENT_USER = {},
+        PENDING_FILTER = null;
+      let TASK_SORT = { field: "created_at", dir: "desc" },
+        TASK_SEARCH = "",
+        TASK_PAGE = 1;
+      const STATE_COLORS = {
+        open: "#3b82f6",
+        in_progress: "#f59e0b",
+        review: "#8b5cf6",
+        testing: "#06b6d4",
+        done: "#10b981",
+        cancelled: "#64748b",
+      };
+      const PRIORITY_COLORS = {
+        critical: "#ef4444",
+        high: "#f59e0b",
+        medium: "#3b82f6",
+        low: "#64748b",
+      };
+      const ROLE_COLORS = {
+        admin: "#ef4444",
+        manager: "#f59e0b",
+        engineer: "#3b82f6",
+        viewer: "#64748b",
+      };
+      const ACTION_ICONS = {
+        created: "🆕",
+        state_changed: "🔄",
+        assigned: "👤",
+        commented: "💬",
+        sla_breached: "🔴",
+        updated: "📝",
+        deleted: "🗑",
+      };
+      const ALL_PAGES = [
+        "dashboard",
+        "tasks",
+        "users",
+        "teams",
+        "organizations",
+        "workflows",
+        "transitions",
+        "ai",
+        "audit",
+        "comments",
+      ];
+      const STATES = [
+        "open",
+        "in_progress",
+        "review",
+        "testing",
+        "done",
+        "cancelled",
+      ];
+      const PRIORITIES = ["critical", "high", "medium", "low"];
 
-const STATE_COLORS = {open:'#3b82f6',in_progress:'#f59e0b',review:'#8b5cf6',testing:'#06b6d4',done:'#10b981',cancelled:'#64748b'};
-const PRIORITY_COLORS = {critical:'#ef4444',high:'#f59e0b',medium:'#3b82f6',low:'#64748b'};
-const ROLE_COLORS = {admin:'#ef4444',manager:'#f59e0b',engineer:'#3b82f6',viewer:'#64748b'};
-const ACTION_ICONS = {created:'🆕',state_changed:'🔄',assigned:'👤',commented:'💬',sla_breached:'🔴',updated:'📝',deleted:'🗑'};
-const ALL_PAGES = ['dashboard','tasks','users','teams','organizations','workflows','transitions','ai','audit','comments'];
+      function $(id) {
+        return document.getElementById(id);
+      }
+      function badge(t, m) {
+        const c = (m || {})[t] || "#64748b";
+        return `<span class="badge" style="background:${c}18;color:${c};border:1px solid ${c}30">${(t || "—").replace(/_/g, " ")}</span>`;
+      }
+      function timeAgo(ts) {
+        if (!ts) return "—";
+        const d = new Date(ts),
+          n = new Date(),
+          s = (n - d) / 1000;
+        if (s < 60) return "just now";
+        if (s < 3600) return Math.floor(s / 60) + "m ago";
+        if (s < 86400) return Math.floor(s / 3600) + "h ago";
+        return Math.floor(s / 86400) + "d ago";
+      }
+      function formatDate(ts) {
+        return ts ? new Date(ts).toLocaleString() : "—";
+      }
+      function isAdmin() {
+        return CURRENT_USER.role === "admin";
+      }
+      function isManagerOrAbove() {
+        return CURRENT_USER.role === "admin" || CURRENT_USER.role === "manager";
+      }
+      function showGlobalMsg(m, e) {
+        $("global-msg").innerHTML =
+          `<div class="msg ${e ? "msg-error" : "msg-success"}">${m}</div>`;
+        setTimeout(() => ($("global-msg").innerHTML = ""), 4000);
+      }
+      function showMsg(id, m, e) {
+        const el = $(id);
+        if (el) {
+          el.innerHTML = `<div class="msg ${e ? "msg-error" : "msg-success"}">${m}</div>`;
+          setTimeout(() => (el.innerHTML = ""), 3000);
+        }
+      }
+      function statCard(i, l, v, c, s = "", o = "") {
+        return `<div class="card stat-card" onclick="${o}"><div class="stat-icon" style="background:${c}15;border:1px solid ${c}25">${i}</div><div><div class="stat-value">${v}</div><div class="stat-label">${l}</div>${s ? `<div style="font-size:11px;color:${c};margin-top:2px">${s}</div>` : ""}</div></div>`;
+      }
 
-// =================== HELPERS ===================
-function $(id) { return document.getElementById(id); }
-function badge(text, colorMap) { const c=(colorMap||{})[text]||'#64748b'; return `<span class="badge" style="background:${c}18;color:${c};border:1px solid ${c}30">${(text||'—').replace(/_/g,' ')}</span>`; }
-function timeAgo(ts) { if(!ts) return '—'; const d=new Date(ts),now=new Date(),diff=(now-d)/1000; if(diff<60) return 'just now'; if(diff<3600) return Math.floor(diff/60)+'m ago'; if(diff<86400) return Math.floor(diff/3600)+'h ago'; return Math.floor(diff/86400)+'d ago'; }
-function formatDate(ts) { return ts ? new Date(ts).toLocaleString() : '—'; }
-function isAdmin() { return CURRENT_USER.role === 'admin'; }
-function isManagerOrAbove() { return CURRENT_USER.role === 'admin' || CURRENT_USER.role === 'manager'; }
-function showGlobalMsg(msg, isError) { $('global-msg').innerHTML=`<div class="msg ${isError?'msg-error':'msg-success'}">${msg}</div>`; setTimeout(()=>$('global-msg').innerHTML='',4000); }
-function showMsg(elId, msg, isError) { const el=$(elId); if(el){el.innerHTML=`<div class="msg ${isError?'msg-error':'msg-success'}">${msg}</div>`; setTimeout(()=>el.innerHTML='',3000);} }
-function statCard(icon,label,value,color,sub='',onclick='') { return `<div class="card stat-card" onclick="${onclick}"><div class="stat-icon" style="background:${color}15;border:1px solid ${color}25">${icon}</div><div><div class="stat-value">${value}</div><div class="stat-label">${label}</div>${sub?`<div style="font-size:11px;color:${color};margin-top:2px">${sub}</div>`:''}</div></div>`; }
-
-// =================== MODAL ===================
-function showModal(title, body, actions) {
-    const actionsHTML = actions.map(a => `<button class="btn btn-sm" style="background:${a.color||'var(--accent)'};color:#fff" onclick="${a.onclick}">${a.label}</button>`).join('');
-    $('modal-container').innerHTML = `<div class="modal-overlay" onclick="if(event.target===this)closeModal()"><div class="modal-box"><div class="modal-title">${title}</div><div class="modal-body">${body}</div><div class="modal-actions">${actionsHTML}</div></div></div>`;
-}
-function showErrorModal(title, message) { showModal(title, `<div style="color:var(--red)">${message}</div>`, [{label:'OK', color:'var(--red)', onclick:'closeModal()'}]); }
-function showSuccessModal(title, message) { showModal(title, `<div style="color:var(--green)">${message}</div>`, [{label:'OK', color:'var(--green)', onclick:'closeModal()'}]); }
-function closeModal() { $('modal-container').innerHTML = ''; }
-
-// =================== SIDEBAR ===================
-function toggleSidebar() { $('sidebar').classList.toggle('open'); $('sidebar-overlay').classList.toggle('open'); }
-
-// =================== API ===================
-async function apiCall(endpoint, method='GET', body=null) {
-    const opts = { method, headers: { 'Content-Type':'application/json' } };
-    if (TOKEN) opts.headers['Authorization'] = `Bearer ${TOKEN}`;
-    if (body) opts.body = JSON.stringify(body);
-    const res = await fetch(API + endpoint, opts);
-    if (res.status === 401) {
-        // Try refresh
-        const refreshed = await tryRefreshToken();
-        if (refreshed) { opts.headers['Authorization'] = `Bearer ${TOKEN}`; const retry = await fetch(API+endpoint, opts); if(!retry.ok) throw new Error(await retry.text()); return retry.json(); }
-        doLogout(); throw new Error('Session expired');
-    }
-    if (!res.ok) { const err = await res.json().catch(()=>({})); throw new Error(typeof err === 'string' ? err : JSON.stringify(err)); }
-    return res.json();
-}
-
-async function tryRefreshToken() {
-    const refresh = sessionStorage.getItem('refresh_token');
-    if (!refresh) return false;
-    try {
-        const res = await fetch(API+'/auth/refresh/', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({refresh}) });
-        if (!res.ok) return false;
-        const data = await res.json();
-        TOKEN = data.access;
-        sessionStorage.setItem('access_token', TOKEN);
-        return true;
-    } catch { return false; }
-}
-
-// =================== AUTH ===================
-async function doLogin() {
-    const user = $('login-user').value, pass = $('login-pass').value, errEl = $('login-error');
-    try {
-        const data = await apiCall('/auth/login/','POST',{username:user,password:pass});
-        if (data.access) {
-            TOKEN = data.access;
-            sessionStorage.setItem('access_token', TOKEN);
-            sessionStorage.setItem('refresh_token', data.refresh);
-            $('login-screen').classList.add('hidden');
-            $('app-shell').classList.remove('hidden');
-            await loadGlobalData();
-            loadDashboard();
-        } else { errEl.textContent='Invalid credentials'; errEl.classList.remove('hidden'); }
-    } catch { errEl.textContent='Connection failed — is the server running?'; errEl.classList.remove('hidden'); }
-}
-function doLogout() { TOKEN=null; sessionStorage.removeItem('access_token'); sessionStorage.removeItem('refresh_token'); $('app-shell').classList.add('hidden'); $('login-screen').classList.remove('hidden'); }
-
-// Auto-login on refresh
-async function tryAutoLogin() {
-    const savedToken = sessionStorage.getItem('access_token');
-    if (savedToken) {
-        TOKEN = savedToken;
-        try {
-            await apiCall('/users/me/');
-            $('login-screen').classList.add('hidden');
-            $('app-shell').classList.remove('hidden');
-            await loadGlobalData();
-            loadDashboard();
-        } catch { TOKEN=null; sessionStorage.removeItem('access_token'); sessionStorage.removeItem('refresh_token'); }
-    }
-}
-window.addEventListener('DOMContentLoaded', tryAutoLogin);
-
-$('login-pass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
-$('login-user').addEventListener('keydown', e => { if(e.key==='Enter') $('login-pass').focus(); });
-
-// =================== GLOBAL DATA ===================
-async function loadGlobalData() {
-    try {
-        const [me,taskData,wfData,userData,teamData,orgData] = await Promise.all([
-            apiCall('/users/me/'), apiCall('/tasks/'), apiCall('/workflows/'),
-            apiCall('/users/'), apiCall('/teams/'), apiCall('/organizations/')
+      function showModal(t, b, a) {
+        $("modal-container").innerHTML =
+          `<div class="modal-overlay" onclick="if(event.target===this)closeModal()"><div class="modal-box"><div class="modal-title">${t}</div><div class="modal-body">${b}</div><div class="modal-actions">${a.map((x) => `<button class="btn btn-sm" style="background:${x.color || "var(--accent)"};color:#fff" onclick="${x.onclick}">${x.label}</button>`).join("")}</div></div></div>`;
+      }
+      function showErrorModal(t, m) {
+        showModal(t, `<div style="color:var(--red)">${m}</div>`, [
+          { label: "OK", color: "var(--red)", onclick: "closeModal()" },
         ]);
-        CURRENT_USER=me; TASKS=taskData.results||[]; WORKFLOWS=wfData.results||[];
-        ALL_USERS=userData.results||[]; TEAMS=teamData.results||[]; ORGS=orgData.results||[];
-        $('current-user').textContent=me.username||'';
-        $('current-role').textContent=(me.role||'').toUpperCase();
-    } catch(e) { showGlobalMsg('Failed to load: '+e.message, true); }
-}
+      }
+      function showSuccessModal(t, m) {
+        showModal(t, `<div style="color:var(--green)">${m}</div>`, [
+          { label: "OK", color: "var(--green)", onclick: "closeModal()" },
+        ]);
+      }
+      function closeModal() {
+        $("modal-container").innerHTML = "";
+      }
+      function toggleSidebar() {
+        $("sidebar").classList.toggle("open");
+        $("sidebar-overlay").classList.toggle("open");
+      }
 
-// =================== NAV ===================
-function switchPage(page) {
-    document.querySelectorAll('.nav-item').forEach(el => el.classList.toggle('active', el.dataset.page===page));
-    ALL_PAGES.forEach(p => $(('page-'+p)).classList.toggle('hidden', p!==page));
-    if(window.innerWidth<=1024) { $('sidebar').classList.remove('open'); $('sidebar-overlay').classList.remove('open'); }
-    const loaders = { dashboard:loadDashboard, tasks:loadTasksPage, users:loadUsersPage, teams:loadTeamsPage, organizations:loadOrgsPage, workflows:loadWorkflowsPage, transitions:loadTransitionsPage, ai:loadAIPage, audit:loadAuditPage, comments:loadCommentsPage };
-    if(loaders[page]) loaders[page]();
-}
+      async function apiCall(ep, method = "GET", body = null) {
+        const o = { method, headers: { "Content-Type": "application/json" } };
+        if (TOKEN) o.headers["Authorization"] = `Bearer ${TOKEN}`;
+        if (body) o.body = JSON.stringify(body);
+        const r = await fetch(API + ep, o);
+        if (r.status === 401) {
+          const ok = await tryRefresh();
+          if (ok) {
+            o.headers["Authorization"] = `Bearer ${TOKEN}`;
+            const r2 = await fetch(API + ep, o);
+            if (!r2.ok) throw new Error(await r2.text());
+            return r2.json();
+          }
+          doLogout();
+          throw new Error("Session expired");
+        }
+        if (r.status === 204) return {};
+        if (!r.ok) {
+          const e = await r.json().catch(() => ({}));
+          throw new Error(typeof e === "string" ? e : JSON.stringify(e));
+        }
+        return r.json();
+      }
+      async function tryRefresh() {
+        const rt = sessionStorage.getItem("rt");
+        if (!rt) return false;
+        try {
+          const r = await fetch(API + "/auth/refresh/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ refresh: rt }),
+          });
+          if (!r.ok) return false;
+          const d = await r.json();
+          TOKEN = d.access;
+          sessionStorage.setItem("at", TOKEN);
+          return true;
+        } catch {
+          return false;
+        }
+      }
 
-// =================== DASHBOARD ===================
-async function loadDashboard() {
-    try {
-        const [dash,perf,act] = await Promise.all([apiCall('/dashboard/overview/'), apiCall('/dashboard/team-performance/'), apiCall('/dashboard/activity/')]);
-        const o=dash.overview||{}, s=dash.sla||{}, tp=perf.team_performance||[], ac=act.recent_activity||[];
-        const active = (o.total_tasks||0)-(o.by_state?.done||0)-(o.by_state?.cancelled||0);
+      async function doLogin() {
+        const u = $("login-user").value,
+          p = $("login-pass").value,
+          e = $("login-error");
+        try {
+          const d = await apiCall("/auth/login/", "POST", {
+            username: u,
+            password: p,
+          });
+          if (d.access) {
+            TOKEN = d.access;
+            sessionStorage.setItem("at", TOKEN);
+            sessionStorage.setItem("rt", d.refresh);
+            $("login-screen").classList.add("hidden");
+            $("app-shell").classList.remove("hidden");
+            await loadGlobalData();
+            loadDashboard();
+          } else {
+            e.textContent = "Invalid credentials";
+            e.classList.remove("hidden");
+          }
+        } catch {
+          e.textContent = "Connection failed";
+          e.classList.remove("hidden");
+        }
+      }
+      function doLogout() {
+        TOKEN = null;
+        sessionStorage.removeItem("at");
+        sessionStorage.removeItem("rt");
+        $("app-shell").classList.add("hidden");
+        $("login-screen").classList.remove("hidden");
+      }
+      async function tryAutoLogin() {
+        const t = sessionStorage.getItem("at");
+        if (t) {
+          TOKEN = t;
+          try {
+            await apiCall("/users/me/");
+            $("login-screen").classList.add("hidden");
+            $("app-shell").classList.remove("hidden");
+            await loadGlobalData();
+            loadDashboard();
+          } catch {
+            TOKEN = null;
+            sessionStorage.removeItem("at");
+            sessionStorage.removeItem("rt");
+          }
+        }
+      }
+      window.addEventListener("DOMContentLoaded", tryAutoLogin);
+      $("login-pass").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") doLogin();
+      });
+      $("login-user").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") $("login-pass").focus();
+      });
 
-        let html = `<div><h2 class="page-title">COMMAND CENTER</h2><p class="page-sub">Real-time overview · Click stats to filter tasks</p></div>`;
-        html += `<div class="grid-5" style="margin-top:20px">
-            ${statCard('📋','Total Tasks',o.total_tasks||0,'#3b82f6','',"goTasksFiltered('all')")}
-            ${statCard('⚡','Active',active,'#f59e0b',`${o.last_7_days?.created||0} new this week`,"goTasksFiltered('active')")}
-            ${statCard('✅','Completed',o.by_state?.done||0,'#10b981',`${o.last_7_days?.completed||0} this week`,"goTasksFiltered('state','done')")}
-            ${statCard('🔴','SLA Breached',s.breached||0,'#ef4444',s.breach_rate?s.breach_rate+'% rate':'',"goTasksFiltered('sla')")}
-            ${statCard('👤','Unassigned',o.unassigned||0,'#8b5cf6','',"goTasksFiltered('unassigned')")}
-        </div>`;
+      async function loadGlobalData() {
+        try {
+          const [me, td, wd, ud, tmd, od] = await Promise.all([
+            apiCall("/users/me/"),
+            apiCall("/tasks/?page_size=100"),
+            apiCall("/workflows/"),
+            apiCall("/users/"),
+            apiCall("/teams/"),
+            apiCall("/organizations/"),
+          ]);
+          CURRENT_USER = me;
+          TASKS = td.results || [];
+          WORKFLOWS = wd.results || [];
+          ALL_USERS = ud.results || [];
+          TEAMS = tmd.results || [];
+          ORGS = od.results || [];
+          $("current-user").textContent = me.username || "";
+          $("current-role").textContent = (me.role || "").toUpperCase();
+        } catch (e) {
+          showGlobalMsg("Load failed: " + e.message, true);
+        }
+      }
 
-        const states=Object.entries(o.by_state||{}), prios=Object.entries(o.by_priority||{}), maxPrio=Math.max(...prios.map(p=>p[1]),1);
-        const stateTotal = states.reduce((a,b)=>a+b[1],0)||1;
+      function switchPage(p) {
+        document
+          .querySelectorAll(".nav-item")
+          .forEach((el) =>
+            el.classList.toggle("active", el.dataset.page === p),
+          );
+        ALL_PAGES.forEach((x) =>
+          $("page-" + x).classList.toggle("hidden", x !== p),
+        );
+        if (window.innerWidth <= 1024) {
+          $("sidebar").classList.remove("open");
+          $("sidebar-overlay").classList.remove("open");
+        }
+        const L = {
+          dashboard: loadDashboard,
+          tasks: loadTasksPage,
+          users: loadUsersPage,
+          teams: loadTeamsPage,
+          organizations: loadOrgsPage,
+          workflows: loadWorkflowsPage,
+          transitions: loadTransitionsPage,
+          ai: loadAIPage,
+          audit: loadAuditPage,
+          comments: loadCommentsPage,
+        };
+        if (L[p]) L[p]();
+      }
+      function goToTask(id) {
+        switchPage("tasks");
+        setTimeout(() => showTaskDetail(id), 300);
+      }
+      function goTasksFiltered(type, value) {
+        PENDING_FILTER = { type, value };
+        switchPage("tasks");
+      }
 
-        let stateHTML = states.length ? states.map(([k,v])=>{const c=STATE_COLORS[k]||'#64748b';return `<div class="clickable-bar" onclick="goTasksFiltered('state','${k}')" style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="font-size:10px;color:var(--text-muted);width:70px">${k.replace(/_/g,' ')}</span><div style="flex:1;height:20px;background:var(--bg);border-radius:4px;overflow:hidden"><div style="height:100%;width:${(v/stateTotal)*100}%;background:${c};border-radius:4px;min-width:${v>0?'24px':'0'};display:flex;align-items:center;padding-left:8px"><span style="font-size:10px;color:#fff;font-weight:600">${v}</span></div></div></div>`;}).join('') : '<div class="empty-state">No data</div>';
+      // =================== PROFILE EDIT ===================
+      function showEditProfile() {
+        const u = CURRENT_USER;
+        showModal(
+          "Edit Profile",
+          `
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">Email</label><input id="ep-email" value="${u.email || ""}" placeholder="Email"></div>
+            <div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">Max Concurrent Tasks</label><input id="ep-max" type="number" value="${u.max_concurrent_tasks || 5}" min="1" max="20"></div>
+            <div style="grid-column:1/-1"><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">Skills (comma separated)</label><input id="ep-skills" value="${(u.skills || []).join(", ")}" placeholder="python, django, aws"></div>
+        </div>`,
+          [
+            {
+              label: "CANCEL",
+              color: "var(--text-muted)",
+              onclick: "closeModal()",
+            },
+            { label: "SAVE", color: "var(--accent)", onclick: "saveProfile()" },
+          ],
+        );
+      }
+      async function saveProfile() {
+        const skills = $("ep-skills").value
+          ? $("ep-skills")
+              .value.split(",")
+              .map((s) => s.trim())
+              .filter(Boolean)
+          : [];
+        try {
+          await apiCall(`/users/${CURRENT_USER.id}/`, "PATCH", {
+            email: $("ep-email").value,
+            max_concurrent_tasks: parseInt($("ep-max").value) || 5,
+            skills,
+          });
+          closeModal();
+          showSuccessModal("Saved", "Profile updated!");
+          await loadGlobalData();
+        } catch (e) {
+          showErrorModal("Error", "Update failed: " + e.message);
+        }
+      }
 
-        let prioHTML = prios.length ? prios.map(([k,v])=>{const c=PRIORITY_COLORS[k]||'#64748b';return `<div class="clickable-bar" onclick="goTasksFiltered('priority','${k}')" style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="font-size:10px;color:var(--text-muted);width:60px">${k}</span><div style="flex:1;height:20px;background:var(--bg);border-radius:4px;overflow:hidden"><div style="height:100%;width:${(v/maxPrio)*100}%;background:${c};border-radius:4px;min-width:${v>0?'24px':'0'};display:flex;align-items:center;padding-left:8px"><span style="font-size:10px;color:#fff;font-weight:600">${v}</span></div></div></div>`;}).join('') : '<div class="empty-state">No data</div>';
+      // =================== DASHBOARD ===================
+      async function loadDashboard() {
+        try {
+          const [dash, perf, act] = await Promise.all([
+            apiCall("/dashboard/overview/"),
+            apiCall("/dashboard/team-performance/"),
+            apiCall("/dashboard/activity/"),
+          ]);
+          const o = dash.overview || {},
+            s = dash.sla || {},
+            tp = perf.team_performance || [],
+            ac = act.recent_activity || [];
+          const active =
+            (o.total_tasks || 0) -
+            (o.by_state?.done || 0) -
+            (o.by_state?.cancelled || 0);
+          let h = `<div><h2 class="page-title">COMMAND CENTER</h2><p class="page-sub">Real-time overview · Click stats to filter</p></div>`;
+          h += `<div class="grid-5" style="margin-top:20px">${statCard("📋", "Total Tasks", o.total_tasks || 0, "#3b82f6", "", "goTasksFiltered('all')")}${statCard("⚡", "Active", active, "#f59e0b", `${o.last_7_days?.created || 0} new this week`, "goTasksFiltered('active')")}${statCard("✅", "Completed", o.by_state?.done || 0, "#10b981", `${o.last_7_days?.completed || 0} this week`, "goTasksFiltered('state','done')")}${statCard("🔴", "SLA Breached", s.breached || 0, "#ef4444", s.breach_rate ? s.breach_rate + "% rate" : "", "goTasksFiltered('sla')")}${statCard("👤", "Unassigned", o.unassigned || 0, "#8b5cf6", "", "goTasksFiltered('unassigned')")}</div>`;
+          const states = Object.entries(o.by_state || {}),
+            prios = Object.entries(o.by_priority || {}),
+            mp = Math.max(...prios.map((p) => p[1]), 1),
+            st = states.reduce((a, b) => a + b[1], 0) || 1;
+          let sH = states.length
+            ? states
+                .map(([k, v]) => {
+                  const c = STATE_COLORS[k] || "#64748b";
+                  return `<div class="clickable-bar" onclick="goTasksFiltered('state','${k}')" style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="font-size:10px;color:var(--text-muted);width:70px">${k.replace(/_/g, " ")}</span><div style="flex:1;height:20px;background:var(--bg);border-radius:4px;overflow:hidden"><div style="height:100%;width:${(v / st) * 100}%;background:${c};border-radius:4px;min-width:${v > 0 ? "24px" : "0"};display:flex;align-items:center;padding-left:8px"><span style="font-size:10px;color:#fff;font-weight:600">${v}</span></div></div></div>`;
+                })
+                .join("")
+            : '<div class="empty-state">No data</div>';
+          let pH = prios.length
+            ? prios
+                .map(([k, v]) => {
+                  const c = PRIORITY_COLORS[k] || "#64748b";
+                  return `<div class="clickable-bar" onclick="goTasksFiltered('priority','${k}')" style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="font-size:10px;color:var(--text-muted);width:60px">${k}</span><div style="flex:1;height:20px;background:var(--bg);border-radius:4px;overflow:hidden"><div style="height:100%;width:${(v / mp) * 100}%;background:${c};border-radius:4px;min-width:${v > 0 ? "24px" : "0"};display:flex;align-items:center;padding-left:8px"><span style="font-size:10px;color:#fff;font-weight:600">${v}</span></div></div></div>`;
+                })
+                .join("")
+            : '<div class="empty-state">No data</div>';
+          let tH = tp.length
+            ? tp
+                .map((p) => {
+                  const c =
+                    p.workload_percentage >= 80
+                      ? "var(--red)"
+                      : p.workload_percentage >= 50
+                        ? "var(--amber)"
+                        : "var(--green)";
+                  return `<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px"><span>${p.username.replace(/_/g, " ")}</span><span style="color:${c}">${p.workload_percentage}% · ${p.active_tasks} active</span></div><div class="progress-bg"><div class="progress-fill" style="width:${Math.min(p.workload_percentage, 100)}%;background:${c}"></div></div></div>`;
+                })
+                .join("")
+            : '<div class="empty-state">No data</div>';
+          h += `<div class="grid-3" style="margin-top:14px"><div class="card"><h3 class="section-title">Tasks by State</h3>${sH}</div><div class="card"><h3 class="section-title">Tasks by Priority</h3>${pH}</div><div class="card"><h3 class="section-title">Team Workload</h3>${tH}</div></div>`;
+          h += `<div class="grid-2" style="margin-top:14px"><div class="card"><h3 class="section-title">SLA Health</h3><div class="detail-row"><span class="detail-label">Healthy</span><span style="color:var(--green)">${s.healthy || 0}</span></div><div class="detail-row"><span class="detail-label">At Risk</span><span style="color:var(--amber)">${s.at_risk || 0}</span></div><div class="detail-row"><span class="detail-label">Breached</span><span style="color:var(--red)">${s.breached || 0}</span></div><button class="btn btn-sm btn-outline" style="margin-top:14px;width:100%" onclick="runSLACheck()">🔍 RUN SLA CHECK</button></div><div class="card"><h3 class="section-title">Quick Stats</h3><div class="detail-row"><span class="detail-label">Org</span><span class="detail-value">${ORGS[0]?.name || "—"}</span></div><div class="detail-row"><span class="detail-label">Users</span><span class="detail-value">${ALL_USERS.length}</span></div><div class="detail-row"><span class="detail-label">Teams</span><span class="detail-value">${TEAMS.length}</span></div><div class="detail-row"><span class="detail-label">Workflows</span><span class="detail-value">${WORKFLOWS.length}</span></div></div></div>`;
+          const aH =
+            ac
+              .slice(0, 10)
+              .map(
+                (a) =>
+                  `<div class="activity-item"><span style="font-size:14px">${ACTION_ICONS[a.action] || "📝"}</span><div style="flex:1"><span class="link" style="font-size:12px" onclick="goToTask('${a.task_key}')">${a.task_key}</span> <span style="color:var(--text-dim);font-size:12px">— ${a.action.replace(/_/g, " ")} by ${a.performed_by}</span>${a.reason ? `<div style="font-size:10px;color:var(--text-muted);margin-top:2px">↳ ${a.reason}</div>` : ""}</div><span style="color:var(--text-muted);font-size:10px">${timeAgo(a.timestamp)}</span></div>`,
+              )
+              .join("") || '<div class="empty-state">No activity</div>';
+          h += `<div class="card" style="margin-top:14px"><h3 class="section-title">Recent Activity</h3>${aH}</div>`;
+          $("page-dashboard").innerHTML = h;
+        } catch (e) {
+          $("page-dashboard").innerHTML =
+            `<div class="msg msg-error">${e.message}</div>`;
+        }
+      }
+      async function runSLACheck() {
+        try {
+          const r = await apiCall("/dashboard/sla-check/", "POST");
+          showSuccessModal(
+            "SLA Check",
+            `Checked: ${r.results.checked}<br>Breached: ${r.results.breached}`,
+          );
+          loadDashboard();
+        } catch {
+          showErrorModal("Error", "SLA check failed");
+        }
+      }
 
-        let teamHTML = tp.length ? tp.map(p=>{const c=p.workload_percentage>=80?'var(--red)':p.workload_percentage>=50?'var(--amber)':'var(--green)';return `<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px"><span>${p.username.replace(/_/g,' ')}</span><span style="color:${c}">${p.workload_percentage}% · ${p.active_tasks} active</span></div><div class="progress-bg"><div class="progress-fill" style="width:${Math.min(p.workload_percentage,100)}%;background:${c}"></div></div></div>`;}).join('') : '<div class="empty-state">No data</div>';
+      // =================== TASKS ===================
+      async function loadTasksPage() {
+        await loadGlobalData();
+        const f = PENDING_FILTER;
+        PENDING_FILTER = null;
+        if (f) {
+          if (f.type === "state") renderTasks({ state: f.value });
+          else if (f.type === "priority") renderTasks({ priority: f.value });
+          else if (f.type === "sla") renderTasks({ sla: true });
+          else if (f.type === "unassigned") renderTasks({ unassigned: true });
+          else if (f.type === "active") renderTasks({ active: true });
+          else renderTasks({});
+        } else renderTasks({});
+      }
 
-        html += `<div class="grid-3" style="margin-top:14px">
-            <div class="card"><h3 class="section-title">Tasks by State</h3>${stateHTML}</div>
-            <div class="card"><h3 class="section-title">Tasks by Priority</h3>${prioHTML}</div>
-            <div class="card"><h3 class="section-title">Team Workload</h3>${teamHTML}</div>
-        </div>`;
+      function renderTasks(filters = {}) {
+        const fs = filters.state || "",
+          fp = filters.priority || "",
+          ft = filters.team || "",
+          fSLA = filters.sla || false,
+          fUn = filters.unassigned || false,
+          fAct = filters.active || false,
+          search = filters.search || "";
+        let filtered = TASKS.filter((t) => {
+          if (fs && t.current_state !== fs) return false;
+          if (fp && t.priority !== fp) return false;
+          if (fSLA && !t.sla_breached) return false;
+          if (fUn && t.assigned_to_name) return false;
+          if (
+            fAct &&
+            (t.current_state === "done" || t.current_state === "cancelled")
+          )
+            return false;
+          if (ft && t.team !== ft) return false;
+          if (search) {
+            const s = search.toLowerCase();
+            if (
+              !t.title.toLowerCase().includes(s) &&
+              !t.task_key.toLowerCase().includes(s)
+            )
+              return false;
+          }
+          return true;
+        });
+        // Sort
+        filtered.sort((a, b) => {
+          let va = a[TASK_SORT.field],
+            vb = b[TASK_SORT.field];
+          if (TASK_SORT.field === "ai_priority_score") {
+            va = va || 0;
+            vb = vb || 0;
+          }
+          if (va < vb) return TASK_SORT.dir === "asc" ? -1 : 1;
+          if (va > vb) return TASK_SORT.dir === "asc" ? 1 : -1;
+          return 0;
+        });
+        // Pagination
+        const perPage = 15,
+          totalPages = Math.ceil(filtered.length / perPage) || 1;
+        TASK_PAGE = Math.min(TASK_PAGE, totalPages);
+        const paged = filtered.slice(
+          (TASK_PAGE - 1) * perPage,
+          TASK_PAGE * perPage,
+        );
+        let labels = [];
+        if (fs) labels.push("State: " + fs.replace(/_/g, " "));
+        if (fp) labels.push("Priority: " + fp);
+        if (ft) {
+          const tm = TEAMS.find((x) => x.id === ft);
+          labels.push("Team: " + (tm?.name || ft));
+        }
+        if (fSLA) labels.push("SLA Breached");
+        if (fUn) labels.push("Unassigned");
+        if (fAct) labels.push("Active");
+        if (search) labels.push("Search: " + search);
 
-        html += `<div class="grid-2" style="margin-top:14px">
-            <div class="card"><h3 class="section-title">SLA Health</h3>
-                <div class="detail-row"><span class="detail-label">Healthy</span><span style="color:var(--green)">${s.healthy||0}</span></div>
-                <div class="detail-row"><span class="detail-label">At Risk (&lt;24h)</span><span style="color:var(--amber)">${s.at_risk||0}</span></div>
-                <div class="detail-row"><span class="detail-label">Breached</span><span style="color:var(--red)">${s.breached||0}</span></div>
-                <button class="btn btn-sm btn-outline" style="margin-top:14px;width:100%" onclick="runSLACheck()">🔍 RUN SLA CHECK</button>
-            </div>
-            <div class="card"><h3 class="section-title">Quick Stats</h3>
-                <div class="detail-row"><span class="detail-label">Organization</span><span class="detail-value">${ORGS[0]?.name||'—'}</span></div>
-                <div class="detail-row"><span class="detail-label">Users</span><span class="detail-value">${ALL_USERS.length}</span></div>
-                <div class="detail-row"><span class="detail-label">Teams</span><span class="detail-value">${TEAMS.length}</span></div>
-                <div class="detail-row"><span class="detail-label">Workflows</span><span class="detail-value">${WORKFLOWS.length}</span></div>
-            </div>
-        </div>`;
-
-        const actHTML = ac.slice(0,10).map(a => `<div class="activity-item"><span style="font-size:14px">${ACTION_ICONS[a.action]||'📝'}</span><div style="flex:1"><span style="color:var(--accent);font-weight:600;font-size:12px">${a.task_key}</span> <span style="color:var(--text-dim);font-size:12px">— ${a.action.replace(/_/g,' ')} by ${a.performed_by}</span>${a.reason?`<div style="font-size:10px;color:var(--text-muted);margin-top:2px">↳ ${a.reason}</div>`:''}</div><span style="color:var(--text-muted);font-size:10px">${timeAgo(a.timestamp)}</span></div>`).join('') || '<div class="empty-state">No activity</div>';
-        html += `<div class="card" style="margin-top:14px"><h3 class="section-title">Recent Activity</h3>${actHTML}</div>`;
-        $('page-dashboard').innerHTML = html;
-    } catch(e) { $('page-dashboard').innerHTML = `<div class="msg msg-error">Failed: ${e.message}</div>`; }
-}
-
-async function runSLACheck() { try { const r=await apiCall('/dashboard/sla-check/','POST'); showSuccessModal('SLA Check Complete', `Checked: ${r.results.checked}<br>Newly breached: ${r.results.breached}`); loadDashboard(); } catch { showErrorModal('Error','SLA check failed'); } }
-
-// Dashboard -> Tasks with filter
-function goTasksFiltered(type, value) {
-    PENDING_FILTER = {type, value};
-    switchPage('tasks');
-}
-
-// =================== TASKS ===================
-async function loadTasksPage() { await loadGlobalData(); const f = PENDING_FILTER; PENDING_FILTER=null; if(f) applyPendingFilter(f); else renderTasks(); }
-
-function applyPendingFilter(f) {
-    if(f.type==='state') renderTasks(f.value,'',false,false);
-    else if(f.type==='priority') renderTasks('',f.value,false,false);
-    else if(f.type==='sla') renderTasks('','',true,false);
-    else if(f.type==='unassigned') renderTasks('','',false,true);
-    else if(f.type==='active') renderTasks('','',false,false,true);
-    else renderTasks();
-}
-
-function renderTasks(filterState='', filterPriority='', filterSLA=false, filterUnassigned=false, filterActive=false) {
-    let filtered = TASKS.filter(t => {
-        if(filterState && t.current_state!==filterState) return false;
-        if(filterPriority && t.priority!==filterPriority) return false;
-        if(filterSLA && !t.sla_breached) return false;
-        if(filterUnassigned && t.assigned_to_name) return false;
-        if(filterActive && (t.current_state==='done'||t.current_state==='cancelled')) return false;
-        return true;
-    });
-    let labels=[];
-    if(filterState) labels.push('State: '+filterState.replace(/_/g,' '));
-    if(filterPriority) labels.push('Priority: '+filterPriority);
-    if(filterSLA) labels.push('SLA Breached');
-    if(filterUnassigned) labels.push('Unassigned');
-    if(filterActive) labels.push('Active Only');
-
-    let html = `<div class="page-header"><div><h2 class="page-title">TASKS</h2><p class="page-sub">${filtered.length} tasks${labels.length?' · '+labels.join(', '):''}</p></div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">${labels.length?'<button class="btn btn-sm btn-outline" onclick="renderTasks()">✕ CLEAR</button>':''}
+        let h = `<div class="page-header"><div><h2 class="page-title">TASKS</h2><p class="page-sub">${filtered.length} tasks${labels.length ? " · " + labels.join(", ") : ""}</p></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">${labels.length ? `<button class="btn btn-sm btn-outline" onclick="TASK_PAGE=1;renderTasks({})">✕ CLEAR</button>` : ""}
         <button class="btn btn-sm" style="background:var(--accent);color:#fff" onclick="toggleCreateTask()">+ NEW TASK</button></div></div>`;
-    html += `<div id="create-task-form" class="card hidden" style="margin-top:14px"></div>`;
-    html += `<div style="display:flex;gap:10px;margin:16px 0 14px;flex-wrap:wrap">
-        <select style="width:150px" onchange="renderTasks(this.value,$('f-prio')?.value||'')"><option value="">All States</option>${['open','in_progress','review','testing','done','cancelled'].map(s=>`<option value="${s}" ${filterState===s?'selected':''}>${s.replace(/_/g,' ')}</option>`).join('')}</select>
-        <select id="f-prio" style="width:150px" onchange="renderTasks(document.querySelector('#page-tasks select').value,this.value)"><option value="">All Priorities</option>${['critical','high','medium','low'].map(p=>`<option value="${p}" ${filterPriority===p?'selected':''}>${p}</option>`).join('')}</select>
+        h += `<div id="create-task-form" class="card hidden" style="margin-top:14px"></div>`;
+        // Search + Filters
+        h += `<div class="search-bar" style="margin:16px 0 14px">
+        <input id="task-search" placeholder="🔍 Search tasks..." value="${search}" onkeydown="if(event.key==='Enter'){TASK_PAGE=1;renderTasks(getCurrentFilters())}" style="max-width:250px">
+        <button class="btn btn-sm btn-outline" onclick="TASK_PAGE=1;renderTasks(getCurrentFilters())">Search</button>
+        <select id="f-state" style="width:140px" onchange="TASK_PAGE=1;renderTasks(getCurrentFilters())"><option value="">All States</option>${STATES.map((s) => `<option value="${s}" ${fs === s ? "selected" : ""}>${s.replace(/_/g, " ")}</option>`).join("")}</select>
+        <select id="f-prio" style="width:140px" onchange="TASK_PAGE=1;renderTasks(getCurrentFilters())"><option value="">All Priorities</option>${PRIORITIES.map((p) => `<option value="${p}" ${fp === p ? "selected" : ""}>${p}</option>`).join("")}</select>
+        <select id="f-team" style="width:140px" onchange="TASK_PAGE=1;renderTasks(getCurrentFilters())"><option value="">All Teams</option>${TEAMS.map((t) => `<option value="${t.id}" ${ft === t.id ? "selected" : ""}>${t.name}</option>`).join("")}</select>
     </div><div id="task-msg"></div>`;
-
-    html += `<div class="card"><div class="table-wrap"><table><thead><tr>${['Key','Title','State','Priority','Type','Assignee','AI','Created'].map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>`;
-    if(!filtered.length) html += `<tr><td colspan="8" class="empty-state">No tasks</td></tr>`;
-    else filtered.forEach(t => {
-        const ai = t.ai_priority_score!=null ? `<span style="color:${t.ai_priority_score>=0.7?'var(--red)':t.ai_priority_score>=0.4?'var(--amber)':'var(--green)'};font-weight:600">${(t.ai_priority_score*100).toFixed(0)}%</span>` : '<span style="color:var(--text-muted)">—</span>';
-        html += `<tr class="clickable" onclick="showTaskDetail('${t.id}')"><td style="color:var(--accent);font-weight:600;font-size:12px">${t.task_key}</td><td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.title}</td><td>${badge(t.current_state,STATE_COLORS)}</td><td>${badge(t.priority,PRIORITY_COLORS)}</td><td style="color:var(--text-dim)">${t.task_type}</td><td style="color:${t.assigned_to_name?'var(--text)':'var(--text-muted)'}">${t.assigned_to_name||'—'}</td><td>${ai}</td><td style="color:var(--text-muted);font-size:11px">${timeAgo(t.created_at)}</td></tr>`;
-    });
-    html += `</tbody></table></div></div><div id="task-detail-panel"></div>`;
-    $('page-tasks').innerHTML = html;
-}
-
-function toggleCreateTask() {
-    const form=$('create-task-form'); form.classList.toggle('hidden');
-    if(!form.classList.contains('hidden')) {
-        form.innerHTML = `<h3 style="font-size:12px;font-weight:600;margin:0 0 14px;color:var(--accent)">Create New Task</h3>
-            <div class="grid-2" style="gap:12px">
-                <div style="grid-column:1/-1"><input id="new-title" placeholder="Task title..."></div>
-                <div style="grid-column:1/-1"><textarea id="new-desc" style="min-height:70px;resize:vertical" placeholder="Description..."></textarea></div>
-                <select id="new-priority"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option><option value="critical">Critical</option></select>
-                <select id="new-type"><option value="task">Task</option><option value="bug">Bug</option><option value="feature">Feature</option><option value="improvement">Improvement</option></select>
-                <select id="new-workflow"><option value="">Workflow...</option>${WORKFLOWS.map(w=>`<option value="${w.id}">${w.name}</option>`).join('')}</select>
-                <select id="new-team"><option value="">No team</option>${TEAMS.map(t=>`<option value="${t.id}">${t.name}</option>`).join('')}</select>
-                <div style="grid-column:1/-1"><input id="new-tags" placeholder="Tags (comma separated): backend, urgent"></div>
-            </div>
-            <div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-sm" style="background:var(--accent);color:#fff" onclick="createTask()">CREATE</button><button class="btn btn-sm btn-outline" onclick="$('create-task-form').classList.add('hidden')">CANCEL</button></div>`;
-    }
-}
-
-async function createTask() {
-    const body = { title:$('new-title').value, description:$('new-desc').value, priority:$('new-priority').value, task_type:$('new-type').value, workflow:$('new-workflow').value||(WORKFLOWS[0]?.id||''), tags:$('new-tags').value?$('new-tags').value.split(',').map(t=>t.trim()).filter(Boolean):[] };
-    if($('new-team').value) body.team=$('new-team').value;
-    try { await apiCall('/tasks/','POST',body); await loadGlobalData(); renderTasks(); showSuccessModal('Success','Task created!'); } catch(e) { showErrorModal('Error','Create failed: '+e.message); }
-}
-
-async function showTaskDetail(taskId) {
-    try {
-        const task=TASKS.find(t=>t.id===taskId); if(!task) return;
-        const [trans,detail] = await Promise.all([apiCall(`/tasks/${taskId}/available-transitions/`), apiCall(`/tasks/${taskId}/`)]);
-        const avail=trans.available_transitions||[];
-        const engineers=ALL_USERS.filter(u=>u.role==='engineer'||u.role==='manager');
-        const userOpts=engineers.map(u=>{
-            const assigned = TASKS.some(t=>t.assigned_to===u.id && t.current_state!=='done' && t.current_state!=='cancelled');
-            const label = `${u.username} (${u.role}) — ${u.active_task_count}/${u.max_concurrent_tasks} tasks${u.id===task.assigned_to?' ✓ current':''}`;
-            return `<option value="${u.id}" ${u.id===task.assigned_to?'selected':''}>${label}</option>`;
-        }).join('');
-        const tags=(detail.tags||[]).map(t=>`<span class="tag">${t}</span>`).join(' ')||'—';
-        const comments=detail.comments||[];
-
-        let html = `<div class="card" style="margin-top:14px">
-            <div style="display:flex;justify-content:space-between;align-items:start"><h3 style="font-size:14px;font-weight:700;color:var(--accent)">${task.task_key}</h3><button class="btn btn-outline" style="padding:4px 12px;font-size:14px" onclick="$('task-detail-panel').innerHTML=''">×</button></div>
-            <p style="font-size:13px;font-weight:500;margin:8px 0 4px">${task.title}</p>
-            ${detail.description?`<p style="font-size:11px;color:var(--text-dim);margin-bottom:14px">${detail.description}</p>`:''}
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px">
-                <div class="detail-row"><span class="detail-label">State</span>${badge(task.current_state,STATE_COLORS)}</div>
-                <div class="detail-row"><span class="detail-label">Priority</span>${badge(task.priority,PRIORITY_COLORS)}</div>
-                <div class="detail-row"><span class="detail-label">Type</span><span class="detail-value">${task.task_type}</span></div>
-                <div class="detail-row"><span class="detail-label">SLA</span><span style="color:${task.sla_breached?'var(--red)':'var(--green)'}">${task.sla_breached?'BREACHED':'OK'}</span></div>
-                <div class="detail-row"><span class="detail-label">Assignee</span><span style="color:${task.assigned_to_name?'var(--text)':'var(--text-muted)'}">${task.assigned_to_name||'Unassigned'}</span></div>
-                <div class="detail-row"><span class="detail-label">Created by</span><span class="detail-value">${task.created_by_name||'—'}</span></div>
-                <div class="detail-row"><span class="detail-label">AI Score</span><span class="detail-value">${task.ai_priority_score!=null?(task.ai_priority_score*100).toFixed(0)+'%':'—'}</span></div>
-                <div class="detail-row"><span class="detail-label">Created</span><span class="detail-value">${formatDate(task.created_at)}</span></div>
-            </div>
-            <div style="margin-top:10px"><span class="detail-label" style="font-size:11px">Tags: </span>${tags}</div>`;
-
-        // Assign (managers and admins only)
-        if(isManagerOrAbove()) {
-            html += `<div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--border)"><h4 class="section-title">Assign Task</h4>
-                <div style="display:flex;gap:8px"><select id="assign-user" style="flex:1"><option value="">Select engineer...</option>${userOpts}</select>
-                <button class="btn btn-sm" style="background:var(--purple);color:#fff" onclick="doAssign('${taskId}')">ASSIGN</button></div><div id="assign-msg" style="margin-top:8px"></div></div>`;
-        }
-
-        if(avail.length>0) {
-            html += `<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)"><h4 class="section-title">Transition State</h4>
-                <div style="display:flex;flex-wrap:wrap;gap:6px">${avail.map(t=>`<button class="transition-btn" onclick="doTransition('${taskId}','${t.to_state}')">${t.to_state.replace(/_/g,' ')}</button>`).join('')}</div></div>`;
-        }
-
-        html += `<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)"><h4 class="section-title">Comments (${comments.length})</h4>
-            ${comments.map(c=>`<div style="padding:8px 0;border-bottom:1px solid rgba(30,41,59,0.05)"><div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:4px"><span style="color:var(--accent);font-weight:600">${c.author_name}</span><span style="color:var(--text-muted)">${timeAgo(c.created_at)}</span></div><div style="font-size:12px;color:var(--text-dim)">${c.content}</div></div>`).join('')||'<div style="color:var(--text-muted);font-size:11px;padding:8px 0">No comments</div>'}
-            <div style="display:flex;gap:8px;margin-top:10px"><input id="new-comment" style="flex:1" placeholder="Add comment..."><button class="btn btn-sm" style="background:var(--cyan);color:#fff" onclick="addComment('${taskId}')">POST</button></div></div>`;
-
-        html += `</div>`;
-        $('task-detail-panel').innerHTML = html;
-    } catch(e) { showErrorModal('Error','Failed to load task'); }
-}
-
-async function doAssign(taskId) {
-    const userId=$('assign-user').value; if(!userId){showMsg('assign-msg','Select an engineer',true);return;}
-    try { await apiCall(`/tasks/${taskId}/assign/`,'POST',{user_id:userId,reason:'Assigned via dashboard'}); showSuccessModal('Assigned','Task assigned successfully!'); await loadGlobalData(); setTimeout(()=>showTaskDetail(taskId),300); }
-    catch(e) { showErrorModal('Assignment Failed', e.message); }
-}
-
-async function doTransition(taskId, toState) {
-    showModal('Confirm Transition', `<div style="margin-bottom:14px">Move task to <strong>${toState.replace(/_/g,' ')}</strong>?</div><input id="transition-reason" placeholder="Reason (optional)" style="width:100%">`, [
-        {label:'CANCEL', color:'var(--text-muted)', onclick:'closeModal()'},
-        {label:'CONFIRM →', color:'var(--accent)', onclick:`confirmTransition('${taskId}','${toState}')`}
-    ]);
-}
-
-async function confirmTransition(taskId, toState) {
-    const reason = $('transition-reason')?.value || '';
-    closeModal();
-    try { await apiCall(`/tasks/${taskId}/transition/`,'POST',{to_state:toState,reason}); showSuccessModal('Success',`Transitioned to ${toState.replace(/_/g,' ')}`); await loadGlobalData(); renderTasks(); }
-    catch(e) { let msg=e.message; try{msg=JSON.parse(msg); if(Array.isArray(msg)) msg=msg.join('<br>'); else if(typeof msg==='object') msg=Object.values(msg).flat().join('<br>');}catch{} showErrorModal('Transition Failed', msg); }
-}
-
-async function addComment(taskId) { const c=$('new-comment').value; if(!c) return; try { await apiCall('/comments/','POST',{task:taskId,content:c}); showTaskDetail(taskId); } catch { showErrorModal('Error','Comment failed'); } }
-
-// =================== USERS ===================
-async function loadUsersPage() {
-    await loadGlobalData();
-    let html = `<div class="page-header"><div><h2 class="page-title">USERS</h2><p class="page-sub">${ALL_USERS.length} users</p></div>
-        ${isManagerOrAbove()?'<button class="btn btn-sm" style="background:var(--accent);color:#fff" onclick="showCreateUserForm()">+ NEW USER</button>':''}
-    </div><div id="create-user-area"></div>
-    <div class="card" style="margin-top:20px"><div class="table-wrap"><table><thead><tr>${['Username','Email','Role','Skills','Active','Capacity'].map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>`;
-    if(!ALL_USERS.length) html += `<tr><td colspan="6" class="empty-state">No users</td></tr>`;
-    else ALL_USERS.forEach(u => {
-        const skills=(u.skills||[]).map(s=>`<span class="tag">${s}</span>`).join(' ')||'—';
-        const load=u.max_concurrent_tasks>0?Math.round(u.active_task_count/u.max_concurrent_tasks*100):0;
-        const lc=load>=80?'var(--red)':load>=50?'var(--amber)':'var(--green)';
-        html += `<tr><td style="font-weight:600">${u.username}</td><td style="color:var(--text-dim)">${u.email||'—'}</td><td>${badge(u.role,ROLE_COLORS)}</td><td>${skills}</td><td>${u.active_task_count}</td><td><div style="display:flex;align-items:center;gap:8px"><div class="progress-bg" style="width:60px"><div class="progress-fill" style="width:${load}%;background:${lc}"></div></div><span style="font-size:10px;color:${lc}">${load}%</span></div></td></tr>`;
-    });
-    html += `</tbody></table></div></div>`;
-    $('page-users').innerHTML = html;
-}
-
-function showCreateUserForm() {
-    const roles = isAdmin() ? ['admin','manager','engineer','viewer'] : ['manager','engineer','viewer'];
-    const roleOpts = roles.map(r=>`<option value="${r}">${r}</option>`).join('');
-    const orgOpts = ORGS.map(o=>`<option value="${o.id}">${o.name}</option>`).join('');
-    $('create-user-area').innerHTML = `<div class="card" style="margin-top:14px"><h3 style="font-size:12px;font-weight:600;margin:0 0 14px;color:var(--accent)">Create User</h3>
-        <div class="grid-2" style="gap:12px">
-            <input id="nu-user" placeholder="Username"><input id="nu-email" placeholder="Email">
-            <input id="nu-pass" type="password" placeholder="Password (min 8 chars)"><select id="nu-role">${roleOpts}</select>
-            <select id="nu-org">${orgOpts}</select><input id="nu-skills" placeholder="Skills (comma separated)">
-        </div>
-        <div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-sm" style="background:var(--accent);color:#fff" onclick="createUser()">CREATE USER</button><button class="btn btn-sm btn-outline" onclick="$('create-user-area').innerHTML=''">CANCEL</button></div></div>`;
-}
-
-async function createUser() {
-    const skills = $('nu-skills').value ? $('nu-skills').value.split(',').map(s=>s.trim()).filter(Boolean) : [];
-    try {
-        await apiCall('/users/','POST',{ username:$('nu-user').value, email:$('nu-email').value, password:$('nu-pass').value, role:$('nu-role').value, organization:$('nu-org').value, skills });
-        showSuccessModal('Success','User created!'); $('create-user-area').innerHTML=''; loadUsersPage();
-    } catch(e) { showErrorModal('Error','Create failed: '+e.message); }
-}
-
-// =================== TEAMS ===================
-async function loadTeamsPage() {
-    await loadGlobalData();
-    let html = `<div class="page-header"><div><h2 class="page-title">TEAMS</h2><p class="page-sub">${TEAMS.length} teams</p></div>
-        ${isAdmin()?'<button class="btn btn-sm" style="background:var(--accent);color:#fff" onclick="showCreateTeamForm()">+ NEW TEAM</button>':''}
-    </div><div id="create-team-area"></div>`;
-    if(!TEAMS.length) html += `<div class="empty-state" style="margin-top:40px">No teams</div>`;
-    else { html += `<div class="grid-2" style="margin-top:20px">`; TEAMS.forEach(t=>{
-        const lead=ALL_USERS.find(u=>u.id===t.lead);
-        const members = (t.members||[]).map(mId=>{const u=ALL_USERS.find(x=>x.id===mId);return u?`<span class="tag">${u.username}</span>`:''}).join(' ')||'—';
-        html += `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><h3 style="font-size:14px;font-weight:600">${t.name}</h3><span style="font-size:11px;color:var(--text-muted)">${t.member_count} members</span></div>
-            <div class="detail-row"><span class="detail-label">Lead</span><span class="detail-value">${lead?lead.username:'—'}</span></div>
-            <div style="margin-top:10px"><span class="detail-label" style="font-size:11px">Members: </span>${members}</div></div>`;
-    }); html += `</div>`; }
-    $('page-teams').innerHTML = html;
-}
-
-function showCreateTeamForm() {
-    const userOpts=ALL_USERS.map(u=>`<option value="${u.id}">${u.username} (${u.role})</option>`).join('');
-    const orgOpts=ORGS.map(o=>`<option value="${o.id}">${o.name}</option>`).join('');
-    const memberOpts=ALL_USERS.map(u=>`<label style="display:flex;align-items:center;gap:6px;padding:4px 0;font-size:11px;cursor:pointer"><input type="checkbox" value="${u.id}" class="team-member-cb"> ${u.username} (${u.role})</label>`).join('');
-    $('create-team-area').innerHTML = `<div class="card" style="margin-top:14px"><h3 style="font-size:12px;font-weight:600;margin:0 0 14px;color:var(--accent)">Create Team</h3>
-        <div class="grid-2" style="gap:12px">
-            <input id="nt-name" placeholder="Team name"><select id="nt-org">${orgOpts}</select>
-            <div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:6px;display:block">Lead</label><select id="nt-lead"><option value="">Select lead...</option>${userOpts}</select></div>
-            <div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:6px;display:block">Members</label><div style="max-height:120px;overflow-y:auto;padding:8px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">${memberOpts}</div></div>
-        </div>
-        <div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-sm" style="background:var(--accent);color:#fff" onclick="createTeam()">CREATE TEAM</button><button class="btn btn-sm btn-outline" onclick="$('create-team-area').innerHTML=''">CANCEL</button></div></div>`;
-}
-
-async function createTeam() {
-    const members = [...document.querySelectorAll('.team-member-cb:checked')].map(cb=>cb.value);
-    try { await apiCall('/teams/','POST',{ name:$('nt-name').value, organization:$('nt-org').value, lead:$('nt-lead').value||null, members }); showSuccessModal('Success','Team created!'); $('create-team-area').innerHTML=''; loadTeamsPage(); }
-    catch(e) { showErrorModal('Error','Create failed: '+e.message); }
-}
-
-// =================== ORGANIZATIONS ===================
-async function loadOrgsPage() {
-    await loadGlobalData();
-    let html = `<div><h2 class="page-title">ORGANIZATIONS</h2><p class="page-sub">${ORGS.length} organization(s)</p></div><div style="margin-top:20px">`;
-    ORGS.forEach(o => {
-        html += `<div class="card" style="margin-bottom:14px">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
-                <h3 style="font-size:16px;font-weight:700">${o.name}</h3>
-                <div style="display:flex;gap:8px;align-items:center"><span class="badge" style="background:var(--accent-glow);color:var(--accent);border:1px solid rgba(59,130,246,0.15)">${o.slug}</span>
-                ${isAdmin()?`<button class="btn btn-sm btn-outline" onclick="showEditOrg('${o.id}','${o.name}','${o.slug}')">✏ Edit</button>`:''}</div>
-            </div>
-            <div class="grid-3"><div class="detail-row"><span class="detail-label">Members</span><span class="detail-value">${o.member_count}</span></div>
-            <div class="detail-row"><span class="detail-label">Teams</span><span class="detail-value">${o.team_count}</span></div>
-            <div class="detail-row"><span class="detail-label">Created</span><span class="detail-value">${formatDate(o.created_at)}</span></div></div>
-        </div>`;
-    });
-    html += `</div><div id="edit-org-area"></div>`;
-    $('page-organizations').innerHTML = html;
-}
-
-function showEditOrg(id, name, slug) {
-    $('edit-org-area').innerHTML = `<div class="card" style="margin-top:14px"><h3 style="font-size:12px;font-weight:600;margin:0 0 14px;color:var(--accent)">Edit Organization</h3>
-        <div class="grid-2" style="gap:12px"><input id="eo-name" value="${name}" placeholder="Name"><input id="eo-slug" value="${slug}" placeholder="Slug"></div>
-        <div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-sm" style="background:var(--accent);color:#fff" onclick="updateOrg('${id}')">SAVE</button><button class="btn btn-sm btn-outline" onclick="$('edit-org-area').innerHTML=''">CANCEL</button></div></div>`;
-}
-
-async function updateOrg(id) {
-    try { await apiCall(`/organizations/${id}/`,'PATCH',{name:$('eo-name').value,slug:$('eo-slug').value}); showSuccessModal('Success','Organization updated!'); loadOrgsPage(); }
-    catch(e) { showErrorModal('Error','Update failed: '+e.message); }
-}
-
-// =================== WORKFLOWS ===================
-async function loadWorkflowsPage() {
-    await loadGlobalData();
-    let html = `<div><h2 class="page-title">WORKFLOWS</h2><p class="page-sub">State machine configurations</p></div><div style="margin-top:20px">`;
-    WORKFLOWS.forEach(w => {
-        const statesHTML = (w.allowed_states||[]).map(s=>{const c=STATE_COLORS[s]||'#64748b';const isI=w.initial_state===s;const isF=(w.final_states||[]).includes(s);let l=s.replace(/_/g,' ');if(isI)l='▶ '+l;if(isF)l+=' ■';return `<span class="badge" style="background:${c}18;color:${c};border:1px solid ${c}30">${l}</span>`;}).join(' <span style="color:var(--text-muted)">→</span> ');
-        const transHTML = (w.transitions||[]).map(t=>`<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid rgba(30,41,59,0.05);font-size:11px;flex-wrap:wrap"><span style="color:${STATE_COLORS[t.from_state]||'var(--text-dim)'};min-width:70px">${t.from_state.replace(/_/g,' ')}</span><span style="color:var(--text-muted)">→</span><span style="color:${STATE_COLORS[t.to_state]||'var(--text-dim)'};min-width:70px">${t.to_state.replace(/_/g,' ')}</span><span>${(t.allowed_roles||[]).map(r=>badge(r,ROLE_COLORS)).join(' ')}</span></div>`).join('');
-        html += `<div class="card" style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px"><h3 style="font-size:14px;font-weight:600">${w.name}</h3>${w.is_default?'<span class="badge" style="background:rgba(16,185,129,0.1);color:var(--green);border:1px solid rgba(16,185,129,0.2)">DEFAULT</span>':''}</div>
-            <div style="margin-bottom:14px"><span class="section-title" style="display:block;margin-bottom:8px">States (▶ initial · ■ final)</span><div style="display:flex;flex-wrap:wrap;gap:4px;align-items:center">${statesHTML}</div></div>
-            <div><span class="section-title" style="display:block;margin-bottom:8px">Transitions (${w.transitions?.length||0})</span>${transHTML||'<div class="empty-state">No transitions</div>'}</div></div>`;
-    });
-    html += `</div>`;
-    $('page-workflows').innerHTML = html;
-}
-
-// =================== TRANSITIONS ===================
-async function loadTransitionsPage() {
-    try {
-        const data = await apiCall('/transitions/'); const transitions=data.results||[];
-        let html = `<div class="page-header"><div><h2 class="page-title">TRANSITION RULES</h2><p class="page-sub">${transitions.length} rules</p></div>
-            ${isAdmin()?'<button class="btn btn-sm" style="background:var(--accent);color:#fff" onclick="showCreateTransition()">+ NEW RULE</button>':''}
-        </div><div id="create-trans-area"></div>`;
-        html += `<div class="card" style="margin-top:20px"><div class="table-wrap"><table><thead><tr>${['From','','To','Roles','Workflow',isAdmin()?'Action':''].filter(Boolean).map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>`;
-        if(!transitions.length) html += `<tr><td colspan="${isAdmin()?6:5}" class="empty-state">No rules</td></tr>`;
-        else transitions.forEach(t=>{const wf=WORKFLOWS.find(w=>w.id===t.workflow); html += `<tr><td>${badge(t.from_state,STATE_COLORS)}</td><td style="text-align:center;color:var(--text-muted)">→</td><td>${badge(t.to_state,STATE_COLORS)}</td><td>${(t.allowed_roles||[]).map(r=>badge(r,ROLE_COLORS)).join(' ')}</td><td style="color:var(--text-dim);font-size:11px">${wf?.name||'—'}</td>${isAdmin()?`<td><button class="btn btn-sm" style="background:rgba(239,68,68,0.1);color:var(--red);border:1px solid rgba(239,68,68,0.2)" onclick="deleteTransition('${t.id}','${t.from_state}','${t.to_state}')">✕ Delete</button></td>`:''}</tr>`;});
-        html += `</tbody></table></div></div>`;
-        $('page-transitions').innerHTML = html;
-    } catch(e) { $('page-transitions').innerHTML = `<div class="msg msg-error">${e.message}</div>`; }
-}
-
-function showCreateTransition() {
-    const wfOpts=WORKFLOWS.map(w=>`<option value="${w.id}">${w.name}</option>`).join('');
-    const allStates=['open','in_progress','review','testing','done','cancelled'];
-    const stateOpts=allStates.map(s=>`<option value="${s}">${s.replace(/_/g,' ')}</option>`).join('');
-    const roleChecks=['admin','manager','engineer','viewer'].map(r=>`<label style="display:flex;align-items:center;gap:6px;font-size:11px;cursor:pointer"><input type="checkbox" value="${r}" class="trans-role-cb" ${r!=='viewer'?'checked':''}> ${r}</label>`).join(' ');
-    $('create-trans-area').innerHTML = `<div class="card" style="margin-top:14px"><h3 style="font-size:12px;font-weight:600;margin:0 0 14px;color:var(--accent)">New Transition Rule</h3>
-        <div class="grid-2" style="gap:12px">
-            <div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">From State</label><select id="nt-from">${stateOpts}</select></div>
-            <div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">To State</label><select id="nt-to"><option value="in_progress">in progress</option>${stateOpts}</select></div>
-            <div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">Workflow</label><select id="nt-wf">${wfOpts}</select></div>
-            <div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">Allowed Roles</label><div style="display:flex;gap:12px;flex-wrap:wrap">${roleChecks}</div></div>
-        </div>
-        <div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-sm" style="background:var(--accent);color:#fff" onclick="createTransition()">CREATE RULE</button><button class="btn btn-sm btn-outline" onclick="$('create-trans-area').innerHTML=''">CANCEL</button></div></div>`;
-}
-
-async function createTransition() {
-    const roles=[...document.querySelectorAll('.trans-role-cb:checked')].map(cb=>cb.value);
-    try { await apiCall('/transitions/','POST',{from_state:$('nt-from').value,to_state:$('nt-to').value,workflow:$('nt-wf').value,allowed_roles:roles}); showSuccessModal('Success','Transition rule created!'); $('create-trans-area').innerHTML=''; loadTransitionsPage(); }
-    catch(e) { showErrorModal('Error','Create failed: '+e.message); }
-}
-
-async function deleteTransition(id, from, to) {
-    showModal('Delete Transition Rule', `Are you sure you want to delete the rule <strong>${from.replace(/_/g,' ')} → ${to.replace(/_/g,' ')}</strong>?<br><br><span style="color:var(--red)">This cannot be undone.</span>`, [
-        {label:'CANCEL', color:'var(--text-muted)', onclick:'closeModal()'},
-        {label:'DELETE', color:'var(--red)', onclick:`confirmDeleteTransition('${id}')`}
-    ]);
-}
-
-async function confirmDeleteTransition(id) {
-    closeModal();
-    try { await apiCall(`/transitions/${id}/`,'DELETE'); showSuccessModal('Deleted','Transition rule removed.'); loadTransitionsPage(); }
-    catch(e) { showErrorModal('Error','Delete failed: '+e.message); }
-}
-
-// =================== AI ===================
-function loadAIPage() {
-    const taskOpts=TASKS.map(t=>`<option value="${t.id}">${t.task_key} — ${t.title} ${t.assigned_to_name?'(→ '+t.assigned_to_name+')':'(unassigned)'}</option>`).join('');
-    $('page-ai').innerHTML = `<h2 class="page-title">AI ENGINE</h2><p class="page-sub">Intelligent priority scoring, task routing, and natural language queries</p>
-        <div class="card" style="margin-top:20px"><h3 style="font-size:12px;font-weight:600;margin:0 0 12px;color:var(--purple)">⚡ Natural Language Query</h3>
-            <p style="color:var(--text-muted);font-size:11px;margin-bottom:12px">Ask: "critical bugs", "unassigned tasks", "tasks assigned to dev_alice"</p>
-            <div style="display:flex;gap:10px;flex-wrap:wrap"><input id="nl-input" style="flex:1;min-width:200px" placeholder='Try: "show me high priority bugs"'><button class="btn btn-sm" style="background:var(--purple);color:#fff" onclick="doNLQuery()">QUERY</button></div><div id="nl-result"></div></div>
-        <div class="grid-2" style="margin-top:14px">
-            <div class="card" style="overflow:hidden"><h3 style="font-size:12px;font-weight:600;margin:0 0 12px;color:var(--amber)">🎯 Priority Scoring</h3>
-                <select id="score-task" style="margin-bottom:10px"><option value="">Select task...</option>${taskOpts}</select>
-                <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-sm" style="background:var(--amber);color:#fff" onclick="doScore()">SCORE</button><button class="btn btn-sm" style="background:transparent;border:1px solid var(--amber);color:var(--amber)" onclick="doScoreAll()">SCORE ALL</button></div><div id="score-result"></div></div>
-            <div class="card" style="overflow:hidden"><h3 style="font-size:12px;font-weight:600;margin:0 0 12px;color:var(--green)">🤖 Smart Routing</h3>
-                <select id="route-task" style="margin-bottom:10px"><option value="">Select task...</option>${taskOpts}</select>
-                <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-sm" style="background:var(--green);color:#fff" onclick="doRoute()">RECOMMEND</button>
-                ${isManagerOrAbove()?`<button class="btn btn-sm" style="background:transparent;border:1px solid var(--green);color:var(--green)" onclick="doAutoAssign()">AUTO-ASSIGN</button>`:''}</div><div id="route-result"></div></div>
-        </div>`;
-    $('nl-input').addEventListener('keydown',e=>{if(e.key==='Enter')doNLQuery();});
-}
-
-async function doNLQuery() { const q=$('nl-input').value; if(!q) return; try { const d=await apiCall('/ai/query/','POST',{question:q}); let h=`<div class="msg msg-info" style="margin-top:14px">${d.explanation}</div>`; if(d.parsed_filters&&Object.keys(d.parsed_filters).length) h+=`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">${Object.entries(d.parsed_filters).map(([k,v])=>`<span class="badge" style="background:rgba(139,92,246,0.1);color:var(--purple);border:1px solid rgba(139,92,246,0.2)">${k}: ${v}</span>`).join('')}</div>`; if(d.results?.length){h+=`<div class="table-wrap"><table><thead><tr>${['Key','Title','State','Priority','Assignee'].map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>`;d.results.forEach(t=>{h+=`<tr><td style="color:var(--accent);font-weight:600;font-size:12px">${t.task_key}</td><td>${t.title}</td><td>${badge(t.state,STATE_COLORS)}</td><td>${badge(t.priority,PRIORITY_COLORS)}</td><td style="color:var(--text-dim)">${t.assigned_to||'—'}</td></tr>`;});h+=`</tbody></table></div>`;}else h+=`<div class="empty-state">No matches</div>`; $('nl-result').innerHTML=h; } catch{$('nl-result').innerHTML=`<div class="msg msg-error" style="margin-top:14px">Query failed</div>`;} }
-
-async function doScore() { const tid=$('score-task').value; if(!tid) return; try { const d=await apiCall('/ai/score-priority/','POST',{task_id:tid}); const s=d.priority_analysis; const c=s.score>=0.7?'var(--red)':s.score>=0.4?'var(--amber)':'var(--green)'; let h=`<div style="margin-top:14px;padding:14px;background:var(--bg);border-radius:8px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><span style="font-size:12px;font-weight:600">${d.task_key}</span><span style="font-size:20px;font-weight:700;color:${c}">${(s.score*100).toFixed(0)}%</span></div><p style="font-size:11px;color:var(--accent);margin:0 0 8px">${s.explanation}</p><p style="font-size:11px;color:var(--text-dim);margin:0 0 10px">Est: ${d.estimated_hours}h</p>`; Object.entries(s.factors||{}).forEach(([k,v])=>{const fc=v>=0.7?'var(--red)':v>=0.4?'var(--amber)':'var(--green)';h+=`<div class="score-bar"><span class="score-bar-label">${k.replace(/_/g,' ')}</span><div class="score-bar-track"><div class="score-bar-fill" style="width:${v*100}%;background:${fc}"></div></div><span class="score-bar-value">${(v*100).toFixed(0)}%</span></div>`;});h+=`</div>`;$('score-result').innerHTML=h;await loadGlobalData();}catch{$('score-result').innerHTML=`<div class="msg msg-error" style="margin-top:14px">Failed</div>`;} }
-
-async function doScoreAll() { try { const d=await apiCall('/ai/score-all/','POST'); let h=`<div class="msg msg-success" style="margin-top:14px">${d.scored_count} scored</div><div style="max-height:200px;overflow-y:auto">`; (d.results||[]).forEach(r=>{const c=r.score>=0.7?'var(--red)':r.score>=0.4?'var(--amber)':'var(--green)';h+=`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(30,41,59,0.03);font-size:11px"><span style="color:var(--accent)">${r.task_key}</span><span style="color:${c};font-weight:600">${(r.score*100).toFixed(0)}%</span></div>`;});h+=`</div>`;$('score-result').innerHTML=h;await loadGlobalData();}catch{$('score-result').innerHTML=`<div class="msg msg-error" style="margin-top:14px">Failed</div>`;} }
-
-async function doRoute() { const tid=$('route-task').value; if(!tid) return; try { const d=await apiCall('/ai/recommend-assignee/','POST',{task_id:tid}); let h=`<div style="margin-top:14px">`; (d.recommendations||[]).forEach((r,i)=>{const c=r.total_score>=0.7?'var(--green)':r.total_score>=0.4?'var(--amber)':'var(--red)';h+=`<div class="rec-card ${i===0?'top':''}"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:12px;font-weight:600">${i===0?'👑 ':''}${r.username}</span><span style="font-size:14px;font-weight:700;color:${c}">${(r.total_score*100).toFixed(0)}%</span></div><p style="font-size:10px;color:var(--text-dim);margin:0 0 6px">${r.reasoning}</p><div style="display:flex;gap:6px;flex-wrap:wrap">${Object.entries(r.factors||{}).map(([k,v])=>{const fc=v>=0.7?'#10b981':v>=0.4?'#f59e0b':'#ef4444';return `<span class="badge" style="background:${fc}18;color:${fc};border:1px solid ${fc}30">${k.replace(/_/g,' ')}: ${(v*100).toFixed(0)}%</span>`;}).join('')}</div></div>`;});h+=`</div>`;$('route-result').innerHTML=h;}catch{$('route-result').innerHTML=`<div class="msg msg-error" style="margin-top:14px">Failed</div>`;} }
-
-async function doAutoAssign() { const tid=$('route-task').value; if(!tid) return; try { const d=await apiCall('/ai/auto-assign/','POST',{task_id:tid}); showSuccessModal('Auto-Assigned',d.message); await loadGlobalData(); loadAIPage(); } catch(e) { let msg=e.message; try{const p=JSON.parse(msg);msg=p.error||msg;}catch{} showErrorModal('Auto-Assign Failed',msg); } }
-
-// =================== AUDIT ===================
-async function loadAuditPage() {
-    try {
-        const data = await apiCall('/audit-logs/');
-        const logs = data.results || [];
-        let html = `<div><h2 class="page-title">AUDIT LOGS</h2><p class="page-sub">${logs.length} entries · Click task key to view task</p></div>`;
-
-        html += `<div style="margin-top:20px">`;
-        if (!logs.length) html += `<div class="card empty-state">No audit logs</div>`;
-        else logs.forEach(l => {
-            const tk = TASKS.find(t => t.id === l.task);
-            const icon = ACTION_ICONS[l.action] || '📝';
-            const actionColor = {created:'var(--green)',state_changed:'var(--amber)',assigned:'var(--purple)',commented:'var(--cyan)',sla_breached:'var(--red)',updated:'var(--accent)',deleted:'var(--red)'}[l.action] || 'var(--text-dim)';
-
-            let oldHTML = '—', newHTML = '—';
-            if (l.old_value) {
-                const entries = Object.entries(l.old_value);
-                oldHTML = entries.map(([k,v]) => `<span style="color:var(--red)">${k}:</span> ${v}`).join('<br>');
+        // Table
+        const sortIcon = (f) =>
+          TASK_SORT.field === f ? (TASK_SORT.dir === "asc" ? " ↑" : " ↓") : "";
+        h += `<div class="card"><div class="table-wrap"><table><thead><tr>
+        <th onclick="sortTasks('task_key')">Key${sortIcon("task_key")}</th>
+        <th onclick="sortTasks('title')">Title${sortIcon("title")}</th>
+        <th onclick="sortTasks('current_state')">State${sortIcon("current_state")}</th>
+        <th onclick="sortTasks('priority')">Priority${sortIcon("priority")}</th>
+        <th class="no-sort">Type</th><th class="no-sort">Assignee</th>
+        <th onclick="sortTasks('ai_priority_score')">AI${sortIcon("ai_priority_score")}</th>
+        <th onclick="sortTasks('created_at')">Created${sortIcon("created_at")}</th>
+        ${isAdmin() ? '<th class="no-sort">Action</th>' : ""}
+    </tr></thead><tbody>`;
+        if (!paged.length)
+          h += `<tr><td colspan="${isAdmin() ? 9 : 8}" class="empty-state">No tasks</td></tr>`;
+        else
+          paged.forEach((t) => {
+            const ai =
+              t.ai_priority_score != null
+                ? `<span style="color:${t.ai_priority_score >= 0.7 ? "var(--red)" : t.ai_priority_score >= 0.4 ? "var(--amber)" : "var(--green)"};font-weight:600;cursor:pointer" title="Click to re-score" onclick="event.stopPropagation();quickScore('${t.id}')">${(t.ai_priority_score * 100).toFixed(0)}%</span>`
+                : `<span style="color:var(--text-muted);cursor:pointer" title="Click to score" onclick="event.stopPropagation();quickScore('${t.id}')">Score</span>`;
+            h += `<tr class="clickable" onclick="showTaskDetail('${t.id}')"><td style="color:var(--accent);font-weight:600;font-size:12px">${t.task_key}</td><td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.title}</td><td>${badge(t.current_state, STATE_COLORS)}</td><td>${badge(t.priority, PRIORITY_COLORS)}</td><td style="color:var(--text-dim)">${t.task_type}</td><td style="color:${t.assigned_to_name ? "var(--text)" : "var(--text-muted)"}">${t.assigned_to_name || "—"}</td><td>${ai}</td><td style="color:var(--text-muted);font-size:11px">${timeAgo(t.created_at)}</td>${isAdmin() ? `<td><button class="btn btn-sm btn-danger" onclick="event.stopPropagation();deleteTask('${t.id}','${t.task_key}')" title="Delete">✕</button></td>` : ""}</tr>`;
+          });
+        h += `</tbody></table></div></div>`;
+        // Pagination
+        if (totalPages > 1) {
+          h += `<div class="pagination"><button ${TASK_PAGE <= 1 ? "disabled" : ""} onclick="TASK_PAGE--;renderTasks(getCurrentFilters())">← Prev</button>`;
+          for (let i = 1; i <= totalPages; i++) {
+            if (
+              totalPages > 7 &&
+              i > 3 &&
+              i < totalPages - 2 &&
+              Math.abs(i - TASK_PAGE) > 1
+            ) {
+              if (i === 4 || i === totalPages - 3)
+                h += `<span style="color:var(--text-muted)">…</span>`;
+              continue;
             }
-            if (l.new_value) {
-                const entries = Object.entries(l.new_value);
-                newHTML = entries.map(([k,v]) => `<span style="color:var(--green)">${k}:</span> ${v}`).join('<br>');
-            }
+            h += `<button class="${i === TASK_PAGE ? "active" : ""}" onclick="TASK_PAGE=${i};renderTasks(getCurrentFilters())">${i}</button>`;
+          }
+          h += `<button ${TASK_PAGE >= totalPages ? "disabled" : ""} onclick="TASK_PAGE++;renderTasks(getCurrentFilters())">Next →</button></div>`;
+        }
+        h += `<div id="task-detail-panel"></div>`;
+        $("page-tasks").innerHTML = h;
+      }
+      function getCurrentFilters() {
+        return {
+          state: $("f-state")?.value || "",
+          priority: $("f-prio")?.value || "",
+          team: $("f-team")?.value || "",
+          search: $("task-search")?.value || "",
+        };
+      }
+      function sortTasks(field) {
+        if (TASK_SORT.field === field)
+          TASK_SORT.dir = TASK_SORT.dir === "asc" ? "desc" : "asc";
+        else {
+          TASK_SORT.field = field;
+          TASK_SORT.dir = "asc";
+        }
+        TASK_PAGE = 1;
+        renderTasks(getCurrentFilters());
+      }
+      async function quickScore(id) {
+        try {
+          await apiCall("/ai/score-priority/", "POST", { task_id: id });
+          await loadGlobalData();
+          renderTasks(getCurrentFilters());
+        } catch {
+          showErrorModal("Error", "Scoring failed");
+        }
+      }
+      async function deleteTask(id, key) {
+        showModal(
+          "Delete Task",
+          `Delete <strong>${key}</strong>? This cannot be undone.`,
+          [
+            {
+              label: "CANCEL",
+              color: "var(--text-muted)",
+              onclick: "closeModal()",
+            },
+            {
+              label: "DELETE",
+              color: "var(--red)",
+              onclick: `confirmDeleteTask('${id}')`,
+            },
+          ],
+        );
+      }
+      async function confirmDeleteTask(id) {
+        closeModal();
+        try {
+          await apiCall(`/tasks/${id}/`, "DELETE");
+          showSuccessModal("Deleted", "Task removed");
+          await loadGlobalData();
+          renderTasks(getCurrentFilters());
+        } catch (e) {
+          showErrorModal("Error", e.message);
+        }
+      }
 
-            html += `<div class="card" style="margin-bottom:8px;padding:14px 20px">
-                <div style="display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap;gap:8px;margin-bottom:10px">
-                    <div style="display:flex;align-items:center;gap:10px">
-                        <span style="font-size:16px">${icon}</span>
-                        <span style="color:var(--accent);font-weight:600;font-size:12px;cursor:pointer;text-decoration:underline" onclick="goToTask('${l.task}')">${tk?.task_key || '—'}</span>
-                        <span class="badge" style="background:${actionColor}18;color:${actionColor};border:1px solid ${actionColor}30">${l.action.replace(/_/g,' ')}</span>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:12px">
-                        <span style="font-size:11px;color:var(--text-dim)">by <strong>${l.performed_by_name || 'System'}</strong></span>
-                        <span style="font-size:10px;color:var(--text-muted)">${formatDate(l.timestamp)}</span>
-                    </div>
-                </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-                    <div style="padding:10px;background:rgba(239,68,68,0.04);border-radius:6px;border:1px solid rgba(239,68,68,0.08)">
-                        <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--red);margin-bottom:6px;font-weight:600">Previous</div>
-                        <div style="font-size:11px;line-height:1.6;word-break:break-word">${oldHTML}</div>
-                    </div>
-                    <div style="padding:10px;background:rgba(16,185,129,0.04);border-radius:6px;border:1px solid rgba(16,185,129,0.08)">
-                        <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--green);margin-bottom:6px;font-weight:600">New</div>
-                        <div style="font-size:11px;line-height:1.6;word-break:break-word">${newHTML}</div>
-                    </div>
-                </div>
-                ${l.reason ? `<div style="margin-top:8px;font-size:11px;color:var(--text-dim)">↳ ${l.reason}</div>` : ''}
-            </div>`;
+      function toggleCreateTask() {
+        const f = $("create-task-form");
+        f.classList.toggle("hidden");
+        if (!f.classList.contains("hidden")) {
+          f.innerHTML = `<h3 style="font-size:12px;font-weight:600;margin:0 0 14px;color:var(--accent)">Create New Task</h3><div class="grid-2" style="gap:12px"><div style="grid-column:1/-1"><input id="new-title" placeholder="Task title..."></div><div style="grid-column:1/-1"><textarea id="new-desc" style="min-height:70px;resize:vertical" placeholder="Description..."></textarea></div><select id="new-priority"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option><option value="critical">Critical</option></select><select id="new-type"><option value="task">Task</option><option value="bug">Bug</option><option value="feature">Feature</option><option value="improvement">Improvement</option></select><select id="new-workflow"><option value="">Workflow...</option>${WORKFLOWS.map((w) => `<option value="${w.id}">${w.name}</option>`).join("")}</select><select id="new-team"><option value="">No team</option>${TEAMS.map((t) => `<option value="${t.id}">${t.name}</option>`).join("")}</select><div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">Due Date</label><input id="new-due" type="datetime-local"></div><div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">Tags</label><input id="new-tags" placeholder="backend, urgent"></div></div><div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-sm" style="background:var(--accent);color:#fff" onclick="createTask()">CREATE</button><button class="btn btn-sm btn-outline" onclick="$('create-task-form').classList.add('hidden')">CANCEL</button></div>`;
+        }
+      }
+      async function createTask() {
+        const body = {
+          title: $("new-title").value,
+          description: $("new-desc").value,
+          priority: $("new-priority").value,
+          task_type: $("new-type").value,
+          workflow: $("new-workflow").value || WORKFLOWS[0]?.id || "",
+          tags: $("new-tags").value
+            ? $("new-tags")
+                .value.split(",")
+                .map((s) => s.trim())
+                .filter(Boolean)
+            : [],
+        };
+        if ($("new-team").value) body.team = $("new-team").value;
+        if ($("new-due").value)
+          body.due_date = new Date($("new-due").value).toISOString();
+        try {
+          await apiCall("/tasks/", "POST", body);
+          await loadGlobalData();
+          renderTasks({});
+          showSuccessModal("Success", "Task created!");
+        } catch (e) {
+          showErrorModal("Error", e.message);
+        }
+      }
+
+      async function showTaskDetail(taskId) {
+        try {
+          const task = TASKS.find((t) => t.id === taskId);
+          if (!task) return;
+          const [trans, detail] = await Promise.all([
+            apiCall(`/tasks/${taskId}/available-transitions/`),
+            apiCall(`/tasks/${taskId}/`),
+          ]);
+          const avail = trans.available_transitions || [];
+          const eng = ALL_USERS.filter(
+            (u) => u.role === "engineer" || u.role === "manager",
+          );
+          const uOpts = eng
+            .map(
+              (u) =>
+                `<option value="${u.id}" ${u.id === task.assigned_to ? "selected" : ""}>${u.username} (${u.role}) — ${u.active_task_count}/${u.max_concurrent_tasks}${u.id === task.assigned_to ? " ✓" : ""}</option>`,
+            )
+            .join("");
+          const tags =
+            (detail.tags || [])
+              .map((t) => `<span class="tag">${t}</span>`)
+              .join(" ") || "—";
+          const comments = detail.comments || [];
+          let h = `<div class="card" style="margin-top:14px"><div style="display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap;gap:8px"><h3 style="font-size:14px;font-weight:700;color:var(--accent)">${task.task_key}</h3><button class="btn btn-outline" style="padding:4px 12px;font-size:14px" onclick="$('task-detail-panel').innerHTML=''">×</button></div><p style="font-size:13px;font-weight:500;margin:8px 0 4px">${task.title}</p>${detail.description ? `<p style="font-size:11px;color:var(--text-dim);margin-bottom:14px">${detail.description}</p>` : ""}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px"><div class="detail-row"><span class="detail-label">State</span>${badge(task.current_state, STATE_COLORS)}</div><div class="detail-row"><span class="detail-label">Priority</span>${badge(task.priority, PRIORITY_COLORS)}</div><div class="detail-row"><span class="detail-label">Type</span><span class="detail-value">${task.task_type}</span></div><div class="detail-row"><span class="detail-label">SLA</span><span style="color:${task.sla_breached ? "var(--red)" : "var(--green)"}">${task.sla_breached ? "BREACHED" : "OK"}</span></div><div class="detail-row"><span class="detail-label">Assignee</span><span style="color:${task.assigned_to_name ? "var(--text)" : "var(--text-muted)"}">${task.assigned_to_name || "Unassigned"}</span></div><div class="detail-row"><span class="detail-label">Created by</span><span class="detail-value">${task.created_by_name || "—"}</span></div><div class="detail-row"><span class="detail-label">AI Score</span><span class="detail-value">${task.ai_priority_score != null ? (task.ai_priority_score * 100).toFixed(0) + "%" : "—"}</span></div><div class="detail-row"><span class="detail-label">Est Hours</span><span class="detail-value">${detail.ai_estimated_hours || "—"}</span></div><div class="detail-row"><span class="detail-label">Due Date</span><span class="detail-value">${detail.due_date ? formatDate(detail.due_date) : "Not set"}</span></div><div class="detail-row"><span class="detail-label">Created</span><span class="detail-value">${formatDate(task.created_at)}</span></div></div><div style="margin-top:10px"><span class="detail-label" style="font-size:11px">Tags: </span>${tags}</div>`;
+          if (isManagerOrAbove())
+            h += `<div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--border)"><h4 class="section-title">Assign Task</h4><div style="display:flex;gap:8px;flex-wrap:wrap"><select id="assign-user" style="flex:1;min-width:200px;max-width:100%"><option value="">Select engineer...</option>${uOpts}</select><button class="btn btn-sm" style="background:var(--purple);color:#fff" onclick="doAssign('${taskId}')">ASSIGN</button></div><div id="assign-msg" style="margin-top:8px"></div></div>`;
+          if (avail.length > 0)
+            h += `<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)"><h4 class="section-title">Transition</h4><div style="display:flex;flex-wrap:wrap;gap:6px">${avail.map((t) => `<button class="transition-btn" onclick="doTransition('${taskId}','${t.to_state}')">${t.to_state.replace(/_/g, " ")}</button>`).join("")}</div></div>`;
+          h += `<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)"><h4 class="section-title">Comments (${comments.length})</h4>${comments.map((c) => `<div style="padding:8px 0;border-bottom:1px solid rgba(30,41,59,0.05)"><div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:4px"><span style="color:var(--accent);font-weight:600">${c.author_name}</span><span style="color:var(--text-muted)">${timeAgo(c.created_at)}</span></div><div style="font-size:12px;color:var(--text-dim)">${c.content}</div></div>`).join("") || '<div style="color:var(--text-muted);font-size:11px;padding:8px 0">No comments</div>'}<div style="display:flex;gap:8px;margin-top:10px"><input id="new-comment" style="flex:1" placeholder="Add comment..."><button class="btn btn-sm" style="background:var(--cyan);color:#fff" onclick="addComment('${taskId}')">POST</button></div></div>`;
+          h += `</div>`;
+          $("task-detail-panel").innerHTML = h;
+        } catch (e) {
+          showErrorModal("Error", "Failed to load task");
+        }
+      }
+
+      async function doAssign(id) {
+        const uid = $("assign-user").value;
+        if (!uid) {
+          showMsg("assign-msg", "Select engineer", true);
+          return;
+        }
+        try {
+          await apiCall(`/tasks/${id}/assign/`, "POST", {
+            user_id: uid,
+            reason: "Dashboard",
+          });
+          showSuccessModal("Assigned", "Task assigned!");
+          await loadGlobalData();
+          setTimeout(() => showTaskDetail(id), 300);
+        } catch (e) {
+          showErrorModal("Failed", e.message);
+        }
+      }
+      async function doTransition(id, to) {
+        showModal(
+          "Confirm Transition",
+          `Move to <strong>${to.replace(/_/g, " ")}</strong>?<div style="margin-top:12px"><input id="transition-reason" placeholder="Reason (optional)" style="width:100%"></div>`,
+          [
+            {
+              label: "CANCEL",
+              color: "var(--text-muted)",
+              onclick: "closeModal()",
+            },
+            {
+              label: "CONFIRM →",
+              color: "var(--accent)",
+              onclick: `confirmTransition('${id}','${to}')`,
+            },
+          ],
+        );
+      }
+      async function confirmTransition(id, to) {
+        const r = $("transition-reason")?.value || "";
+        closeModal();
+        try {
+          await apiCall(`/tasks/${id}/transition/`, "POST", {
+            to_state: to,
+            reason: r,
+          });
+          showSuccessModal("Done", `→ ${to.replace(/_/g, " ")}`);
+          await loadGlobalData();
+          renderTasks(getCurrentFilters());
+        } catch (e) {
+          let m = e.message;
+          try {
+            const p = JSON.parse(m);
+            m = Array.isArray(p)
+              ? p.join("<br>")
+              : typeof p === "object"
+                ? Object.values(p).flat().join("<br>")
+                : m;
+          } catch {}
+          showErrorModal("Transition Failed", m);
+        }
+      }
+      async function addComment(id) {
+        const c = $("new-comment").value;
+        if (!c) return;
+        try {
+          await apiCall("/comments/", "POST", { task: id, content: c });
+          showTaskDetail(id);
+        } catch {
+          showErrorModal("Error", "Comment failed");
+        }
+      }
+
+      // =================== USERS ===================
+      async function loadUsersPage() {
+        await loadGlobalData();
+        let h = `<div class="page-header"><div><h2 class="page-title">USERS</h2><p class="page-sub">${ALL_USERS.length} users</p></div>${isManagerOrAbove() ? '<button class="btn btn-sm" style="background:var(--accent);color:#fff" onclick="showCreateUserForm()">+ NEW USER</button>' : ""}</div><div id="create-user-area"></div><div class="card" style="margin-top:20px"><div class="table-wrap"><table><thead><tr>${[
+          "Username",
+          "Email",
+          "Role",
+          "Skills",
+          "Active",
+          "Capacity",
+          isAdmin() ? "Action" : "",
+        ]
+          .filter(Boolean)
+          .map((x) => `<th class="no-sort">${x}</th>`)
+          .join("")}</tr></thead><tbody>`;
+        if (!ALL_USERS.length)
+          h += `<tr><td colspan="${isAdmin() ? 7 : 6}" class="empty-state">No users</td></tr>`;
+        else
+          ALL_USERS.forEach((u) => {
+            const sk =
+              (u.skills || [])
+                .map((s) => `<span class="tag">${s}</span>`)
+                .join(" ") || "—";
+            const ld =
+              u.max_concurrent_tasks > 0
+                ? Math.round(
+                    (u.active_task_count / u.max_concurrent_tasks) * 100,
+                  )
+                : 0;
+            const lc =
+              ld >= 80
+                ? "var(--red)"
+                : ld >= 50
+                  ? "var(--amber)"
+                  : "var(--green)";
+            h += `<tr><td style="font-weight:600">${u.username}</td><td style="color:var(--text-dim)">${u.email || "—"}</td><td>${badge(u.role, ROLE_COLORS)}</td><td>${sk}</td><td>${u.active_task_count}</td><td><div style="display:flex;align-items:center;gap:8px"><div class="progress-bg" style="width:60px"><div class="progress-fill" style="width:${ld}%;background:${lc}"></div></div><span style="font-size:10px;color:${lc}">${ld}%</span></div></td>${isAdmin() && u.id !== CURRENT_USER.id ? `<td><button class="btn btn-sm btn-danger" onclick="deleteUser('${u.id}','${u.username}')">✕</button></td>` : isAdmin() ? "<td>—</td>" : ""}</tr>`;
+          });
+        h += `</tbody></table></div></div>`;
+        $("page-users").innerHTML = h;
+      }
+      function showCreateUserForm() {
+        const roles = isAdmin()
+          ? ["admin", "manager", "engineer", "viewer"]
+          : ["manager", "engineer", "viewer"];
+        $("create-user-area").innerHTML =
+          `<div class="card" style="margin-top:14px"><h3 style="font-size:12px;font-weight:600;margin:0 0 14px;color:var(--accent)">Create User</h3><div class="grid-2" style="gap:12px"><input id="nu-user" placeholder="Username"><input id="nu-email" placeholder="Email"><input id="nu-pass" type="password" placeholder="Password (min 8)"><select id="nu-role">${roles.map((r) => `<option value="${r}">${r}</option>`).join("")}</select><select id="nu-org">${ORGS.map((o) => `<option value="${o.id}">${o.name}</option>`).join("")}</select><input id="nu-skills" placeholder="Skills (comma separated)"></div><div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-sm" style="background:var(--accent);color:#fff" onclick="createUser()">CREATE</button><button class="btn btn-sm btn-outline" onclick="$('create-user-area').innerHTML=''">CANCEL</button></div></div>`;
+      }
+      async function createUser() {
+        const sk = $("nu-skills").value
+          ? $("nu-skills")
+              .value.split(",")
+              .map((s) => s.trim())
+              .filter(Boolean)
+          : [];
+        try {
+          await apiCall("/users/", "POST", {
+            username: $("nu-user").value,
+            email: $("nu-email").value,
+            password: $("nu-pass").value,
+            role: $("nu-role").value,
+            organization: $("nu-org").value,
+            skills: sk,
+          });
+          showSuccessModal("Success", "User created!");
+          $("create-user-area").innerHTML = "";
+          loadUsersPage();
+        } catch (e) {
+          showErrorModal("Error", e.message);
+        }
+      }
+      async function deleteUser(id, name) {
+        showModal("Delete User", `Delete <strong>${name}</strong>?`, [
+          {
+            label: "CANCEL",
+            color: "var(--text-muted)",
+            onclick: "closeModal()",
+          },
+          {
+            label: "DELETE",
+            color: "var(--red)",
+            onclick: `confirmDeleteUser('${id}')`,
+          },
+        ]);
+      }
+      async function confirmDeleteUser(id) {
+        closeModal();
+        try {
+          await apiCall(`/users/${id}/`, "DELETE");
+          showSuccessModal("Deleted", "User removed");
+          loadUsersPage();
+        } catch (e) {
+          showErrorModal("Error", e.message);
+        }
+      }
+
+      // =================== TEAMS ===================
+      async function loadTeamsPage() {
+        await loadGlobalData();
+        let h = `<div class="page-header"><div><h2 class="page-title">TEAMS</h2><p class="page-sub">${TEAMS.length} teams</p></div>${isAdmin() ? '<button class="btn btn-sm" style="background:var(--accent);color:#fff" onclick="showCreateTeamForm()">+ NEW TEAM</button>' : ""}</div><div id="create-team-area"></div>`;
+        if (!TEAMS.length)
+          h += `<div class="empty-state" style="margin-top:40px">No teams</div>`;
+        else {
+          h += `<div class="grid-2" style="margin-top:20px">`;
+          TEAMS.forEach((t) => {
+            const lead = ALL_USERS.find((u) => u.id === t.lead);
+            const members =
+              (t.members || [])
+                .map((mId) => {
+                  const u = ALL_USERS.find((x) => x.id === mId);
+                  return u ? `<span class="tag">${u.username}</span>` : "";
+                })
+                .join(" ") || "—";
+            h += `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px"><h3 style="font-size:14px;font-weight:600">${t.name}</h3><div style="display:flex;gap:6px">${isAdmin() ? `<button class="btn btn-sm btn-outline" onclick="showEditTeam('${t.id}')">✏</button><button class="btn btn-sm btn-danger" onclick="deleteTeam('${t.id}','${t.name}')">✕</button>` : ""}<span style="font-size:11px;color:var(--text-muted)">${t.member_count} members</span></div></div><div class="detail-row"><span class="detail-label">Lead</span><span class="detail-value">${lead ? lead.username : "—"}</span></div><div style="margin-top:10px"><span class="detail-label" style="font-size:11px">Members: </span>${members}</div></div>`;
+          });
+          h += `</div>`;
+        }
+        $("page-teams").innerHTML = h;
+      }
+      function showCreateTeamForm() {
+        const uOpts = ALL_USERS.map(
+          (u) => `<option value="${u.id}">${u.username} (${u.role})</option>`,
+        ).join("");
+        const mCb = ALL_USERS.map(
+          (u) =>
+            `<label style="display:flex;align-items:center;gap:6px;padding:4px 0;font-size:11px;cursor:pointer"><input type="checkbox" value="${u.id}" class="tm-cb"> ${u.username}</label>`,
+        ).join("");
+        $("create-team-area").innerHTML =
+          `<div class="card" style="margin-top:14px"><h3 style="font-size:12px;font-weight:600;margin:0 0 14px;color:var(--accent)">Create Team</h3><div class="grid-2" style="gap:12px"><input id="nt-name" placeholder="Team name"><select id="nt-org">${ORGS.map((o) => `<option value="${o.id}">${o.name}</option>`).join("")}</select><div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">Lead</label><select id="nt-lead"><option value="">Select...</option>${uOpts}</select></div><div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">Members</label><div style="max-height:120px;overflow-y:auto;padding:8px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">${mCb}</div></div></div><div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-sm" style="background:var(--accent);color:#fff" onclick="createTeam()">CREATE</button><button class="btn btn-sm btn-outline" onclick="$('create-team-area').innerHTML=''">CANCEL</button></div></div>`;
+      }
+      async function createTeam() {
+        const m = [...document.querySelectorAll(".tm-cb:checked")].map(
+          (c) => c.value,
+        );
+        try {
+          await apiCall("/teams/", "POST", {
+            name: $("nt-name").value,
+            organization: $("nt-org").value,
+            lead: $("nt-lead").value || null,
+            members: m,
+          });
+          showSuccessModal("Success", "Team created!");
+          $("create-team-area").innerHTML = "";
+          loadTeamsPage();
+        } catch (e) {
+          showErrorModal("Error", e.message);
+        }
+      }
+      function showEditTeam(id) {
+        const t = TEAMS.find((x) => x.id === id);
+        if (!t) return;
+        const uOpts = ALL_USERS.map(
+          (u) =>
+            `<option value="${u.id}" ${u.id === t.lead ? "selected" : ""}>${u.username}</option>`,
+        ).join("");
+        const mCb = ALL_USERS.map(
+          (u) =>
+            `<label style="display:flex;align-items:center;gap:6px;padding:4px 0;font-size:11px;cursor:pointer"><input type="checkbox" value="${u.id}" class="etm-cb" ${(t.members || []).includes(u.id) ? "checked" : ""}> ${u.username}</label>`,
+        ).join("");
+        showModal(
+          "Edit Team",
+          `<div class="grid-2" style="gap:12px"><div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">Name</label><input id="et-name" value="${t.name}"></div><div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">Lead</label><select id="et-lead"><option value="">None</option>${uOpts}</select></div><div style="grid-column:1/-1"><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">Members</label><div style="max-height:150px;overflow-y:auto;padding:8px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">${mCb}</div></div></div>`,
+          [
+            {
+              label: "CANCEL",
+              color: "var(--text-muted)",
+              onclick: "closeModal()",
+            },
+            {
+              label: "SAVE",
+              color: "var(--accent)",
+              onclick: `saveTeam('${id}')`,
+            },
+          ],
+        );
+      }
+      async function saveTeam(id) {
+        const m = [...document.querySelectorAll(".etm-cb:checked")].map(
+          (c) => c.value,
+        );
+        try {
+          await apiCall(`/teams/${id}/`, "PATCH", {
+            name: $("et-name").value,
+            lead: $("et-lead").value || null,
+            members: m,
+          });
+          closeModal();
+          showSuccessModal("Saved", "Team updated!");
+          await loadGlobalData();
+          loadTeamsPage();
+        } catch (e) {
+          showErrorModal("Error", e.message);
+        }
+      }
+      async function deleteTeam(id, name) {
+        showModal("Delete Team", `Delete <strong>${name}</strong>?`, [
+          {
+            label: "CANCEL",
+            color: "var(--text-muted)",
+            onclick: "closeModal()",
+          },
+          {
+            label: "DELETE",
+            color: "var(--red)",
+            onclick: `confirmDeleteTeam('${id}')`,
+          },
+        ]);
+      }
+      async function confirmDeleteTeam(id) {
+        closeModal();
+        try {
+          await apiCall(`/teams/${id}/`, "DELETE");
+          showSuccessModal("Deleted", "Team removed");
+          await loadGlobalData();
+          loadTeamsPage();
+        } catch (e) {
+          showErrorModal("Error", e.message);
+        }
+      }
+
+      // =================== ORGANIZATIONS ===================
+      async function loadOrgsPage() {
+        await loadGlobalData();
+        let h = `<div class="page-header"><div><h2 class="page-title">ORGANIZATIONS</h2><p class="page-sub">${ORGS.length} org(s)</p></div>${isAdmin() ? '<button class="btn btn-sm" style="background:var(--accent);color:#fff" onclick="showCreateOrg()">+ NEW ORG</button>' : ""}</div><div id="org-form-area"></div><div style="margin-top:20px">`;
+        ORGS.forEach((o) => {
+          h += `<div class="card" style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px"><h3 style="font-size:16px;font-weight:700">${o.name}</h3><div style="display:flex;gap:8px;align-items:center"><span class="badge" style="background:var(--accent-glow);color:var(--accent);border:1px solid rgba(59,130,246,0.15)">${o.slug}</span>${isAdmin() ? `<button class="btn btn-sm btn-outline" onclick="showEditOrg('${o.id}','${o.name}','${o.slug}')">✏ Edit</button>` : ""}</div></div><div class="grid-3"><div class="detail-row"><span class="detail-label">Members</span><span class="detail-value">${o.member_count}</span></div><div class="detail-row"><span class="detail-label">Teams</span><span class="detail-value">${o.team_count}</span></div><div class="detail-row"><span class="detail-label">Created</span><span class="detail-value">${formatDate(o.created_at)}</span></div></div></div>`;
         });
-        html += `</div>`;
-        $('page-audit').innerHTML = html;
-    } catch(e) { $('page-audit').innerHTML = `<div class="msg msg-error">${e.message}</div>`; }
-}
+        h += `</div>`;
+        $("page-organizations").innerHTML = h;
+      }
+      function showCreateOrg() {
+        $("org-form-area").innerHTML =
+          `<div class="card" style="margin-top:14px"><h3 style="font-size:12px;font-weight:600;margin:0 0 14px;color:var(--accent)">New Organization</h3><div class="grid-2" style="gap:12px"><input id="no-name" placeholder="Name"><input id="no-slug" placeholder="Slug (url-friendly)"></div><div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-sm" style="background:var(--accent);color:#fff" onclick="createOrg()">CREATE</button><button class="btn btn-sm btn-outline" onclick="$('org-form-area').innerHTML=''">CANCEL</button></div></div>`;
+      }
+      async function createOrg() {
+        try {
+          await apiCall("/organizations/", "POST", {
+            name: $("no-name").value,
+            slug: $("no-slug").value,
+          });
+          showSuccessModal("Success", "Organization created!");
+          $("org-form-area").innerHTML = "";
+          await loadGlobalData();
+          loadOrgsPage();
+        } catch (e) {
+          showErrorModal("Error", e.message);
+        }
+      }
+      function showEditOrg(id, name, slug) {
+        $("org-form-area").innerHTML =
+          `<div class="card" style="margin-top:14px"><h3 style="font-size:12px;font-weight:600;margin:0 0 14px;color:var(--accent)">Edit Organization</h3><div class="grid-2" style="gap:12px"><input id="eo-name" value="${name}"><input id="eo-slug" value="${slug}"></div><div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-sm" style="background:var(--accent);color:#fff" onclick="updateOrg('${id}')">SAVE</button><button class="btn btn-sm btn-outline" onclick="$('org-form-area').innerHTML=''">CANCEL</button></div></div>`;
+      }
+      async function updateOrg(id) {
+        try {
+          await apiCall(`/organizations/${id}/`, "PATCH", {
+            name: $("eo-name").value,
+            slug: $("eo-slug").value,
+          });
+          showSuccessModal("Saved", "Updated!");
+          $("org-form-area").innerHTML = "";
+          await loadGlobalData();
+          loadOrgsPage();
+        } catch (e) {
+          showErrorModal("Error", e.message);
+        }
+      }
 
-function goToTask(taskId) {
-    switchPage('tasks');
-    setTimeout(() => showTaskDetail(taskId), 300);
-}
-
-// =================== COMMENTS ===================
-async function loadCommentsPage() {
-    try {
-        const data = await apiCall('/comments/');
-        let comments = data.results || [];
-        // Sort recent first
-        comments.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-
-        let html = `<div><h2 class="page-title">COMMENTS</h2><p class="page-sub">${comments.length} comments · Click task key to view task</p></div><div class="card" style="margin-top:20px">`;
-        if (!comments.length) html += `<div class="empty-state">No comments</div>`;
-        else comments.forEach(c => {
-            const tk = TASKS.find(t => t.id === c.task);
-            html += `<div class="activity-item">
-                <span style="font-size:14px">💬</span>
-                <div style="flex:1">
-                    <div style="display:flex;gap:10px;align-items:center;margin-bottom:4px;flex-wrap:wrap">
-                        <span style="color:var(--accent);font-weight:600;font-size:12px;cursor:pointer;text-decoration:underline" onclick="goToTask('${c.task}')">${tk?.task_key || '—'}</span>
-                        <span style="color:var(--purple);font-size:11px;font-weight:600">${c.author_name}</span>
-                    </div>
-                    <div style="font-size:12px;color:var(--text-dim)">${c.content}</div>
-                </div>
-                <span style="color:var(--text-muted);font-size:10px;white-space:nowrap">${timeAgo(c.created_at)}</span>
-            </div>`;
+      // =================== WORKFLOWS ===================
+      async function loadWorkflowsPage() {
+        await loadGlobalData();
+        let h = `<div class="page-header"><div><h2 class="page-title">WORKFLOWS</h2><p class="page-sub">State machines</p></div>${isAdmin() ? '<button class="btn btn-sm" style="background:var(--accent);color:#fff" onclick="showCreateWorkflow()">+ NEW WORKFLOW</button>' : ""}</div><div id="wf-form-area"></div><div style="margin-top:20px">`;
+        WORKFLOWS.forEach((w) => {
+          const stH = (w.allowed_states || [])
+            .map((s) => {
+              const c = STATE_COLORS[s] || "#64748b";
+              const isI = w.initial_state === s;
+              const isF = (w.final_states || []).includes(s);
+              let l = s.replace(/_/g, " ");
+              if (isI) l = "▶ " + l;
+              if (isF) l += " ■";
+              return `<span class="badge" style="background:${c}18;color:${c};border:1px solid ${c}30">${l}</span>`;
+            })
+            .join(' <span style="color:var(--text-muted)">→</span> ');
+          const trH = (w.transitions || [])
+            .map(
+              (t) =>
+                `<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid rgba(30,41,59,0.05);font-size:11px;flex-wrap:wrap"><span style="color:${STATE_COLORS[t.from_state] || "var(--text-dim)"};min-width:70px">${t.from_state.replace(/_/g, " ")}</span><span style="color:var(--text-muted)">→</span><span style="color:${STATE_COLORS[t.to_state] || "var(--text-dim)"};min-width:70px">${t.to_state.replace(/_/g, " ")}</span><span>${(t.allowed_roles || []).map((r) => badge(r, ROLE_COLORS)).join(" ")}</span></div>`,
+            )
+            .join("");
+          h += `<div class="card" style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px"><h3 style="font-size:14px;font-weight:600">${w.name}</h3><div style="display:flex;gap:6px">${w.is_default ? '<span class="badge" style="background:rgba(16,185,129,0.1);color:var(--green);border:1px solid rgba(16,185,129,0.2)">DEFAULT</span>' : ""}${isAdmin() ? `<button class="btn btn-sm btn-outline" onclick='showEditWorkflow(${JSON.stringify(w).replace(/'/g, "&#39;")})'>✏</button><button class="btn btn-sm btn-danger" onclick="deleteWorkflow('${w.id}','${w.name}')">✕</button>` : ""}</div></div><div style="margin-bottom:14px"><span class="section-title" style="display:block;margin-bottom:8px">States (▶ initial · ■ final)</span><div style="display:flex;flex-wrap:wrap;gap:4px;align-items:center">${stH}</div></div><div><span class="section-title" style="display:block;margin-bottom:8px">Transitions (${w.transitions?.length || 0})</span>${trH || '<div class="empty-state">None</div>'}</div></div>`;
         });
-        html += `</div>`;
-        $('page-comments').innerHTML = html;
-    } catch(e) { $('page-comments').innerHTML = `<div class="msg msg-error">${e.message}</div>`; }
-}
+        h += `</div>`;
+        $("page-workflows").innerHTML = h;
+      }
+      function showCreateWorkflow() {
+        $("wf-form-area").innerHTML =
+          `<div class="card" style="margin-top:14px"><h3 style="font-size:12px;font-weight:600;margin:0 0 14px;color:var(--accent)">New Workflow</h3><div class="grid-2" style="gap:12px"><input id="nw-name" placeholder="Workflow name"><select id="nw-org">${ORGS.map((o) => `<option value="${o.id}">${o.name}</option>`).join("")}</select><div style="grid-column:1/-1"><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">States (comma separated)</label><input id="nw-states" placeholder="open, in_progress, review, done, cancelled" value="open, in_progress, review, testing, done, cancelled"></div><input id="nw-initial" placeholder="Initial state" value="open"><input id="nw-final" placeholder="Final states (comma)" value="done, cancelled"><label style="display:flex;align-items:center;gap:8px;font-size:11px;cursor:pointer"><input type="checkbox" id="nw-default"> Default workflow</label></div><div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-sm" style="background:var(--accent);color:#fff" onclick="createWorkflow()">CREATE</button><button class="btn btn-sm btn-outline" onclick="$('wf-form-area').innerHTML=''">CANCEL</button></div></div>`;
+      }
+      async function createWorkflow() {
+        const states = $("nw-states")
+          .value.split(",")
+          .map((s) => s.trim())
+          .filter(Boolean);
+        const finals = $("nw-final")
+          .value.split(",")
+          .map((s) => s.trim())
+          .filter(Boolean);
+        try {
+          await apiCall("/workflows/", "POST", {
+            name: $("nw-name").value,
+            organization: $("nw-org").value,
+            allowed_states: states,
+            initial_state: $("nw-initial").value,
+            final_states: finals,
+            is_default: $("nw-default").checked,
+          });
+          showSuccessModal("Success", "Workflow created!");
+          $("wf-form-area").innerHTML = "";
+          await loadGlobalData();
+          loadWorkflowsPage();
+        } catch (e) {
+          showErrorModal("Error", e.message);
+        }
+      }
+      function showEditWorkflow(w) {
+        showModal(
+          "Edit Workflow",
+          `<div class="grid-2" style="gap:12px"><div style="grid-column:1/-1"><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">Name</label><input id="ew-name" value="${w.name}"></div><div style="grid-column:1/-1"><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">States</label><input id="ew-states" value="${(w.allowed_states || []).join(", ")}"></div><div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">Initial</label><input id="ew-initial" value="${w.initial_state}"></div><div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">Final</label><input id="ew-final" value="${(w.final_states || []).join(", ")}"></div><label style="display:flex;align-items:center;gap:8px;font-size:11px;cursor:pointer;grid-column:1/-1"><input type="checkbox" id="ew-default" ${w.is_default ? "checked" : ""}> Default</label></div>`,
+          [
+            {
+              label: "CANCEL",
+              color: "var(--text-muted)",
+              onclick: "closeModal()",
+            },
+            {
+              label: "SAVE",
+              color: "var(--accent)",
+              onclick: `saveWorkflow('${w.id}')`,
+            },
+          ],
+        );
+      }
+      async function saveWorkflow(id) {
+        const states = $("ew-states")
+          .value.split(",")
+          .map((s) => s.trim())
+          .filter(Boolean);
+        const finals = $("ew-final")
+          .value.split(",")
+          .map((s) => s.trim())
+          .filter(Boolean);
+        try {
+          await apiCall(`/workflows/${id}/`, "PATCH", {
+            name: $("ew-name").value,
+            allowed_states: states,
+            initial_state: $("ew-initial").value,
+            final_states: finals,
+            is_default: $("ew-default").checked,
+          });
+          closeModal();
+          showSuccessModal("Saved", "Workflow updated!");
+          await loadGlobalData();
+          loadWorkflowsPage();
+        } catch (e) {
+          showErrorModal("Error", e.message);
+        }
+      }
+      async function deleteWorkflow(id, name) {
+        showModal(
+          "Delete Workflow",
+          `Delete <strong>${name}</strong>?<br><span style="color:var(--red)">Tasks using this workflow will be affected.</span>`,
+          [
+            {
+              label: "CANCEL",
+              color: "var(--text-muted)",
+              onclick: "closeModal()",
+            },
+            {
+              label: "DELETE",
+              color: "var(--red)",
+              onclick: `confirmDeleteWorkflow('${id}')`,
+            },
+          ],
+        );
+      }
+      async function confirmDeleteWorkflow(id) {
+        closeModal();
+        try {
+          await apiCall(`/workflows/${id}/`, "DELETE");
+          showSuccessModal("Deleted", "Workflow removed");
+          await loadGlobalData();
+          loadWorkflowsPage();
+        } catch (e) {
+          showErrorModal("Error", e.message);
+        }
+      }
 
-</script>
-</body>
+      // =================== TRANSITIONS ===================
+      async function loadTransitionsPage() {
+        try {
+          const data = await apiCall("/transitions/");
+          const tr = data.results || [];
+          let h = `<div class="page-header"><div><h2 class="page-title">TRANSITION RULES</h2><p class="page-sub">${tr.length} rules</p></div>${isAdmin() ? '<button class="btn btn-sm" style="background:var(--accent);color:#fff" onclick="showCreateTransition()">+ NEW RULE</button>' : ""}</div><div id="create-trans-area"></div><div class="card" style="margin-top:20px"><div class="table-wrap"><table><thead><tr>${[
+            "From",
+            "",
+            "To",
+            "Roles",
+            "Workflow",
+            isAdmin() ? "Action" : "",
+          ]
+            .filter(Boolean)
+            .map((x) => `<th class="no-sort">${x}</th>`)
+            .join("")}</tr></thead><tbody>`;
+          if (!tr.length)
+            h += `<tr><td colspan="${isAdmin() ? 6 : 5}" class="empty-state">No rules</td></tr>`;
+          else
+            tr.forEach((t) => {
+              const wf = WORKFLOWS.find((w) => w.id === t.workflow);
+              h += `<tr><td>${badge(t.from_state, STATE_COLORS)}</td><td style="text-align:center;color:var(--text-muted)">→</td><td>${badge(t.to_state, STATE_COLORS)}</td><td>${(t.allowed_roles || []).map((r) => badge(r, ROLE_COLORS)).join(" ")}</td><td style="color:var(--text-dim);font-size:11px">${wf?.name || "—"}</td>${isAdmin() ? `<td><button class="btn btn-sm btn-danger" onclick="deleteTransition('${t.id}','${t.from_state}','${t.to_state}')">✕</button></td>` : ""}</tr>`;
+            });
+          h += `</tbody></table></div></div>`;
+          $("page-transitions").innerHTML = h;
+        } catch (e) {
+          $("page-transitions").innerHTML =
+            `<div class="msg msg-error">${e.message}</div>`;
+        }
+      }
+      function showCreateTransition() {
+        const wfOpts = WORKFLOWS.map(
+          (w) => `<option value="${w.id}">${w.name}</option>`,
+        ).join("");
+        const stOpts = STATES.map(
+          (s) => `<option value="${s}">${s.replace(/_/g, " ")}</option>`,
+        ).join("");
+        const rCb = ["admin", "manager", "engineer", "viewer"]
+          .map(
+            (r) =>
+              `<label style="display:flex;align-items:center;gap:6px;font-size:11px;cursor:pointer"><input type="checkbox" value="${r}" class="tr-cb" ${r !== "viewer" ? "checked" : ""}> ${r}</label>`,
+          )
+          .join(" ");
+        $("create-trans-area").innerHTML =
+          `<div class="card" style="margin-top:14px"><h3 style="font-size:12px;font-weight:600;margin:0 0 14px;color:var(--accent)">New Rule</h3><div class="grid-2" style="gap:12px"><div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">From</label><select id="nt-from">${stOpts}</select></div><div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">To</label><select id="nt-to"><option value="in_progress">in progress</option>${stOpts}</select></div><div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">Workflow</label><select id="nt-wf">${wfOpts}</select></div><div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">Roles</label><div style="display:flex;gap:12px;flex-wrap:wrap">${rCb}</div></div></div><div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-sm" style="background:var(--accent);color:#fff" onclick="createTransition()">CREATE</button><button class="btn btn-sm btn-outline" onclick="$('create-trans-area').innerHTML=''">CANCEL</button></div></div>`;
+      }
+      async function createTransition() {
+        const roles = [...document.querySelectorAll(".tr-cb:checked")].map(
+          (c) => c.value,
+        );
+        try {
+          await apiCall("/transitions/", "POST", {
+            from_state: $("nt-from").value,
+            to_state: $("nt-to").value,
+            workflow: $("nt-wf").value,
+            allowed_roles: roles,
+          });
+          showSuccessModal("Success", "Rule created!");
+          $("create-trans-area").innerHTML = "";
+          loadTransitionsPage();
+        } catch (e) {
+          showErrorModal("Error", e.message);
+        }
+      }
+      async function deleteTransition(id, f, t) {
+        showModal(
+          "Delete Rule",
+          `Delete <strong>${f.replace(/_/g, " ")} → ${t.replace(/_/g, " ")}</strong>?`,
+          [
+            {
+              label: "CANCEL",
+              color: "var(--text-muted)",
+              onclick: "closeModal()",
+            },
+            {
+              label: "DELETE",
+              color: "var(--red)",
+              onclick: `confirmDeleteTrans('${id}')`,
+            },
+          ],
+        );
+      }
+      async function confirmDeleteTrans(id) {
+        closeModal();
+        try {
+          await apiCall(`/transitions/${id}/`, "DELETE");
+          showSuccessModal("Deleted", "Rule removed");
+          loadTransitionsPage();
+        } catch (e) {
+          showErrorModal("Error", e.message);
+        }
+      }
+
+      // =================== AI ===================
+      function loadAIPage() {
+        const tOpts = TASKS.map(
+          (t) =>
+            `<option value="${t.id}">${t.task_key} — ${t.title} ${t.assigned_to_name ? "(→ " + t.assigned_to_name + ")" : "(unassigned)"}</option>`,
+        ).join("");
+        $("page-ai").innerHTML =
+          `<h2 class="page-title">AI ENGINE</h2><p class="page-sub">Priority scoring, task routing, natural language queries</p><div class="card" style="margin-top:20px"><h3 style="font-size:12px;font-weight:600;margin:0 0 12px;color:var(--purple)">⚡ Natural Language Query</h3><p style="color:var(--text-muted);font-size:11px;margin-bottom:12px">Ask: "critical bugs", "unassigned tasks", "tasks assigned to dev_alice"</p><div style="display:flex;gap:10px;flex-wrap:wrap"><input id="nl-input" style="flex:1;min-width:200px" placeholder='Try: "high priority bugs"'><button class="btn btn-sm" style="background:var(--purple);color:#fff" onclick="doNLQuery()">QUERY</button></div><div id="nl-result"></div></div><div class="grid-2" style="margin-top:14px"><div class="card" style="overflow:hidden"><h3 style="font-size:12px;font-weight:600;margin:0 0 12px;color:var(--amber)">🎯 Priority Scoring</h3><select id="score-task" style="margin-bottom:10px"><option value="">Select task...</option>${tOpts}</select><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-sm" style="background:var(--amber);color:#fff" onclick="doScore()">SCORE</button><button class="btn btn-sm" style="background:transparent;border:1px solid var(--amber);color:var(--amber)" onclick="doScoreAll()">SCORE ALL</button></div><div id="score-result"></div></div><div class="card" style="overflow:hidden"><h3 style="font-size:12px;font-weight:600;margin:0 0 12px;color:var(--green)">🤖 Smart Routing</h3><select id="route-task" style="margin-bottom:10px"><option value="">Select task...</option>${tOpts}</select><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-sm" style="background:var(--green);color:#fff" onclick="doRoute()">RECOMMEND</button>${isManagerOrAbove() ? `<button class="btn btn-sm" style="background:transparent;border:1px solid var(--green);color:var(--green)" onclick="doAutoAssign()">AUTO-ASSIGN</button>` : ""}</div><div id="route-result"></div></div></div>`;
+        $("nl-input").addEventListener("keydown", (e) => {
+          if (e.key === "Enter") doNLQuery();
+        });
+      }
+      async function doNLQuery() {
+        const q = $("nl-input").value;
+        if (!q) return;
+        try {
+          const d = await apiCall("/ai/query/", "POST", { question: q });
+          let h = `<div class="msg msg-info" style="margin-top:14px">${d.explanation}</div>`;
+          if (d.parsed_filters && Object.keys(d.parsed_filters).length)
+            h += `<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">${Object.entries(
+              d.parsed_filters,
+            )
+              .map(
+                ([k, v]) =>
+                  `<span class="badge" style="background:rgba(139,92,246,0.1);color:var(--purple);border:1px solid rgba(139,92,246,0.2)">${k}: ${v}</span>`,
+              )
+              .join("")}</div>`;
+          if (d.results?.length) {
+            h += `<div class="table-wrap"><table><thead><tr>${["Key", "Title", "State", "Priority", "Assignee"].map((x) => `<th class="no-sort">${x}</th>`).join("")}</tr></thead><tbody>`;
+            d.results.forEach((t) => {
+              h += `<tr class="clickable" onclick="goToTask('${t.task_key}')"><td style="color:var(--accent);font-weight:600;font-size:12px">${t.task_key}</td><td>${t.title}</td><td>${badge(t.state, STATE_COLORS)}</td><td>${badge(t.priority, PRIORITY_COLORS)}</td><td style="color:var(--text-dim)">${t.assigned_to || "—"}</td></tr>`;
+            });
+            h += `</tbody></table></div>`;
+          } else h += `<div class="empty-state">No matches</div>`;
+          $("nl-result").innerHTML = h;
+        } catch {
+          $("nl-result").innerHTML =
+            `<div class="msg msg-error" style="margin-top:14px">Failed</div>`;
+        }
+      }
+      async function doScore() {
+        const id = $("score-task").value;
+        if (!id) return;
+        try {
+          const d = await apiCall("/ai/score-priority/", "POST", {
+            task_id: id,
+          });
+          const s = d.priority_analysis;
+          const c =
+            s.score >= 0.7
+              ? "var(--red)"
+              : s.score >= 0.4
+                ? "var(--amber)"
+                : "var(--green)";
+          let h = `<div style="margin-top:14px;padding:14px;background:var(--bg);border-radius:8px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><span style="font-size:12px;font-weight:600">${d.task_key}</span><span style="font-size:20px;font-weight:700;color:${c}">${(s.score * 100).toFixed(0)}%</span></div><p style="font-size:11px;color:var(--accent);margin:0 0 8px">${s.explanation}</p><p style="font-size:11px;color:var(--text-dim);margin:0 0 10px">Est: ${d.estimated_hours}h</p>`;
+          Object.entries(s.factors || {}).forEach(([k, v]) => {
+            const fc =
+              v >= 0.7
+                ? "var(--red)"
+                : v >= 0.4
+                  ? "var(--amber)"
+                  : "var(--green)";
+            h += `<div class="score-bar"><span class="score-bar-label">${k.replace(/_/g, " ")}</span><div class="score-bar-track"><div class="score-bar-fill" style="width:${v * 100}%;background:${fc}"></div></div><span class="score-bar-value">${(v * 100).toFixed(0)}%</span></div>`;
+          });
+          h += `</div>`;
+          $("score-result").innerHTML = h;
+          await loadGlobalData();
+        } catch {
+          $("score-result").innerHTML =
+            `<div class="msg msg-error" style="margin-top:14px">Failed</div>`;
+        }
+      }
+      async function doScoreAll() {
+        try {
+          const d = await apiCall("/ai/score-all/", "POST");
+          let h = `<div class="msg msg-success" style="margin-top:14px">${d.scored_count} scored</div><div style="max-height:200px;overflow-y:auto">`;
+          (d.results || []).forEach((r) => {
+            const c =
+              r.score >= 0.7
+                ? "var(--red)"
+                : r.score >= 0.4
+                  ? "var(--amber)"
+                  : "var(--green)";
+            h += `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(30,41,59,0.03);font-size:11px"><span style="color:var(--accent)">${r.task_key}</span><span style="color:${c};font-weight:600">${(r.score * 100).toFixed(0)}%</span></div>`;
+          });
+          h += `</div>`;
+          $("score-result").innerHTML = h;
+          await loadGlobalData();
+        } catch {
+          $("score-result").innerHTML =
+            `<div class="msg msg-error" style="margin-top:14px">Failed</div>`;
+        }
+      }
+      async function doRoute() {
+        const id = $("route-task").value;
+        if (!id) return;
+        try {
+          const d = await apiCall("/ai/recommend-assignee/", "POST", {
+            task_id: id,
+          });
+          let h = `<div style="margin-top:14px">`;
+          (d.recommendations || []).forEach((r, i) => {
+            const c =
+              r.total_score >= 0.7
+                ? "var(--green)"
+                : r.total_score >= 0.4
+                  ? "var(--amber)"
+                  : "var(--red)";
+            h += `<div class="rec-card ${i === 0 ? "top" : ""}"><div style="display:flex;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap"><span style="font-size:12px;font-weight:600">${i === 0 ? "👑 " : ""}${r.username}</span><span style="font-size:14px;font-weight:700;color:${c}">${(r.total_score * 100).toFixed(0)}%</span></div><p style="font-size:10px;color:var(--text-dim);margin:0 0 6px">${r.reasoning}</p><div style="display:flex;gap:6px;flex-wrap:wrap">${Object.entries(
+              r.factors || {},
+            )
+              .map(([k, v]) => {
+                const fc =
+                  v >= 0.7 ? "#10b981" : v >= 0.4 ? "#f59e0b" : "#ef4444";
+                return `<span class="badge" style="background:${fc}18;color:${fc};border:1px solid ${fc}30">${k.replace(/_/g, " ")}: ${(v * 100).toFixed(0)}%</span>`;
+              })
+              .join("")}</div></div>`;
+          });
+          h += `</div>`;
+          $("route-result").innerHTML = h;
+        } catch {
+          $("route-result").innerHTML =
+            `<div class="msg msg-error" style="margin-top:14px">Failed</div>`;
+        }
+      }
+      async function doAutoAssign() {
+        const id = $("route-task").value;
+        if (!id) return;
+        try {
+          const d = await apiCall("/ai/auto-assign/", "POST", { task_id: id });
+          showSuccessModal("Auto-Assigned", d.message);
+          await loadGlobalData();
+          loadAIPage();
+        } catch (e) {
+          let m = e.message;
+          try {
+            const p = JSON.parse(m);
+            m = p.error || m;
+          } catch {}
+          showErrorModal("Auto-Assign Failed", m);
+        }
+      }
+
+      // =================== AUDIT ===================
+      async function loadAuditPage() {
+        try {
+          const data = await apiCall("/audit-logs/");
+          const logs = data.results || [];
+          let h = `<div><h2 class="page-title">AUDIT LOGS</h2><p class="page-sub">${logs.length} entries</p></div><div style="margin-top:20px">`;
+          if (!logs.length) h += `<div class="card empty-state">No logs</div>`;
+          else
+            logs.forEach((l) => {
+              const tk = TASKS.find((t) => t.id === l.task);
+              const icon = ACTION_ICONS[l.action] || "📝";
+              const ac =
+                {
+                  created: "var(--green)",
+                  state_changed: "var(--amber)",
+                  assigned: "var(--purple)",
+                  commented: "var(--cyan)",
+                  sla_breached: "var(--red)",
+                  updated: "var(--accent)",
+                  deleted: "var(--red)",
+                }[l.action] || "var(--text-dim)";
+              let oH = "—",
+                nH = "—";
+              if (l.old_value)
+                oH = Object.entries(l.old_value)
+                  .map(
+                    ([k, v]) =>
+                      `<span style="color:var(--red)">${k}:</span> ${v}`,
+                  )
+                  .join("<br>");
+              if (l.new_value)
+                nH = Object.entries(l.new_value)
+                  .map(
+                    ([k, v]) =>
+                      `<span style="color:var(--green)">${k}:</span> ${v}`,
+                  )
+                  .join("<br>");
+              h += `<div class="card" style="margin-bottom:8px;padding:14px 20px"><div style="display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap;gap:8px;margin-bottom:10px"><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><span style="font-size:16px">${icon}</span><span class="link" style="font-size:12px" onclick="goToTask('${l.task}')">${tk?.task_key || "—"}</span><span class="badge" style="background:${ac}18;color:${ac};border:1px solid ${ac}30">${l.action.replace(/_/g, " ")}</span></div><div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><span style="font-size:11px;color:var(--text-dim)">by <strong>${l.performed_by_name || "System"}</strong></span><span style="font-size:10px;color:var(--text-muted)">${formatDate(l.timestamp)}</span></div></div><div class="grid-2"><div style="padding:10px;background:rgba(239,68,68,0.04);border-radius:6px;border:1px solid rgba(239,68,68,0.08)"><div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--red);margin-bottom:6px;font-weight:600">Previous</div><div style="font-size:11px;line-height:1.6;word-break:break-word">${oH}</div></div><div style="padding:10px;background:rgba(16,185,129,0.04);border-radius:6px;border:1px solid rgba(16,185,129,0.08)"><div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--green);margin-bottom:6px;font-weight:600">New</div><div style="font-size:11px;line-height:1.6;word-break:break-word">${nH}</div></div></div>${l.reason ? `<div style="margin-top:8px;font-size:11px;color:var(--text-dim)">↳ ${l.reason}</div>` : ""}</div>`;
+            });
+          h += `</div>`;
+          $("page-audit").innerHTML = h;
+        } catch (e) {
+          $("page-audit").innerHTML =
+            `<div class="msg msg-error">${e.message}</div>`;
+        }
+      }
+
+      // =================== COMMENTS ===================
+      async function loadCommentsPage() {
+        try {
+          const data = await apiCall("/comments/");
+          let comments = data.results || [];
+          comments.sort(
+            (a, b) => new Date(b.created_at) - new Date(a.created_at),
+          );
+          let h = `<div><h2 class="page-title">COMMENTS</h2><p class="page-sub">${comments.length} comments</p></div><div class="card" style="margin-top:20px">`;
+          if (!comments.length)
+            h += `<div class="empty-state">No comments</div>`;
+          else
+            comments.forEach((c) => {
+              const tk = TASKS.find((t) => t.id === c.task);
+              h += `<div class="activity-item"><span style="font-size:14px">💬</span><div style="flex:1"><div style="display:flex;gap:10px;align-items:center;margin-bottom:4px;flex-wrap:wrap"><span class="link" style="font-size:12px" onclick="goToTask('${c.task}')">${tk?.task_key || "—"}</span><span style="color:var(--purple);font-size:11px;font-weight:600">${c.author_name}</span></div><div style="font-size:12px;color:var(--text-dim)">${c.content}</div></div><span style="color:var(--text-muted);font-size:10px;white-space:nowrap">${timeAgo(c.created_at)}</span></div>`;
+            });
+          h += `</div>`;
+          $("page-comments").innerHTML = h;
+        } catch (e) {
+          $("page-comments").innerHTML =
+            `<div class="msg msg-error">${e.message}</div>`;
+        }
+      }
+    </script>
+  </body>
 </html>

@@ -21,6 +21,6 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/', include('core.urls')),
-    # DRF browsable API login (for testing in browser)
+    path('api/v1/ai/', include('ai_engine.urls')),
     path('api-auth/', include('rest_framework.urls')),
 ]

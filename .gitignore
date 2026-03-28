@@ -209,3 +209,5 @@ venv/
 db.sqlite3
 __pycache__/
 *.pyc
+.env
+.env

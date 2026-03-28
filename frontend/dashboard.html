@@ -85,6 +85,7 @@
         .transition-btn:hover { border-color: var(--accent); color: var(--accent); }
 
         .rec-card { padding: 12px; border-radius: 8px; margin-bottom: 8px; border: 1px solid var(--border); background: var(--bg); }
+        .ai-card select { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
         .rec-card.top { background: rgba(16,185,129,0.04); border-color: rgba(16,185,129,0.13); }
 
         .detail-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(30,41,59,0.05); font-size: 12px; }
@@ -650,9 +651,9 @@ async function loadTransitionsPage() {
         let html = `<div class="page-header"><div><h2 class="page-title">TRANSITION RULES</h2><p class="page-sub">${transitions.length} rules</p></div>
             ${isAdmin()?'<button class="btn btn-sm" style="background:var(--accent);color:#fff" onclick="showCreateTransition()">+ NEW RULE</button>':''}
         </div><div id="create-trans-area"></div>`;
-        html += `<div class="card" style="margin-top:20px"><div class="table-wrap"><table><thead><tr>${['From','','To','Roles','Workflow'].map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>`;
-        if(!transitions.length) html += `<tr><td colspan="5" class="empty-state">No rules</td></tr>`;
-        else transitions.forEach(t=>{const wf=WORKFLOWS.find(w=>w.id===t.workflow); html += `<tr><td>${badge(t.from_state,STATE_COLORS)}</td><td style="text-align:center;color:var(--text-muted)">→</td><td>${badge(t.to_state,STATE_COLORS)}</td><td>${(t.allowed_roles||[]).map(r=>badge(r,ROLE_COLORS)).join(' ')}</td><td style="color:var(--text-dim);font-size:11px">${wf?.name||'—'}</td></tr>`;});
+        html += `<div class="card" style="margin-top:20px"><div class="table-wrap"><table><thead><tr>${['From','','To','Roles','Workflow',isAdmin()?'Action':''].filter(Boolean).map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>`;
+        if(!transitions.length) html += `<tr><td colspan="${isAdmin()?6:5}" class="empty-state">No rules</td></tr>`;
+        else transitions.forEach(t=>{const wf=WORKFLOWS.find(w=>w.id===t.workflow); html += `<tr><td>${badge(t.from_state,STATE_COLORS)}</td><td style="text-align:center;color:var(--text-muted)">→</td><td>${badge(t.to_state,STATE_COLORS)}</td><td>${(t.allowed_roles||[]).map(r=>badge(r,ROLE_COLORS)).join(' ')}</td><td style="color:var(--text-dim);font-size:11px">${wf?.name||'—'}</td>${isAdmin()?`<td><button class="btn btn-sm" style="background:rgba(239,68,68,0.1);color:var(--red);border:1px solid rgba(239,68,68,0.2)" onclick="deleteTransition('${t.id}','${t.from_state}','${t.to_state}')">✕ Delete</button></td>`:''}</tr>`;});
         html += `</tbody></table></div></div>`;
         $('page-transitions').innerHTML = html;
     } catch(e) { $('page-transitions').innerHTML = `<div class="msg msg-error">${e.message}</div>`; }
@@ -679,6 +680,19 @@ async function createTransition() {
     catch(e) { showErrorModal('Error','Create failed: '+e.message); }
 }
 
+async function deleteTransition(id, from, to) {
+    showModal('Delete Transition Rule', `Are you sure you want to delete the rule <strong>${from.replace(/_/g,' ')} → ${to.replace(/_/g,' ')}</strong>?<br><br><span style="color:var(--red)">This cannot be undone.</span>`, [
+        {label:'CANCEL', color:'var(--text-muted)', onclick:'closeModal()'},
+        {label:'DELETE', color:'var(--red)', onclick:`confirmDeleteTransition('${id}')`}
+    ]);
+}
+
+async function confirmDeleteTransition(id) {
+    closeModal();
+    try { await apiCall(`/transitions/${id}/`,'DELETE'); showSuccessModal('Deleted','Transition rule removed.'); loadTransitionsPage(); }
+    catch(e) { showErrorModal('Error','Delete failed: '+e.message); }
+}
+
 // =================== AI ===================
 function loadAIPage() {
     const taskOpts=TASKS.map(t=>`<option value="${t.id}">${t.task_key} — ${t.title} ${t.assigned_to_name?'(→ '+t.assigned_to_name+')':'(unassigned)'}</option>`).join('');
@@ -687,10 +701,10 @@ function loadAIPage() {
             <p style="color:var(--text-muted);font-size:11px;margin-bottom:12px">Ask: "critical bugs", "unassigned tasks", "tasks assigned to dev_alice"</p>
             <div style="display:flex;gap:10px;flex-wrap:wrap"><input id="nl-input" style="flex:1;min-width:200px" placeholder='Try: "show me high priority bugs"'><button class="btn btn-sm" style="background:var(--purple);color:#fff" onclick="doNLQuery()">QUERY</button></div><div id="nl-result"></div></div>
         <div class="grid-2" style="margin-top:14px">
-            <div class="card"><h3 style="font-size:12px;font-weight:600;margin:0 0 12px;color:var(--amber)">🎯 Priority Scoring</h3>
+            <div class="card" style="overflow:hidden"><h3 style="font-size:12px;font-weight:600;margin:0 0 12px;color:var(--amber)">🎯 Priority Scoring</h3>
                 <select id="score-task" style="margin-bottom:10px"><option value="">Select task...</option>${taskOpts}</select>
                 <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-sm" style="background:var(--amber);color:#fff" onclick="doScore()">SCORE</button><button class="btn btn-sm" style="background:transparent;border:1px solid var(--amber);color:var(--amber)" onclick="doScoreAll()">SCORE ALL</button></div><div id="score-result"></div></div>
-            <div class="card"><h3 style="font-size:12px;font-weight:600;margin:0 0 12px;color:var(--green)">🤖 Smart Routing</h3>
+            <div class="card" style="overflow:hidden"><h3 style="font-size:12px;font-weight:600;margin:0 0 12px;color:var(--green)">🤖 Smart Routing</h3>
                 <select id="route-task" style="margin-bottom:10px"><option value="">Select task...</option>${taskOpts}</select>
                 <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-sm" style="background:var(--green);color:#fff" onclick="doRoute()">RECOMMEND</button>
                 ${isManagerOrAbove()?`<button class="btn btn-sm" style="background:transparent;border:1px solid var(--green);color:var(--green)" onclick="doAutoAssign()">AUTO-ASSIGN</button>`:''}</div><div id="route-result"></div></div>
@@ -709,10 +723,93 @@ async function doRoute() { const tid=$('route-task').value; if(!tid) return; try
 async function doAutoAssign() { const tid=$('route-task').value; if(!tid) return; try { const d=await apiCall('/ai/auto-assign/','POST',{task_id:tid}); showSuccessModal('Auto-Assigned',d.message); await loadGlobalData(); loadAIPage(); } catch(e) { let msg=e.message; try{const p=JSON.parse(msg);msg=p.error||msg;}catch{} showErrorModal('Auto-Assign Failed',msg); } }
 
 // =================== AUDIT ===================
-async function loadAuditPage() { try { const data=await apiCall('/audit-logs/'); const logs=data.results||[]; let html=`<div><h2 class="page-title">AUDIT LOGS</h2><p class="page-sub">${logs.length} entries</p></div><div class="card" style="margin-top:20px"><div class="table-wrap"><table><thead><tr>${['Task','Action','By','Old','New','Reason','Time'].map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>`; if(!logs.length)html+=`<tr><td colspan="7" class="empty-state">No logs</td></tr>`; else logs.forEach(l=>{const tk=TASKS.find(t=>t.id===l.task);const old=l.old_value?`<code style="font-size:10px;color:var(--red);background:rgba(239,68,68,0.08);padding:2px 6px;border-radius:4px">${JSON.stringify(l.old_value)}</code>`:'—';const nw=l.new_value?`<code style="font-size:10px;color:var(--green);background:rgba(16,185,129,0.08);padding:2px 6px;border-radius:4px">${JSON.stringify(l.new_value)}</code>`:'—';html+=`<tr><td style="color:var(--accent);font-weight:600;font-size:12px">${tk?.task_key||'—'}</td><td><span style="font-size:13px">${ACTION_ICONS[l.action]||'📝'}</span> ${l.action.replace(/_/g,' ')}</td><td style="font-size:12px">${l.performed_by_name||'System'}</td><td style="max-width:120px;overflow:hidden;text-overflow:ellipsis">${old}</td><td style="max-width:120px;overflow:hidden;text-overflow:ellipsis">${nw}</td><td style="color:var(--text-dim);font-size:11px;max-width:100px;overflow:hidden;text-overflow:ellipsis">${l.reason||'—'}</td><td style="color:var(--text-muted);font-size:10px;white-space:nowrap">${timeAgo(l.timestamp)}</td></tr>`;}); html+=`</tbody></table></div></div>`; $('page-audit').innerHTML=html; }catch(e){$('page-audit').innerHTML=`<div class="msg msg-error">${e.message}</div>`;} }
+async function loadAuditPage() {
+    try {
+        const data = await apiCall('/audit-logs/');
+        const logs = data.results || [];
+        let html = `<div><h2 class="page-title">AUDIT LOGS</h2><p class="page-sub">${logs.length} entries · Click task key to view task</p></div>`;
+
+        html += `<div style="margin-top:20px">`;
+        if (!logs.length) html += `<div class="card empty-state">No audit logs</div>`;
+        else logs.forEach(l => {
+            const tk = TASKS.find(t => t.id === l.task);
+            const icon = ACTION_ICONS[l.action] || '📝';
+            const actionColor = {created:'var(--green)',state_changed:'var(--amber)',assigned:'var(--purple)',commented:'var(--cyan)',sla_breached:'var(--red)',updated:'var(--accent)',deleted:'var(--red)'}[l.action] || 'var(--text-dim)';
+
+            let oldHTML = '—', newHTML = '—';
+            if (l.old_value) {
+                const entries = Object.entries(l.old_value);
+                oldHTML = entries.map(([k,v]) => `<span style="color:var(--red)">${k}:</span> ${v}`).join('<br>');
+            }
+            if (l.new_value) {
+                const entries = Object.entries(l.new_value);
+                newHTML = entries.map(([k,v]) => `<span style="color:var(--green)">${k}:</span> ${v}`).join('<br>');
+            }
+
+            html += `<div class="card" style="margin-bottom:8px;padding:14px 20px">
+                <div style="display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+                    <div style="display:flex;align-items:center;gap:10px">
+                        <span style="font-size:16px">${icon}</span>
+                        <span style="color:var(--accent);font-weight:600;font-size:12px;cursor:pointer;text-decoration:underline" onclick="goToTask('${l.task}')">${tk?.task_key || '—'}</span>
+                        <span class="badge" style="background:${actionColor}18;color:${actionColor};border:1px solid ${actionColor}30">${l.action.replace(/_/g,' ')}</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:12px">
+                        <span style="font-size:11px;color:var(--text-dim)">by <strong>${l.performed_by_name || 'System'}</strong></span>
+                        <span style="font-size:10px;color:var(--text-muted)">${formatDate(l.timestamp)}</span>
+                    </div>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                    <div style="padding:10px;background:rgba(239,68,68,0.04);border-radius:6px;border:1px solid rgba(239,68,68,0.08)">
+                        <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--red);margin-bottom:6px;font-weight:600">Previous</div>
+                        <div style="font-size:11px;line-height:1.6;word-break:break-word">${oldHTML}</div>
+                    </div>
+                    <div style="padding:10px;background:rgba(16,185,129,0.04);border-radius:6px;border:1px solid rgba(16,185,129,0.08)">
+                        <div style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--green);margin-bottom:6px;font-weight:600">New</div>
+                        <div style="font-size:11px;line-height:1.6;word-break:break-word">${newHTML}</div>
+                    </div>
+                </div>
+                ${l.reason ? `<div style="margin-top:8px;font-size:11px;color:var(--text-dim)">↳ ${l.reason}</div>` : ''}
+            </div>`;
+        });
+        html += `</div>`;
+        $('page-audit').innerHTML = html;
+    } catch(e) { $('page-audit').innerHTML = `<div class="msg msg-error">${e.message}</div>`; }
+}
+
+function goToTask(taskId) {
+    switchPage('tasks');
+    setTimeout(() => showTaskDetail(taskId), 300);
+}
 
 // =================== COMMENTS ===================
-async function loadCommentsPage() { try { const data=await apiCall('/comments/'); const comments=data.results||[]; let html=`<div><h2 class="page-title">COMMENTS</h2><p class="page-sub">${comments.length} comments</p></div><div class="card" style="margin-top:20px">`; if(!comments.length)html+=`<div class="empty-state">No comments</div>`; else comments.forEach(c=>{const tk=TASKS.find(t=>t.id===c.task);html+=`<div class="activity-item"><span style="font-size:14px">💬</span><div style="flex:1"><div style="display:flex;gap:10px;align-items:center;margin-bottom:4px;flex-wrap:wrap"><span style="color:var(--accent);font-weight:600;font-size:12px">${tk?.task_key||'—'}</span><span style="color:var(--purple);font-size:11px;font-weight:600">${c.author_name}</span></div><div style="font-size:12px;color:var(--text-dim)">${c.content}</div></div><span style="color:var(--text-muted);font-size:10px;white-space:nowrap">${timeAgo(c.created_at)}</span></div>`;});html+=`</div>`;$('page-comments').innerHTML=html;}catch(e){$('page-comments').innerHTML=`<div class="msg msg-error">${e.message}</div>`;} }
+async function loadCommentsPage() {
+    try {
+        const data = await apiCall('/comments/');
+        let comments = data.results || [];
+        // Sort recent first
+        comments.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+        let html = `<div><h2 class="page-title">COMMENTS</h2><p class="page-sub">${comments.length} comments · Click task key to view task</p></div><div class="card" style="margin-top:20px">`;
+        if (!comments.length) html += `<div class="empty-state">No comments</div>`;
+        else comments.forEach(c => {
+            const tk = TASKS.find(t => t.id === c.task);
+            html += `<div class="activity-item">
+                <span style="font-size:14px">💬</span>
+                <div style="flex:1">
+                    <div style="display:flex;gap:10px;align-items:center;margin-bottom:4px;flex-wrap:wrap">
+                        <span style="color:var(--accent);font-weight:600;font-size:12px;cursor:pointer;text-decoration:underline" onclick="goToTask('${c.task}')">${tk?.task_key || '—'}</span>
+                        <span style="color:var(--purple);font-size:11px;font-weight:600">${c.author_name}</span>
+                    </div>
+                    <div style="font-size:12px;color:var(--text-dim)">${c.content}</div>
+                </div>
+                <span style="color:var(--text-muted);font-size:10px;white-space:nowrap">${timeAgo(c.created_at)}</span>
+            </div>`;
+        });
+        html += `</div>`;
+        $('page-comments').innerHTML = html;
+    } catch(e) { $('page-comments').innerHTML = `<div class="msg msg-error">${e.message}</div>`; }
+}
+
 </script>
 </body>
 </html>

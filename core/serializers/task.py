@@ -16,6 +16,7 @@ class TaskListSerializer(serializers.ModelSerializer):
     """Lightweight serializer for list views"""
     assigned_to_name = serializers.CharField(source='assigned_to.username', read_only=True, default=None)
     created_by_name = serializers.CharField(source='created_by.username', read_only=True)
+    team_name = serializers.CharField(source='team.name', read_only=True, default=None)
     comment_count = serializers.SerializerMethodField()
 
     class Meta:
@@ -23,13 +24,10 @@ class TaskListSerializer(serializers.ModelSerializer):
         fields = (
             'id', 'task_key', 'title', 'current_state', 'priority',
             'task_type', 'assigned_to', 'assigned_to_name',
-            'created_by_name', 'due_date', 'sla_breached',
+            'created_by_name', 'team', 'team_name',
+            'due_date', 'sla_breached',
             'ai_priority_score', 'comment_count', 'created_at',
         )
-
-    def get_comment_count(self, obj):
-        return obj.comments.count()
-
 
 class TaskDetailSerializer(serializers.ModelSerializer):
     """Full serializer for detail/create/update views"""

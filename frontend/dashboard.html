@@ -1318,20 +1318,19 @@
         <th onclick="sortTasks('title')">Title${sortIcon("title")}</th>
         <th onclick="sortTasks('current_state')">State${sortIcon("current_state")}</th>
         <th onclick="sortTasks('priority')">Priority${sortIcon("priority")}</th>
-        <th class="no-sort">Type</th><th class="no-sort">Assignee</th>
+        <th class="no-sort">Type</th><th class="no-sort">Team</th><th class="no-sort">Assignee</th>
         <th onclick="sortTasks('ai_priority_score')">AI${sortIcon("ai_priority_score")}</th>
         <th onclick="sortTasks('created_at')">Created${sortIcon("created_at")}</th>
         ${isAdmin() ? '<th class="no-sort">Action</th>' : ""}
     </tr></thead><tbody>`;
-        if (!paged.length)
-          h += `<tr><td colspan="${isAdmin() ? 9 : 8}" class="empty-state">No tasks</td></tr>`;
+        if(!paged.length)h+=`<tr><td colspan="${isAdmin()?10:9}" class="empty-state">No tasks</td></tr>`;
         else
           paged.forEach((t) => {
             const ai =
               t.ai_priority_score != null
                 ? `<span style="color:${t.ai_priority_score >= 0.7 ? "var(--red)" : t.ai_priority_score >= 0.4 ? "var(--amber)" : "var(--green)"};font-weight:600;cursor:pointer" title="Click to re-score" onclick="event.stopPropagation();quickScore('${t.id}')">${(t.ai_priority_score * 100).toFixed(0)}%</span>`
                 : `<span style="color:var(--text-muted);cursor:pointer" title="Click to score" onclick="event.stopPropagation();quickScore('${t.id}')">Score</span>`;
-            h += `<tr class="clickable" onclick="showTaskDetail('${t.id}')"><td style="color:var(--accent);font-weight:600;font-size:12px">${t.task_key}</td><td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.title}</td><td>${badge(t.current_state, STATE_COLORS)}</td><td>${badge(t.priority, PRIORITY_COLORS)}</td><td style="color:var(--text-dim)">${t.task_type}</td><td style="color:${t.assigned_to_name ? "var(--text)" : "var(--text-muted)"}">${t.assigned_to_name || "—"}</td><td>${ai}</td><td style="color:var(--text-muted);font-size:11px">${timeAgo(t.created_at)}</td>${isAdmin() ? `<td><button class="btn btn-sm btn-danger" onclick="event.stopPropagation();deleteTask('${t.id}','${t.task_key}')" title="Delete">✕</button></td>` : ""}</tr>`;
+            h += `<tr class="clickable" onclick="showTaskDetail('${t.id}')"><td style="color:var(--accent);font-weight:600;font-size:12px">${t.task_key}</td><td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.title}</td><td>${badge(t.current_state, STATE_COLORS)}</td><td>${badge(t.priority, PRIORITY_COLORS)}</td><td style="color:var(--text-dim)">${t.task_type}</td><td style="color:${t.team_name?'var(--cyan)':'var(--text-muted)'}; font-size:11px">${t.team_name||'—'}</td><td style="color:${t.assigned_to_name?'var(--text)':'var(--text-muted)'}">${t.assigned_to_name||'—'}</td><td>${ai}</td><td style="color:var(--text-muted);font-size:11px">${timeAgo(t.created_at)}</td>${isAdmin() ? `<td><button class="btn btn-sm btn-danger" onclick="event.stopPropagation();deleteTask('${t.id}','${t.task_key}')" title="Delete">✕</button></td>` : ""}</tr>`;
           });
         h += `</tbody></table></div></div>`;
         // Pagination
@@ -1476,6 +1475,7 @@
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
             <div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:4px">Priority</label><select id="edit-priority" style="font-size:12px">${PRIORITIES.map(p=>`<option value="${p}" ${detail.priority===p?'selected':''}>${p}</option>`).join('')}</select></div>
             <div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:4px">Due Date</label><input id="edit-due" type="datetime-local" value="${detail.due_date?new Date(detail.due_date).toISOString().slice(0,16):''}" style="font-size:12px"></div>
+            <div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:4px">Team</label><select id="edit-team" style="font-size:12px"><option value="">No team</option>${TEAMS.map(tm=>`<option value="${tm.id}" ${detail.team===tm.id?'selected':''}>${tm.name}</option>`).join('')}</select></div>
             <div style="grid-column:1/-1"><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:4px">Tags</label><input id="edit-tags" value="${(detail.tags||[]).join(', ')}" placeholder="backend, urgent" style="font-size:12px"></div>
         </div>
         <button class="btn btn-sm" style="background:var(--accent);color:#fff;margin-top:10px" onclick="saveTaskEdit('${taskId}')">SAVE CHANGES</button>
@@ -1493,7 +1493,7 @@
       }
 
       async function saveTaskEdit(id){
-        const body={priority:$('edit-priority').value,tags:$('edit-tags').value?$('edit-tags').value.split(',').map(s=>s.trim()).filter(Boolean):[]};
+        const body={priority:$('edit-priority').value,team:$('edit-team').value||null,tags:$('edit-tags').value?$('edit-tags').value.split(',').map(s=>s.trim()).filter(Boolean):[]};
         const due=$('edit-due').value;
         if(due)body.due_date=new Date(due).toISOString();else body.due_date=null;
         try{await apiCall(`/tasks/${id}/`,'PATCH',body);showSuccessModal('Saved','Task updated!');await loadGlobalData();setTimeout(()=>showTaskDetail(id),300)}catch(e){showErrorModal('Error',e.message)}
@@ -1519,7 +1519,7 @@
       }
 
       async function saveTaskEdit(id){
-        const body={priority:$('edit-priority').value,tags:$('edit-tags').value?$('edit-tags').value.split(',').map(s=>s.trim()).filter(Boolean):[]};
+        const body={priority:$('edit-priority').value,team:$('edit-team').value||null,tags:$('edit-tags').value?$('edit-tags').value.split(',').map(s=>s.trim()).filter(Boolean):[]};
         const due=$('edit-due').value;
         if(due)body.due_date=new Date(due).toISOString();else body.due_date=null;
         try{await apiCall(`/tasks/${id}/`,'PATCH',body);showSuccessModal('Saved','Task updated!');await loadGlobalData();setTimeout(()=>showTaskDetail(id),300)}catch(e){showErrorModal('Error',e.message)}

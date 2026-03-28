@@ -29,6 +29,9 @@ class TaskListSerializer(serializers.ModelSerializer):
             'ai_priority_score', 'comment_count', 'created_at',
         )
 
+    def get_comment_count(self, obj):
+        return obj.comments.count()
+
 class TaskDetailSerializer(serializers.ModelSerializer):
     """Full serializer for detail/create/update views"""
     assigned_to_detail = UserSerializer(source='assigned_to', read_only=True)

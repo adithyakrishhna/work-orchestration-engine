@@ -6,7 +6,7 @@ from core.models import Task, AuditLog
 from .priority_scorer import AIPriorityScorer
 from .task_router import AITaskRouter
 from .nl_query import NLQueryEngine
-
+from rest_framework import status
 
 class AIPriorityScoringView(APIView):
     """
@@ -121,10 +121,18 @@ class AIAutoAssignView(APIView):
     POST /api/v1/ai/auto-assign/
     Body: {"task_id": "uuid"}
     Automatically assigns the task to the best candidate.
+    Only admins and managers can auto-assign.
     """
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        # Permission check — only admins and managers can assign
+        if request.user.role not in ('admin', 'manager'):
+            return Response(
+                {'error': 'Only admins and managers can auto-assign tasks.'},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
         task_id = request.data.get('task_id')
         if not task_id:
             return Response(
@@ -164,7 +172,6 @@ class AIAutoAssignView(APIView):
             'assigned_to': best_user.username,
             'recommendation_details': recommendation,
         })
-
 
 class NLQueryView(APIView):
     """

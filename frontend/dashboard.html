@@ -17,11 +17,9 @@
         body { font-family: 'JetBrains Mono', monospace; background: var(--bg); color: var(--text); font-size: 13px; }
         .hidden { display: none !important; }
 
-        /* Login */
-        .login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: radial-gradient(ellipse at 30% 20%, var(--accent-glow), transparent 50%), var(--bg); }
-        .login-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 48px 40px; width: 380px; box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
+        .login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: radial-gradient(ellipse at 30% 20%, var(--accent-glow), transparent 50%), var(--bg); padding: 20px; }
+        .login-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 48px 40px; width: 380px; max-width: 100%; box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
 
-        /* Form */
         input, select, textarea { width: 100%; padding: 10px 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 13px; font-family: inherit; outline: none; }
         input:focus, select:focus, textarea:focus { border-color: var(--accent); }
         .btn { padding: 10px 20px; border: none; border-radius: 8px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: inherit; letter-spacing: 0.5px; transition: opacity 0.15s; }
@@ -31,16 +29,16 @@
         .btn-sm { padding: 7px 16px; font-size: 11px; }
         .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-dim); }
 
-        /* Layout */
-        .sidebar { width: 220px; background: var(--surface); border-right: 1px solid var(--border); height: 100vh; position: fixed; left: 0; top: 0; display: flex; flex-direction: column; z-index: 10; overflow-y: auto; }
-        .main { margin-left: 220px; padding: 28px 32px; min-height: 100vh; }
+        .sidebar { width: 220px; background: var(--surface); border-right: 1px solid var(--border); height: 100vh; position: fixed; left: 0; top: 0; display: flex; flex-direction: column; z-index: 20; overflow-y: auto; transition: transform 0.3s; }
+        .main { margin-left: 220px; padding: 28px 32px; min-height: 100vh; transition: margin-left 0.3s; }
+        .menu-toggle { display: none; position: fixed; top: 12px; left: 12px; z-index: 30; background: var(--surface); border: 1px solid var(--border); color: var(--text); font-size: 20px; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-family: inherit; }
+        .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 15; }
 
         .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 18px; cursor: pointer; border-radius: 8px; margin: 2px 10px; color: var(--text-dim); font-size: 12px; transition: all 0.15s; border: 1px solid transparent; }
         .nav-item:hover { background: var(--surface-hover); }
         .nav-item.active { background: var(--accent-glow); color: var(--accent); font-weight: 600; border-color: rgba(59,130,246,0.13); }
         .nav-section { font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); padding: 16px 18px 6px; font-weight: 600; }
 
-        /* Cards */
         .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; }
         .stat-card { display: flex; align-items: center; gap: 16px; cursor: pointer; transition: border-color 0.2s, box-shadow 0.2s; }
         .stat-card:hover { border-color: var(--accent); box-shadow: 0 0 20px rgba(59,130,246,0.08); }
@@ -48,24 +46,23 @@
         .stat-value { font-size: 22px; font-weight: 700; line-height: 1.1; }
         .stat-label { font-size: 10px; color: var(--text-muted); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.8px; }
 
-        /* Badges */
-        .badge { display: inline-block; padding: 3px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; letter-spacing: 0.3px; }
+        .badge { display: inline-block; padding: 3px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; letter-spacing: 0.3px; white-space: nowrap; }
 
-        /* Table */
         table { width: 100%; border-collapse: collapse; }
         th { padding: 10px 14px; text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-muted); border-bottom: 1px solid var(--border); font-weight: 600; }
         td { padding: 12px 14px; border-bottom: 1px solid rgba(30,41,59,0.03); vertical-align: middle; }
         tr.clickable { cursor: pointer; transition: background 0.1s; }
         tr.clickable:hover { background: var(--surface-hover); }
+        .table-wrap { overflow-x: auto; }
 
         .section-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin: 0 0 14px; font-weight: 600; }
         .page-title { font-size: 16px; font-weight: 700; letter-spacing: 0.5px; }
         .page-sub { color: var(--text-muted); font-size: 11px; margin-top: 4px; }
+        .page-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
 
         .grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
         .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-        .grid-tasks { display: grid; grid-template-columns: 1fr 380px; gap: 14px; }
 
         .progress-bg { height: 6px; background: var(--bg); border-radius: 3px; overflow: hidden; }
         .progress-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
@@ -94,18 +91,41 @@
         .detail-label { color: var(--text-muted); }
         .detail-value { color: var(--text); font-weight: 500; text-align: right; max-width: 60%; word-break: break-all; }
 
-        .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; background: var(--accent-glow); color: var(--accent); margin: 2px 2px; border: 1px solid rgba(59,130,246,0.15); }
-
+        .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; background: var(--accent-glow); color: var(--accent); margin: 2px; border: 1px solid rgba(59,130,246,0.15); }
         .empty-state { color: var(--text-muted); font-size: 12px; text-align: center; padding: 40px 20px; }
 
-        @media (max-width: 1200px) {
-            .grid-5 { grid-template-columns: repeat(3, 1fr); }
+        /* Modal */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .modal-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 28px; width: 420px; max-width: 100%; box-shadow: 0 25px 50px rgba(0,0,0,0.5); }
+        .modal-title { font-size: 14px; font-weight: 700; margin-bottom: 14px; }
+        .modal-body { font-size: 12px; color: var(--text-dim); margin-bottom: 20px; line-height: 1.6; }
+        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+
+        .clickable-bar { cursor: pointer; transition: opacity 0.15s; }
+        .clickable-bar:hover { opacity: 0.8; }
+
+        @media (max-width: 1400px) { .grid-5 { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 1024px) {
+            .grid-5 { grid-template-columns: repeat(2, 1fr); }
             .grid-3 { grid-template-columns: 1fr 1fr; }
-            .grid-tasks { grid-template-columns: 1fr; }
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .sidebar-overlay.open { display: block; }
+            .main { margin-left: 0; padding: 20px 16px; padding-top: 56px; }
+            .menu-toggle { display: block; }
+        }
+        @media (max-width: 640px) {
+            .grid-5, .grid-3, .grid-2 { grid-template-columns: 1fr; }
+            .page-header { flex-direction: column; align-items: flex-start; }
+            .login-box { padding: 32px 24px; }
         }
     </style>
 </head>
 <body>
+
+<div id="modal-container"></div>
+<button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
 
 <!-- LOGIN -->
 <div id="login-screen" class="login-wrap">
@@ -125,13 +145,13 @@
             <input id="login-pass" type="password" placeholder="••••••••">
         </div>
         <button class="btn btn-primary" style="width:100%" onclick="doLogin()">SIGN IN →</button>
-        <p style="text-align:center;color:var(--text-muted);font-size:10px;margin-top:20px;letter-spacing:0.3px">Test: admin_user / testpass123</p>
+        <p style="text-align:center;color:var(--text-muted);font-size:10px;margin-top:20px">Test: admin_user / testpass123</p>
     </div>
 </div>
 
 <!-- APP -->
 <div id="app-shell" class="hidden">
-    <div class="sidebar">
+    <div class="sidebar" id="sidebar">
         <div style="padding:22px 18px 20px;border-bottom:1px solid var(--border)">
             <div style="font-size:13px;font-weight:700;letter-spacing:1px">⚡ ORCHESTRATOR</div>
             <div style="font-size:10px;color:var(--text-muted);margin-top:4px;letter-spacing:0.5px">WORKFLOW ENGINE v1.0</div>
@@ -160,7 +180,7 @@
         </div>
     </div>
 
-    <div class="main">
+    <div class="main" id="main-content">
         <div id="global-msg"></div>
         <div id="page-dashboard"></div>
         <div id="page-tasks" class="hidden"></div>
@@ -178,167 +198,151 @@
 <script>
 const API = 'http://127.0.0.1:8000/api/v1';
 let TOKEN = null;
-let TASKS = [], WORKFLOWS = [], ALL_USERS = [], TEAMS = [], ORGS = [];
-let CURRENT_USER = {};
+let TASKS=[], WORKFLOWS=[], ALL_USERS=[], TEAMS=[], ORGS=[], CURRENT_USER={};
+let PENDING_FILTER = null;
 
-const STATE_COLORS = { open:'#3b82f6', in_progress:'#f59e0b', review:'#8b5cf6', testing:'#06b6d4', done:'#10b981', cancelled:'#64748b' };
-const PRIORITY_COLORS = { critical:'#ef4444', high:'#f59e0b', medium:'#3b82f6', low:'#64748b' };
-const ROLE_COLORS = { admin:'#ef4444', manager:'#f59e0b', engineer:'#3b82f6', viewer:'#64748b' };
-const ACTION_ICONS = { created:'🆕', state_changed:'🔄', assigned:'👤', commented:'💬', sla_breached:'🔴', updated:'📝', deleted:'🗑' };
+const STATE_COLORS = {open:'#3b82f6',in_progress:'#f59e0b',review:'#8b5cf6',testing:'#06b6d4',done:'#10b981',cancelled:'#64748b'};
+const PRIORITY_COLORS = {critical:'#ef4444',high:'#f59e0b',medium:'#3b82f6',low:'#64748b'};
+const ROLE_COLORS = {admin:'#ef4444',manager:'#f59e0b',engineer:'#3b82f6',viewer:'#64748b'};
+const ACTION_ICONS = {created:'🆕',state_changed:'🔄',assigned:'👤',commented:'💬',sla_breached:'🔴',updated:'📝',deleted:'🗑'};
 const ALL_PAGES = ['dashboard','tasks','users','teams','organizations','workflows','transitions','ai','audit','comments'];
 
-// --- API ---
+// =================== HELPERS ===================
+function $(id) { return document.getElementById(id); }
+function badge(text, colorMap) { const c=(colorMap||{})[text]||'#64748b'; return `<span class="badge" style="background:${c}18;color:${c};border:1px solid ${c}30">${(text||'—').replace(/_/g,' ')}</span>`; }
+function timeAgo(ts) { if(!ts) return '—'; const d=new Date(ts),now=new Date(),diff=(now-d)/1000; if(diff<60) return 'just now'; if(diff<3600) return Math.floor(diff/60)+'m ago'; if(diff<86400) return Math.floor(diff/3600)+'h ago'; return Math.floor(diff/86400)+'d ago'; }
+function formatDate(ts) { return ts ? new Date(ts).toLocaleString() : '—'; }
+function isAdmin() { return CURRENT_USER.role === 'admin'; }
+function isManagerOrAbove() { return CURRENT_USER.role === 'admin' || CURRENT_USER.role === 'manager'; }
+function showGlobalMsg(msg, isError) { $('global-msg').innerHTML=`<div class="msg ${isError?'msg-error':'msg-success'}">${msg}</div>`; setTimeout(()=>$('global-msg').innerHTML='',4000); }
+function showMsg(elId, msg, isError) { const el=$(elId); if(el){el.innerHTML=`<div class="msg ${isError?'msg-error':'msg-success'}">${msg}</div>`; setTimeout(()=>el.innerHTML='',3000);} }
+function statCard(icon,label,value,color,sub='',onclick='') { return `<div class="card stat-card" onclick="${onclick}"><div class="stat-icon" style="background:${color}15;border:1px solid ${color}25">${icon}</div><div><div class="stat-value">${value}</div><div class="stat-label">${label}</div>${sub?`<div style="font-size:11px;color:${color};margin-top:2px">${sub}</div>`:''}</div></div>`; }
+
+// =================== MODAL ===================
+function showModal(title, body, actions) {
+    const actionsHTML = actions.map(a => `<button class="btn btn-sm" style="background:${a.color||'var(--accent)'};color:#fff" onclick="${a.onclick}">${a.label}</button>`).join('');
+    $('modal-container').innerHTML = `<div class="modal-overlay" onclick="if(event.target===this)closeModal()"><div class="modal-box"><div class="modal-title">${title}</div><div class="modal-body">${body}</div><div class="modal-actions">${actionsHTML}</div></div></div>`;
+}
+function showErrorModal(title, message) { showModal(title, `<div style="color:var(--red)">${message}</div>`, [{label:'OK', color:'var(--red)', onclick:'closeModal()'}]); }
+function showSuccessModal(title, message) { showModal(title, `<div style="color:var(--green)">${message}</div>`, [{label:'OK', color:'var(--green)', onclick:'closeModal()'}]); }
+function closeModal() { $('modal-container').innerHTML = ''; }
+
+// =================== SIDEBAR ===================
+function toggleSidebar() { $('sidebar').classList.toggle('open'); $('sidebar-overlay').classList.toggle('open'); }
+
+// =================== API ===================
 async function apiCall(endpoint, method='GET', body=null) {
     const opts = { method, headers: { 'Content-Type':'application/json' } };
     if (TOKEN) opts.headers['Authorization'] = `Bearer ${TOKEN}`;
     if (body) opts.body = JSON.stringify(body);
     const res = await fetch(API + endpoint, opts);
-    if (res.status === 401) { doLogout(); throw new Error('Unauthorized'); }
-    if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(JSON.stringify(err));
+    if (res.status === 401) {
+        // Try refresh
+        const refreshed = await tryRefreshToken();
+        if (refreshed) { opts.headers['Authorization'] = `Bearer ${TOKEN}`; const retry = await fetch(API+endpoint, opts); if(!retry.ok) throw new Error(await retry.text()); return retry.json(); }
+        doLogout(); throw new Error('Session expired');
     }
+    if (!res.ok) { const err = await res.json().catch(()=>({})); throw new Error(typeof err === 'string' ? err : JSON.stringify(err)); }
     return res.json();
 }
 
-// --- AUTH ---
-async function doLogin() {
-    const user = document.getElementById('login-user').value;
-    const pass = document.getElementById('login-pass').value;
-    const errEl = document.getElementById('login-error');
+async function tryRefreshToken() {
+    const refresh = sessionStorage.getItem('refresh_token');
+    if (!refresh) return false;
     try {
-        const data = await apiCall('/auth/login/', 'POST', { username: user, password: pass });
+        const res = await fetch(API+'/auth/refresh/', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({refresh}) });
+        if (!res.ok) return false;
+        const data = await res.json();
+        TOKEN = data.access;
+        sessionStorage.setItem('access_token', TOKEN);
+        return true;
+    } catch { return false; }
+}
+
+// =================== AUTH ===================
+async function doLogin() {
+    const user = $('login-user').value, pass = $('login-pass').value, errEl = $('login-error');
+    try {
+        const data = await apiCall('/auth/login/','POST',{username:user,password:pass});
         if (data.access) {
             TOKEN = data.access;
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('app-shell').classList.remove('hidden');
+            sessionStorage.setItem('access_token', TOKEN);
+            sessionStorage.setItem('refresh_token', data.refresh);
+            $('login-screen').classList.add('hidden');
+            $('app-shell').classList.remove('hidden');
             await loadGlobalData();
             loadDashboard();
-        } else { errEl.textContent = 'Invalid credentials'; errEl.classList.remove('hidden'); }
-    } catch { errEl.textContent = 'Connection failed — is the server running?'; errEl.classList.remove('hidden'); }
+        } else { errEl.textContent='Invalid credentials'; errEl.classList.remove('hidden'); }
+    } catch { errEl.textContent='Connection failed — is the server running?'; errEl.classList.remove('hidden'); }
 }
-function doLogout() { TOKEN = null; document.getElementById('app-shell').classList.add('hidden'); document.getElementById('login-screen').classList.remove('hidden'); }
-document.getElementById('login-pass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
-document.getElementById('login-user').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('login-pass').focus(); });
+function doLogout() { TOKEN=null; sessionStorage.removeItem('access_token'); sessionStorage.removeItem('refresh_token'); $('app-shell').classList.add('hidden'); $('login-screen').classList.remove('hidden'); }
 
-// --- GLOBAL DATA ---
+// Auto-login on refresh
+async function tryAutoLogin() {
+    const savedToken = sessionStorage.getItem('access_token');
+    if (savedToken) {
+        TOKEN = savedToken;
+        try {
+            await apiCall('/users/me/');
+            $('login-screen').classList.add('hidden');
+            $('app-shell').classList.remove('hidden');
+            await loadGlobalData();
+            loadDashboard();
+        } catch { TOKEN=null; sessionStorage.removeItem('access_token'); sessionStorage.removeItem('refresh_token'); }
+    }
+}
+window.addEventListener('DOMContentLoaded', tryAutoLogin);
+
+$('login-pass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+$('login-user').addEventListener('keydown', e => { if(e.key==='Enter') $('login-pass').focus(); });
+
+// =================== GLOBAL DATA ===================
 async function loadGlobalData() {
     try {
-        const [me, taskData, wfData, userData, teamData, orgData] = await Promise.all([
+        const [me,taskData,wfData,userData,teamData,orgData] = await Promise.all([
             apiCall('/users/me/'), apiCall('/tasks/'), apiCall('/workflows/'),
             apiCall('/users/'), apiCall('/teams/'), apiCall('/organizations/')
         ]);
-        CURRENT_USER = me;
-        TASKS = taskData.results || [];
-        WORKFLOWS = wfData.results || [];
-        ALL_USERS = userData.results || [];
-        TEAMS = teamData.results || [];
-        ORGS = orgData.results || [];
-        document.getElementById('current-user').textContent = me.username || '';
-        document.getElementById('current-role').textContent = (me.role || '').toUpperCase();
-    } catch (e) { showGlobalMsg('Failed to load data: ' + e.message, true); }
+        CURRENT_USER=me; TASKS=taskData.results||[]; WORKFLOWS=wfData.results||[];
+        ALL_USERS=userData.results||[]; TEAMS=teamData.results||[]; ORGS=orgData.results||[];
+        $('current-user').textContent=me.username||'';
+        $('current-role').textContent=(me.role||'').toUpperCase();
+    } catch(e) { showGlobalMsg('Failed to load: '+e.message, true); }
 }
 
-// --- NAV ---
+// =================== NAV ===================
 function switchPage(page) {
-    document.querySelectorAll('.nav-item').forEach(el => el.classList.toggle('active', el.dataset.page === page));
-    ALL_PAGES.forEach(p => document.getElementById('page-'+p).classList.toggle('hidden', p !== page));
-    const loaders = {
-        dashboard: loadDashboard, tasks: loadTasksPage, users: loadUsersPage,
-        teams: loadTeamsPage, organizations: loadOrgsPage, workflows: loadWorkflowsPage,
-        transitions: loadTransitionsPage, ai: loadAIPage, audit: loadAuditPage, comments: loadCommentsPage
-    };
-    if (loaders[page]) loaders[page]();
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.toggle('active', el.dataset.page===page));
+    ALL_PAGES.forEach(p => $(('page-'+p)).classList.toggle('hidden', p!==page));
+    if(window.innerWidth<=1024) { $('sidebar').classList.remove('open'); $('sidebar-overlay').classList.remove('open'); }
+    const loaders = { dashboard:loadDashboard, tasks:loadTasksPage, users:loadUsersPage, teams:loadTeamsPage, organizations:loadOrgsPage, workflows:loadWorkflowsPage, transitions:loadTransitionsPage, ai:loadAIPage, audit:loadAuditPage, comments:loadCommentsPage };
+    if(loaders[page]) loaders[page]();
 }
 
-// --- HELPERS ---
-function badge(text, colorMap) {
-    const c = (colorMap || {})[text] || '#64748b';
-    return `<span class="badge" style="background:${c}18;color:${c};border:1px solid ${c}30">${(text||'—').replace(/_/g,' ')}</span>`;
-}
-function statCard(icon, label, value, color, sub='', onclick='') {
-    return `<div class="card stat-card" onclick="${onclick}" title="Click to view">
-        <div class="stat-icon" style="background:${color}15;border:1px solid ${color}25">${icon}</div>
-        <div><div class="stat-value">${value}</div><div class="stat-label">${label}</div>${sub ? `<div style="font-size:11px;color:${color};margin-top:2px">${sub}</div>`:''}</div>
-    </div>`;
-}
-function showGlobalMsg(msg, isError) {
-    document.getElementById('global-msg').innerHTML = `<div class="msg ${isError?'msg-error':'msg-success'}">${msg}</div>`;
-    setTimeout(() => document.getElementById('global-msg').innerHTML = '', 4000);
-}
-function showMsg(elId, msg, isError) {
-    const el = document.getElementById(elId);
-    if (el) { el.innerHTML = `<div class="msg ${isError?'msg-error':'msg-success'}">${msg}</div>`; setTimeout(() => el.innerHTML = '', 3000); }
-}
-function timeAgo(ts) {
-    const d = new Date(ts); const now = new Date(); const diff = (now - d) / 1000;
-    if (diff < 60) return 'just now'; if (diff < 3600) return Math.floor(diff/60) + 'm ago';
-    if (diff < 86400) return Math.floor(diff/3600) + 'h ago'; return Math.floor(diff/86400) + 'd ago';
-}
-function formatDate(ts) { return ts ? new Date(ts).toLocaleString() : '—'; }
-
-// ========================================
-// DASHBOARD
-// ========================================
+// =================== DASHBOARD ===================
 async function loadDashboard() {
     try {
-        const [dash, perf, act] = await Promise.all([
-            apiCall('/dashboard/overview/'), apiCall('/dashboard/team-performance/'), apiCall('/dashboard/activity/')
-        ]);
-        const o = dash.overview || {}; const s = dash.sla || {};
-        const tp = perf.team_performance || []; const ac = act.recent_activity || [];
-        const active = (o.total_tasks||0) - (o.by_state?.done||0) - (o.by_state?.cancelled||0);
+        const [dash,perf,act] = await Promise.all([apiCall('/dashboard/overview/'), apiCall('/dashboard/team-performance/'), apiCall('/dashboard/activity/')]);
+        const o=dash.overview||{}, s=dash.sla||{}, tp=perf.team_performance||[], ac=act.recent_activity||[];
+        const active = (o.total_tasks||0)-(o.by_state?.done||0)-(o.by_state?.cancelled||0);
 
-        let html = `<div><h2 class="page-title">COMMAND CENTER</h2><p class="page-sub">Real-time overview · Click any stat to drill down</p></div>`;
-
+        let html = `<div><h2 class="page-title">COMMAND CENTER</h2><p class="page-sub">Real-time overview · Click stats to filter tasks</p></div>`;
         html += `<div class="grid-5" style="margin-top:20px">
-            ${statCard('📋','Total Tasks', o.total_tasks||0, '#3b82f6', '', "switchPage('tasks')")}
-            ${statCard('⚡','Active', active, '#f59e0b', `${o.last_7_days?.created||0} new this week`, "switchPage('tasks')")}
-            ${statCard('✅','Completed', o.by_state?.done||0, '#10b981', `${o.last_7_days?.completed||0} this week`, "filterTasksByState('done')")}
-            ${statCard('🔴','SLA Breached', s.breached||0, '#ef4444', s.breach_rate?s.breach_rate+'% rate':'', "filterTasksBySLA()")}
-            ${statCard('👤','Unassigned', o.unassigned||0, '#8b5cf6', '', "filterTasksUnassigned()")}
+            ${statCard('📋','Total Tasks',o.total_tasks||0,'#3b82f6','',"goTasksFiltered('all')")}
+            ${statCard('⚡','Active',active,'#f59e0b',`${o.last_7_days?.created||0} new this week`,"goTasksFiltered('active')")}
+            ${statCard('✅','Completed',o.by_state?.done||0,'#10b981',`${o.last_7_days?.completed||0} this week`,"goTasksFiltered('state','done')")}
+            ${statCard('🔴','SLA Breached',s.breached||0,'#ef4444',s.breach_rate?s.breach_rate+'% rate':'',"goTasksFiltered('sla')")}
+            ${statCard('👤','Unassigned',o.unassigned||0,'#8b5cf6','',"goTasksFiltered('unassigned')")}
         </div>`;
 
-        // Charts row
-        const states = Object.entries(o.by_state || {});
-        const prios = Object.entries(o.by_priority || {});
-        const maxPrio = Math.max(...prios.map(p=>p[1]), 1);
+        const states=Object.entries(o.by_state||{}), prios=Object.entries(o.by_priority||{}), maxPrio=Math.max(...prios.map(p=>p[1]),1);
+        const stateTotal = states.reduce((a,b)=>a+b[1],0)||1;
 
-        let stateHTML = states.length ? states.map(([k,v]) => {
-            const c = STATE_COLORS[k]||'#64748b';
-            const total = states.reduce((a,b)=>a+b[1],0) || 1;
-            return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;cursor:pointer" onclick="filterTasksByState('${k}')">
-                <span style="font-size:10px;color:var(--text-muted);width:70px">${k.replace(/_/g,' ')}</span>
-                <div style="flex:1;height:20px;background:var(--bg);border-radius:4px;overflow:hidden">
-                    <div style="height:100%;width:${(v/total)*100}%;background:${c};border-radius:4px;min-width:${v>0?'24px':'0'};display:flex;align-items:center;padding-left:8px">
-                        <span style="font-size:10px;color:#fff;font-weight:600">${v}</span>
-                    </div>
-                </div>
-            </div>`;
-        }).join('') : '<div class="empty-state">No data</div>';
+        let stateHTML = states.length ? states.map(([k,v])=>{const c=STATE_COLORS[k]||'#64748b';return `<div class="clickable-bar" onclick="goTasksFiltered('state','${k}')" style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="font-size:10px;color:var(--text-muted);width:70px">${k.replace(/_/g,' ')}</span><div style="flex:1;height:20px;background:var(--bg);border-radius:4px;overflow:hidden"><div style="height:100%;width:${(v/stateTotal)*100}%;background:${c};border-radius:4px;min-width:${v>0?'24px':'0'};display:flex;align-items:center;padding-left:8px"><span style="font-size:10px;color:#fff;font-weight:600">${v}</span></div></div></div>`;}).join('') : '<div class="empty-state">No data</div>';
 
-        let prioHTML = prios.length ? prios.map(([k,v]) => {
-            const c = PRIORITY_COLORS[k]||'#64748b';
-            return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;cursor:pointer" onclick="filterTasksByPriority('${k}')">
-                <span style="font-size:10px;color:var(--text-muted);width:60px">${k}</span>
-                <div style="flex:1;height:20px;background:var(--bg);border-radius:4px;overflow:hidden">
-                    <div style="height:100%;width:${(v/maxPrio)*100}%;background:${c};border-radius:4px;min-width:${v>0?'24px':'0'};display:flex;align-items:center;padding-left:8px">
-                        <span style="font-size:10px;color:#fff;font-weight:600">${v}</span>
-                    </div>
-                </div>
-            </div>`;
-        }).join('') : '<div class="empty-state">No data</div>';
+        let prioHTML = prios.length ? prios.map(([k,v])=>{const c=PRIORITY_COLORS[k]||'#64748b';return `<div class="clickable-bar" onclick="goTasksFiltered('priority','${k}')" style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="font-size:10px;color:var(--text-muted);width:60px">${k}</span><div style="flex:1;height:20px;background:var(--bg);border-radius:4px;overflow:hidden"><div style="height:100%;width:${(v/maxPrio)*100}%;background:${c};border-radius:4px;min-width:${v>0?'24px':'0'};display:flex;align-items:center;padding-left:8px"><span style="font-size:10px;color:#fff;font-weight:600">${v}</span></div></div></div>`;}).join('') : '<div class="empty-state">No data</div>';
 
-        let teamHTML = tp.length ? tp.map(p => {
-            const c = p.workload_percentage >= 80 ? 'var(--red)' : p.workload_percentage >= 50 ? 'var(--amber)' : 'var(--green)';
-            return `<div style="margin-bottom:12px">
-                <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px">
-                    <span>${p.username.replace(/_/g,' ')}</span>
-                    <span style="color:${c}">${p.workload_percentage}% · ${p.active_tasks} active · ${p.completed_tasks} done</span>
-                </div>
-                <div class="progress-bg"><div class="progress-fill" style="width:${Math.min(p.workload_percentage,100)}%;background:${c}"></div></div>
-            </div>`;
-        }).join('') : '<div class="empty-state">No team data</div>';
+        let teamHTML = tp.length ? tp.map(p=>{const c=p.workload_percentage>=80?'var(--red)':p.workload_percentage>=50?'var(--amber)':'var(--green)';return `<div style="margin-bottom:12px"><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px"><span>${p.username.replace(/_/g,' ')}</span><span style="color:${c}">${p.workload_percentage}% · ${p.active_tasks} active</span></div><div class="progress-bg"><div class="progress-fill" style="width:${Math.min(p.workload_percentage,100)}%;background:${c}"></div></div></div>`;}).join('') : '<div class="empty-state">No data</div>';
 
         html += `<div class="grid-3" style="margin-top:14px">
             <div class="card"><h3 class="section-title">Tasks by State</h3>${stateHTML}</div>
@@ -346,562 +350,369 @@ async function loadDashboard() {
             <div class="card"><h3 class="section-title">Team Workload</h3>${teamHTML}</div>
         </div>`;
 
-        // SLA Summary
         html += `<div class="grid-2" style="margin-top:14px">
-            <div class="card">
-                <h3 class="section-title">SLA Health</h3>
-                <div class="grid-2" style="gap:12px">
-                    <div class="detail-row"><span class="detail-label">Total Active</span><span class="detail-value">${s.total_active||0}</span></div>
-                    <div class="detail-row"><span class="detail-label">Healthy</span><span class="detail-value" style="color:var(--green)">${s.healthy||0}</span></div>
-                    <div class="detail-row"><span class="detail-label">At Risk (< 24h)</span><span class="detail-value" style="color:var(--amber)">${s.at_risk||0}</span></div>
-                    <div class="detail-row"><span class="detail-label">Breached</span><span class="detail-value" style="color:var(--red)">${s.breached||0}</span></div>
-                </div>
+            <div class="card"><h3 class="section-title">SLA Health</h3>
+                <div class="detail-row"><span class="detail-label">Healthy</span><span style="color:var(--green)">${s.healthy||0}</span></div>
+                <div class="detail-row"><span class="detail-label">At Risk (&lt;24h)</span><span style="color:var(--amber)">${s.at_risk||0}</span></div>
+                <div class="detail-row"><span class="detail-label">Breached</span><span style="color:var(--red)">${s.breached||0}</span></div>
                 <button class="btn btn-sm btn-outline" style="margin-top:14px;width:100%" onclick="runSLACheck()">🔍 RUN SLA CHECK</button>
             </div>
-            <div class="card">
-                <h3 class="section-title">Quick Stats</h3>
-                <div class="detail-row"><span class="detail-label">Organization</span><span class="detail-value">${ORGS[0]?.name || '—'}</span></div>
-                <div class="detail-row"><span class="detail-label">Total Users</span><span class="detail-value">${ALL_USERS.length}</span></div>
+            <div class="card"><h3 class="section-title">Quick Stats</h3>
+                <div class="detail-row"><span class="detail-label">Organization</span><span class="detail-value">${ORGS[0]?.name||'—'}</span></div>
+                <div class="detail-row"><span class="detail-label">Users</span><span class="detail-value">${ALL_USERS.length}</span></div>
                 <div class="detail-row"><span class="detail-label">Teams</span><span class="detail-value">${TEAMS.length}</span></div>
                 <div class="detail-row"><span class="detail-label">Workflows</span><span class="detail-value">${WORKFLOWS.length}</span></div>
-                <div class="detail-row"><span class="detail-label">Created This Week</span><span class="detail-value">${o.last_7_days?.created||0}</span></div>
-                <div class="detail-row"><span class="detail-label">Completed This Week</span><span class="detail-value">${o.last_7_days?.completed||0}</span></div>
             </div>
         </div>`;
 
-        // Activity
-        let actHTML = ac.slice(0,10).map(a => `<div class="activity-item">
-            <span style="font-size:14px">${ACTION_ICONS[a.action]||'📝'}</span>
-            <div style="flex:1"><span style="color:var(--accent);font-weight:600;font-size:12px">${a.task_key}</span> <span style="color:var(--text-dim);font-size:12px">— ${a.action.replace(/_/g,' ')} by ${a.performed_by}</span>
-            ${a.reason ? `<div style="font-size:10px;color:var(--text-muted);margin-top:2px">↳ ${a.reason}</div>` : ''}</div>
-            <span style="color:var(--text-muted);font-size:10px">${timeAgo(a.timestamp)}</span>
-        </div>`).join('') || '<div class="empty-state">No recent activity</div>';
+        const actHTML = ac.slice(0,10).map(a => `<div class="activity-item"><span style="font-size:14px">${ACTION_ICONS[a.action]||'📝'}</span><div style="flex:1"><span style="color:var(--accent);font-weight:600;font-size:12px">${a.task_key}</span> <span style="color:var(--text-dim);font-size:12px">— ${a.action.replace(/_/g,' ')} by ${a.performed_by}</span>${a.reason?`<div style="font-size:10px;color:var(--text-muted);margin-top:2px">↳ ${a.reason}</div>`:''}</div><span style="color:var(--text-muted);font-size:10px">${timeAgo(a.timestamp)}</span></div>`).join('') || '<div class="empty-state">No activity</div>';
         html += `<div class="card" style="margin-top:14px"><h3 class="section-title">Recent Activity</h3>${actHTML}</div>`;
-
-        document.getElementById('page-dashboard').innerHTML = html;
-    } catch (e) { document.getElementById('page-dashboard').innerHTML = `<div class="msg msg-error">Failed to load: ${e.message}</div>`; }
+        $('page-dashboard').innerHTML = html;
+    } catch(e) { $('page-dashboard').innerHTML = `<div class="msg msg-error">Failed: ${e.message}</div>`; }
 }
 
-async function runSLACheck() {
-    try { const r = await apiCall('/dashboard/sla-check/', 'POST'); showGlobalMsg(`SLA Check: ${r.results.checked} checked, ${r.results.breached} breached`, false); loadDashboard(); }
-    catch { showGlobalMsg('SLA check failed', true); }
+async function runSLACheck() { try { const r=await apiCall('/dashboard/sla-check/','POST'); showSuccessModal('SLA Check Complete', `Checked: ${r.results.checked}<br>Newly breached: ${r.results.breached}`); loadDashboard(); } catch { showErrorModal('Error','SLA check failed'); } }
+
+// Dashboard -> Tasks with filter
+function goTasksFiltered(type, value) {
+    PENDING_FILTER = {type, value};
+    switchPage('tasks');
 }
 
-// Dashboard click handlers
-function filterTasksByState(state) { switchPage('tasks'); setTimeout(() => renderTasks(state, ''), 100); }
-function filterTasksByPriority(p) { switchPage('tasks'); setTimeout(() => renderTasks('', p), 100); }
-function filterTasksBySLA() { switchPage('tasks'); setTimeout(() => renderTasks('', '', true), 100); }
-function filterTasksUnassigned() { switchPage('tasks'); setTimeout(() => renderTasks('', '', false, true), 100); }
+// =================== TASKS ===================
+async function loadTasksPage() { await loadGlobalData(); const f = PENDING_FILTER; PENDING_FILTER=null; if(f) applyPendingFilter(f); else renderTasks(); }
 
-// ========================================
-// TASKS
-// ========================================
-async function loadTasksPage() { await loadGlobalData(); renderTasks(); }
+function applyPendingFilter(f) {
+    if(f.type==='state') renderTasks(f.value,'',false,false);
+    else if(f.type==='priority') renderTasks('',f.value,false,false);
+    else if(f.type==='sla') renderTasks('','',true,false);
+    else if(f.type==='unassigned') renderTasks('','',false,true);
+    else if(f.type==='active') renderTasks('','',false,false,true);
+    else renderTasks();
+}
 
-function renderTasks(filterState='', filterPriority='', filterSLA=false, filterUnassigned=false) {
+function renderTasks(filterState='', filterPriority='', filterSLA=false, filterUnassigned=false, filterActive=false) {
     let filtered = TASKS.filter(t => {
-        if (filterState && t.current_state !== filterState) return false;
-        if (filterPriority && t.priority !== filterPriority) return false;
-        if (filterSLA && !t.sla_breached) return false;
-        if (filterUnassigned && t.assigned_to_name) return false;
+        if(filterState && t.current_state!==filterState) return false;
+        if(filterPriority && t.priority!==filterPriority) return false;
+        if(filterSLA && !t.sla_breached) return false;
+        if(filterUnassigned && t.assigned_to_name) return false;
+        if(filterActive && (t.current_state==='done'||t.current_state==='cancelled')) return false;
         return true;
     });
+    let labels=[];
+    if(filterState) labels.push('State: '+filterState.replace(/_/g,' '));
+    if(filterPriority) labels.push('Priority: '+filterPriority);
+    if(filterSLA) labels.push('SLA Breached');
+    if(filterUnassigned) labels.push('Unassigned');
+    if(filterActive) labels.push('Active Only');
 
-    let activeFilters = [];
-    if (filterState) activeFilters.push(`State: ${filterState.replace(/_/g,' ')}`);
-    if (filterPriority) activeFilters.push(`Priority: ${filterPriority}`);
-    if (filterSLA) activeFilters.push('SLA Breached');
-    if (filterUnassigned) activeFilters.push('Unassigned');
-
-    let html = `<div style="display:flex;justify-content:space-between;align-items:center">
-        <div><h2 class="page-title">TASKS</h2><p class="page-sub">${filtered.length} tasks${activeFilters.length ? ' · Filtered: '+activeFilters.join(', ') : ''}</p></div>
-        <div style="display:flex;gap:8px">
-            <button class="btn btn-sm btn-outline" onclick="renderTasks()">CLEAR FILTERS</button>
-            <button class="btn btn-sm" style="background:var(--accent);color:#fff" onclick="toggleCreateTask()">+ NEW TASK</button>
-        </div>
-    </div>`;
-
+    let html = `<div class="page-header"><div><h2 class="page-title">TASKS</h2><p class="page-sub">${filtered.length} tasks${labels.length?' · '+labels.join(', '):''}</p></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">${labels.length?'<button class="btn btn-sm btn-outline" onclick="renderTasks()">✕ CLEAR</button>':''}
+        <button class="btn btn-sm" style="background:var(--accent);color:#fff" onclick="toggleCreateTask()">+ NEW TASK</button></div></div>`;
     html += `<div id="create-task-form" class="card hidden" style="margin-top:14px"></div>`;
-
     html += `<div style="display:flex;gap:10px;margin:16px 0 14px;flex-wrap:wrap">
-        <select id="f-state" style="width:150px" onchange="renderTasks(this.value, el('f-prio').value)">
-            <option value="">All States</option>
-            ${['open','in_progress','review','testing','done','cancelled'].map(s => `<option value="${s}" ${filterState===s?'selected':''}>${s.replace(/_/g,' ')}</option>`).join('')}
-        </select>
-        <select id="f-prio" style="width:150px" onchange="renderTasks(el('f-state').value, this.value)">
-            <option value="">All Priorities</option>
-            ${['critical','high','medium','low'].map(p => `<option value="${p}" ${filterPriority===p?'selected':''}>${p}</option>`).join('')}
-        </select>
-    </div>`;
+        <select style="width:150px" onchange="renderTasks(this.value,$('f-prio')?.value||'')"><option value="">All States</option>${['open','in_progress','review','testing','done','cancelled'].map(s=>`<option value="${s}" ${filterState===s?'selected':''}>${s.replace(/_/g,' ')}</option>`).join('')}</select>
+        <select id="f-prio" style="width:150px" onchange="renderTasks(document.querySelector('#page-tasks select').value,this.value)"><option value="">All Priorities</option>${['critical','high','medium','low'].map(p=>`<option value="${p}" ${filterPriority===p?'selected':''}>${p}</option>`).join('')}</select>
+    </div><div id="task-msg"></div>`;
 
-    html += `<div id="task-msg"></div>`;
-
-    html += `<div id="tasks-layout"><div class="card"><table><thead><tr>
-        ${['Key','Title','State','Priority','Type','Assignee','AI Score','Created'].map(h => `<th>${h}</th>`).join('')}
-    </tr></thead><tbody>`;
-
-    if (!filtered.length) {
-        html += `<tr><td colspan="8" class="empty-state">No tasks found</td></tr>`;
-    } else {
-        filtered.forEach(t => {
-            const ai = t.ai_priority_score != null ? `<span style="color:${t.ai_priority_score>=0.7?'var(--red)':t.ai_priority_score>=0.4?'var(--amber)':'var(--green)'};font-weight:600">${(t.ai_priority_score*100).toFixed(0)}%</span>` : '<span style="color:var(--text-muted)">—</span>';
-            html += `<tr class="clickable" onclick="showTaskDetail('${t.id}')">
-                <td style="color:var(--accent);font-weight:600;font-size:12px">${t.task_key}</td>
-                <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.title}</td>
-                <td>${badge(t.current_state, STATE_COLORS)}</td>
-                <td>${badge(t.priority, PRIORITY_COLORS)}</td>
-                <td style="color:var(--text-dim)">${t.task_type}</td>
-                <td style="color:${t.assigned_to_name?'var(--text)':'var(--text-muted)'}">${t.assigned_to_name||'—'}</td>
-                <td>${ai}</td>
-                <td style="color:var(--text-muted);font-size:11px">${timeAgo(t.created_at)}</td>
-            </tr>`;
-        });
-    }
-    html += `</tbody></table></div></div>`;
-    html += `<div id="task-detail-panel"></div>`;
-    document.getElementById('page-tasks').innerHTML = html;
+    html += `<div class="card"><div class="table-wrap"><table><thead><tr>${['Key','Title','State','Priority','Type','Assignee','AI','Created'].map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>`;
+    if(!filtered.length) html += `<tr><td colspan="8" class="empty-state">No tasks</td></tr>`;
+    else filtered.forEach(t => {
+        const ai = t.ai_priority_score!=null ? `<span style="color:${t.ai_priority_score>=0.7?'var(--red)':t.ai_priority_score>=0.4?'var(--amber)':'var(--green)'};font-weight:600">${(t.ai_priority_score*100).toFixed(0)}%</span>` : '<span style="color:var(--text-muted)">—</span>';
+        html += `<tr class="clickable" onclick="showTaskDetail('${t.id}')"><td style="color:var(--accent);font-weight:600;font-size:12px">${t.task_key}</td><td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.title}</td><td>${badge(t.current_state,STATE_COLORS)}</td><td>${badge(t.priority,PRIORITY_COLORS)}</td><td style="color:var(--text-dim)">${t.task_type}</td><td style="color:${t.assigned_to_name?'var(--text)':'var(--text-muted)'}">${t.assigned_to_name||'—'}</td><td>${ai}</td><td style="color:var(--text-muted);font-size:11px">${timeAgo(t.created_at)}</td></tr>`;
+    });
+    html += `</tbody></table></div></div><div id="task-detail-panel"></div>`;
+    $('page-tasks').innerHTML = html;
 }
 
-function el(id) { return document.getElementById(id); }
-
 function toggleCreateTask() {
-    const form = el('create-task-form');
-    form.classList.toggle('hidden');
-    if (!form.classList.contains('hidden')) {
-        const wfOpts = WORKFLOWS.map(w => `<option value="${w.id}">${w.name}</option>`).join('');
-        const teamOpts = TEAMS.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
+    const form=$('create-task-form'); form.classList.toggle('hidden');
+    if(!form.classList.contains('hidden')) {
         form.innerHTML = `<h3 style="font-size:12px;font-weight:600;margin:0 0 14px;color:var(--accent)">Create New Task</h3>
             <div class="grid-2" style="gap:12px">
                 <div style="grid-column:1/-1"><input id="new-title" placeholder="Task title..."></div>
                 <div style="grid-column:1/-1"><textarea id="new-desc" style="min-height:70px;resize:vertical" placeholder="Description..."></textarea></div>
                 <select id="new-priority"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option><option value="critical">Critical</option></select>
                 <select id="new-type"><option value="task">Task</option><option value="bug">Bug</option><option value="feature">Feature</option><option value="improvement">Improvement</option></select>
-                <select id="new-workflow"><option value="">Select workflow...</option>${wfOpts}</select>
-                <select id="new-team"><option value="">No team</option>${teamOpts}</select>
-                <div style="grid-column:1/-1"><input id="new-tags" placeholder="Tags (comma separated): backend, urgent, api"></div>
+                <select id="new-workflow"><option value="">Workflow...</option>${WORKFLOWS.map(w=>`<option value="${w.id}">${w.name}</option>`).join('')}</select>
+                <select id="new-team"><option value="">No team</option>${TEAMS.map(t=>`<option value="${t.id}">${t.name}</option>`).join('')}</select>
+                <div style="grid-column:1/-1"><input id="new-tags" placeholder="Tags (comma separated): backend, urgent"></div>
             </div>
-            <div style="display:flex;gap:10px;margin-top:14px">
-                <button class="btn btn-sm" style="background:var(--accent);color:#fff" onclick="createTask()">CREATE</button>
-                <button class="btn btn-sm btn-outline" onclick="el('create-task-form').classList.add('hidden')">CANCEL</button>
-            </div>`;
+            <div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-sm" style="background:var(--accent);color:#fff" onclick="createTask()">CREATE</button><button class="btn btn-sm btn-outline" onclick="$('create-task-form').classList.add('hidden')">CANCEL</button></div>`;
     }
 }
 
 async function createTask() {
-    const wf = el('new-workflow').value || (WORKFLOWS[0]?.id || '');
-    const tags = el('new-tags').value ? el('new-tags').value.split(',').map(t=>t.trim()).filter(Boolean) : [];
-    const body = { title: el('new-title').value, description: el('new-desc').value, priority: el('new-priority').value, task_type: el('new-type').value, workflow: wf, tags };
-    const teamVal = el('new-team').value;
-    if (teamVal) body.team = teamVal;
-    try { await apiCall('/tasks/', 'POST', body); await loadGlobalData(); renderTasks(); showMsg('task-msg', 'Task created!', false); }
-    catch (e) { showMsg('task-msg', 'Create failed: ' + e.message, true); }
+    const body = { title:$('new-title').value, description:$('new-desc').value, priority:$('new-priority').value, task_type:$('new-type').value, workflow:$('new-workflow').value||(WORKFLOWS[0]?.id||''), tags:$('new-tags').value?$('new-tags').value.split(',').map(t=>t.trim()).filter(Boolean):[] };
+    if($('new-team').value) body.team=$('new-team').value;
+    try { await apiCall('/tasks/','POST',body); await loadGlobalData(); renderTasks(); showSuccessModal('Success','Task created!'); } catch(e) { showErrorModal('Error','Create failed: '+e.message); }
 }
 
 async function showTaskDetail(taskId) {
     try {
-        const task = TASKS.find(t => t.id === taskId);
-        if (!task) return;
-        const [trans, taskDetail] = await Promise.all([
-            apiCall(`/tasks/${taskId}/available-transitions/`),
-            apiCall(`/tasks/${taskId}/`)
-        ]);
-        const avail = trans.available_transitions || [];
-        const engineers = ALL_USERS.filter(u => u.role === 'engineer' || u.role === 'manager');
-        const userOpts = engineers.map(u => `<option value="${u.id}">${u.username} (${u.role}) — ${u.active_task_count} active</option>`).join('');
-        const tags = (taskDetail.tags||[]).map(t => `<span class="tag">${t}</span>`).join(' ') || '—';
+        const task=TASKS.find(t=>t.id===taskId); if(!task) return;
+        const [trans,detail] = await Promise.all([apiCall(`/tasks/${taskId}/available-transitions/`), apiCall(`/tasks/${taskId}/`)]);
+        const avail=trans.available_transitions||[];
+        const engineers=ALL_USERS.filter(u=>u.role==='engineer'||u.role==='manager');
+        const userOpts=engineers.map(u=>{
+            const assigned = TASKS.some(t=>t.assigned_to===u.id && t.current_state!=='done' && t.current_state!=='cancelled');
+            const label = `${u.username} (${u.role}) — ${u.active_task_count}/${u.max_concurrent_tasks} tasks${u.id===task.assigned_to?' ✓ current':''}`;
+            return `<option value="${u.id}" ${u.id===task.assigned_to?'selected':''}>${label}</option>`;
+        }).join('');
+        const tags=(detail.tags||[]).map(t=>`<span class="tag">${t}</span>`).join(' ')||'—';
+        const comments=detail.comments||[];
 
         let html = `<div class="card" style="margin-top:14px">
-            <div style="display:flex;justify-content:space-between;align-items:start">
-                <h3 style="font-size:14px;font-weight:700;color:var(--accent)">${task.task_key}</h3>
-                <button class="btn btn-outline" style="padding:4px 12px;font-size:14px" onclick="el('task-detail-panel').innerHTML=''">×</button>
-            </div>
+            <div style="display:flex;justify-content:space-between;align-items:start"><h3 style="font-size:14px;font-weight:700;color:var(--accent)">${task.task_key}</h3><button class="btn btn-outline" style="padding:4px 12px;font-size:14px" onclick="$('task-detail-panel').innerHTML=''">×</button></div>
             <p style="font-size:13px;font-weight:500;margin:8px 0 4px">${task.title}</p>
-            ${taskDetail.description ? `<p style="font-size:11px;color:var(--text-dim);margin-bottom:14px">${taskDetail.description}</p>` : ''}
-
+            ${detail.description?`<p style="font-size:11px;color:var(--text-dim);margin-bottom:14px">${detail.description}</p>`:''}
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px">
-                <div class="detail-row"><span class="detail-label">State</span><span>${badge(task.current_state, STATE_COLORS)}</span></div>
-                <div class="detail-row"><span class="detail-label">Priority</span><span>${badge(task.priority, PRIORITY_COLORS)}</span></div>
+                <div class="detail-row"><span class="detail-label">State</span>${badge(task.current_state,STATE_COLORS)}</div>
+                <div class="detail-row"><span class="detail-label">Priority</span>${badge(task.priority,PRIORITY_COLORS)}</div>
                 <div class="detail-row"><span class="detail-label">Type</span><span class="detail-value">${task.task_type}</span></div>
                 <div class="detail-row"><span class="detail-label">SLA</span><span style="color:${task.sla_breached?'var(--red)':'var(--green)'}">${task.sla_breached?'BREACHED':'OK'}</span></div>
-                <div class="detail-row"><span class="detail-label">Assignee</span><span class="detail-value" style="color:${task.assigned_to_name?'var(--text)':'var(--text-muted)'}">${task.assigned_to_name||'Unassigned'}</span></div>
+                <div class="detail-row"><span class="detail-label">Assignee</span><span style="color:${task.assigned_to_name?'var(--text)':'var(--text-muted)'}">${task.assigned_to_name||'Unassigned'}</span></div>
                 <div class="detail-row"><span class="detail-label">Created by</span><span class="detail-value">${task.created_by_name||'—'}</span></div>
                 <div class="detail-row"><span class="detail-label">AI Score</span><span class="detail-value">${task.ai_priority_score!=null?(task.ai_priority_score*100).toFixed(0)+'%':'—'}</span></div>
-                <div class="detail-row"><span class="detail-label">Est. Hours</span><span class="detail-value">${taskDetail.ai_estimated_hours||'—'}</span></div>
-                <div class="detail-row"><span class="detail-label">Due Date</span><span class="detail-value">${taskDetail.due_date?formatDate(taskDetail.due_date):'Not set'}</span></div>
                 <div class="detail-row"><span class="detail-label">Created</span><span class="detail-value">${formatDate(task.created_at)}</span></div>
             </div>
-            <div style="margin-top:10px"><span class="detail-label" style="font-size:11px">Tags: </span>${tags}</div>
+            <div style="margin-top:10px"><span class="detail-label" style="font-size:11px">Tags: </span>${tags}</div>`;
 
-            <!-- ASSIGN -->
-            <div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--border)">
-                <h4 class="section-title">Assign Task</h4>
-                <div style="display:flex;gap:8px">
-                    <select id="assign-user" style="flex:1"><option value="">Select engineer...</option>${userOpts}</select>
-                    <button class="btn btn-sm" style="background:var(--purple);color:#fff" onclick="doAssign('${taskId}')">ASSIGN</button>
-                </div>
-                <div id="assign-msg" style="margin-top:8px"></div>
-            </div>`;
-
-        // TRANSITIONS
-        if (avail.length > 0) {
-            html += `<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
-                <h4 class="section-title">Transition State</h4>
-                <div style="display:flex;flex-wrap:wrap;gap:6px">
-                    ${avail.map(t => `<button class="transition-btn" onclick="doTransition('${taskId}','${t.to_state}')">${t.to_state.replace(/_/g,' ')}</button>`).join('')}
-                </div>
-            </div>`;
+        // Assign (managers and admins only)
+        if(isManagerOrAbove()) {
+            html += `<div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--border)"><h4 class="section-title">Assign Task</h4>
+                <div style="display:flex;gap:8px"><select id="assign-user" style="flex:1"><option value="">Select engineer...</option>${userOpts}</select>
+                <button class="btn btn-sm" style="background:var(--purple);color:#fff" onclick="doAssign('${taskId}')">ASSIGN</button></div><div id="assign-msg" style="margin-top:8px"></div></div>`;
         }
 
-        // COMMENTS
-        const comments = taskDetail.comments || [];
-        html += `<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
-            <h4 class="section-title">Comments (${comments.length})</h4>
-            ${comments.map(c => `<div style="padding:8px 0;border-bottom:1px solid rgba(30,41,59,0.05)">
-                <div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:4px"><span style="color:var(--accent);font-weight:600">${c.author_name}</span><span style="color:var(--text-muted)">${timeAgo(c.created_at)}</span></div>
-                <div style="font-size:12px;color:var(--text-dim)">${c.content}</div>
-            </div>`).join('') || '<div style="color:var(--text-muted);font-size:11px;padding:8px 0">No comments yet</div>'}
-            <div style="display:flex;gap:8px;margin-top:10px">
-                <input id="new-comment" style="flex:1" placeholder="Add a comment...">
-                <button class="btn btn-sm" style="background:var(--cyan);color:#fff" onclick="addComment('${taskId}')">POST</button>
-            </div>
-        </div>`;
+        if(avail.length>0) {
+            html += `<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)"><h4 class="section-title">Transition State</h4>
+                <div style="display:flex;flex-wrap:wrap;gap:6px">${avail.map(t=>`<button class="transition-btn" onclick="doTransition('${taskId}','${t.to_state}')">${t.to_state.replace(/_/g,' ')}</button>`).join('')}</div></div>`;
+        }
+
+        html += `<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)"><h4 class="section-title">Comments (${comments.length})</h4>
+            ${comments.map(c=>`<div style="padding:8px 0;border-bottom:1px solid rgba(30,41,59,0.05)"><div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:4px"><span style="color:var(--accent);font-weight:600">${c.author_name}</span><span style="color:var(--text-muted)">${timeAgo(c.created_at)}</span></div><div style="font-size:12px;color:var(--text-dim)">${c.content}</div></div>`).join('')||'<div style="color:var(--text-muted);font-size:11px;padding:8px 0">No comments</div>'}
+            <div style="display:flex;gap:8px;margin-top:10px"><input id="new-comment" style="flex:1" placeholder="Add comment..."><button class="btn btn-sm" style="background:var(--cyan);color:#fff" onclick="addComment('${taskId}')">POST</button></div></div>`;
 
         html += `</div>`;
-        el('task-detail-panel').innerHTML = html;
-    } catch (e) { showMsg('task-msg', 'Failed to load task detail', true); }
+        $('task-detail-panel').innerHTML = html;
+    } catch(e) { showErrorModal('Error','Failed to load task'); }
 }
 
 async function doAssign(taskId) {
-    const userId = el('assign-user').value;
-    if (!userId) { showMsg('assign-msg','Select an engineer first',true); return; }
-    try { await apiCall(`/tasks/${taskId}/assign/`,'POST',{user_id:userId,reason:'Assigned via dashboard'}); showMsg('assign-msg','Assigned!',false); await loadGlobalData(); setTimeout(()=>showTaskDetail(taskId),300); }
-    catch(e) { showMsg('assign-msg','Failed: '+e.message,true); }
+    const userId=$('assign-user').value; if(!userId){showMsg('assign-msg','Select an engineer',true);return;}
+    try { await apiCall(`/tasks/${taskId}/assign/`,'POST',{user_id:userId,reason:'Assigned via dashboard'}); showSuccessModal('Assigned','Task assigned successfully!'); await loadGlobalData(); setTimeout(()=>showTaskDetail(taskId),300); }
+    catch(e) { showErrorModal('Assignment Failed', e.message); }
 }
 
 async function doTransition(taskId, toState) {
-    const reason = prompt('Reason for transition (optional):') || '';
-    try { await apiCall(`/tasks/${taskId}/transition/`,'POST',{to_state:toState,reason}); showMsg('task-msg',`→ ${toState.replace(/_/g,' ')}`,false); await loadGlobalData(); renderTasks(); }
-    catch(e) { showMsg('task-msg','Transition failed: '+e.message,true); }
+    showModal('Confirm Transition', `<div style="margin-bottom:14px">Move task to <strong>${toState.replace(/_/g,' ')}</strong>?</div><input id="transition-reason" placeholder="Reason (optional)" style="width:100%">`, [
+        {label:'CANCEL', color:'var(--text-muted)', onclick:'closeModal()'},
+        {label:'CONFIRM →', color:'var(--accent)', onclick:`confirmTransition('${taskId}','${toState}')`}
+    ]);
 }
 
-async function addComment(taskId) {
-    const content = el('new-comment').value;
-    if (!content) return;
-    try { await apiCall('/comments/','POST',{task:taskId,content}); showTaskDetail(taskId); }
-    catch(e) { showMsg('task-msg','Comment failed',true); }
+async function confirmTransition(taskId, toState) {
+    const reason = $('transition-reason')?.value || '';
+    closeModal();
+    try { await apiCall(`/tasks/${taskId}/transition/`,'POST',{to_state:toState,reason}); showSuccessModal('Success',`Transitioned to ${toState.replace(/_/g,' ')}`); await loadGlobalData(); renderTasks(); }
+    catch(e) { let msg=e.message; try{msg=JSON.parse(msg); if(Array.isArray(msg)) msg=msg.join('<br>'); else if(typeof msg==='object') msg=Object.values(msg).flat().join('<br>');}catch{} showErrorModal('Transition Failed', msg); }
 }
 
-// ========================================
-// USERS
-// ========================================
+async function addComment(taskId) { const c=$('new-comment').value; if(!c) return; try { await apiCall('/comments/','POST',{task:taskId,content:c}); showTaskDetail(taskId); } catch { showErrorModal('Error','Comment failed'); } }
+
+// =================== USERS ===================
 async function loadUsersPage() {
     await loadGlobalData();
-    let html = `<div style="display:flex;justify-content:space-between;align-items:center">
-        <div><h2 class="page-title">USERS</h2><p class="page-sub">${ALL_USERS.length} users in organization</p></div>
-    </div>
-    <div class="card" style="margin-top:20px"><table><thead><tr>
-        ${['Username','Email','Role','Skills','Active Tasks','Capacity','Joined'].map(h=>`<th>${h}</th>`).join('')}
-    </tr></thead><tbody>`;
-
-    if (!ALL_USERS.length) { html += `<tr><td colspan="7" class="empty-state">No users</td></tr>`; }
-    else {
-        ALL_USERS.forEach(u => {
-            const skills = (u.skills||[]).map(s => `<span class="tag">${s}</span>`).join(' ') || '<span style="color:var(--text-muted)">—</span>';
-            const load = u.max_concurrent_tasks > 0 ? Math.round(u.active_task_count / u.max_concurrent_tasks * 100) : 0;
-            const loadColor = load >= 80 ? 'var(--red)' : load >= 50 ? 'var(--amber)' : 'var(--green)';
-            html += `<tr>
-                <td style="font-weight:600">${u.username}</td>
-                <td style="color:var(--text-dim)">${u.email || '—'}</td>
-                <td>${badge(u.role, ROLE_COLORS)}</td>
-                <td>${skills}</td>
-                <td>${u.active_task_count}</td>
-                <td><div style="display:flex;align-items:center;gap:8px"><div class="progress-bg" style="width:80px"><div class="progress-fill" style="width:${load}%;background:${loadColor}"></div></div><span style="font-size:10px;color:${loadColor}">${load}%</span></div></td>
-                <td style="color:var(--text-muted);font-size:11px">${u.date_joined ? timeAgo(u.date_joined) : '—'}</td>
-            </tr>`;
-        });
-    }
-    html += `</tbody></table></div>`;
-    el('page-users').innerHTML = html;
+    let html = `<div class="page-header"><div><h2 class="page-title">USERS</h2><p class="page-sub">${ALL_USERS.length} users</p></div>
+        ${isManagerOrAbove()?'<button class="btn btn-sm" style="background:var(--accent);color:#fff" onclick="showCreateUserForm()">+ NEW USER</button>':''}
+    </div><div id="create-user-area"></div>
+    <div class="card" style="margin-top:20px"><div class="table-wrap"><table><thead><tr>${['Username','Email','Role','Skills','Active','Capacity'].map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>`;
+    if(!ALL_USERS.length) html += `<tr><td colspan="6" class="empty-state">No users</td></tr>`;
+    else ALL_USERS.forEach(u => {
+        const skills=(u.skills||[]).map(s=>`<span class="tag">${s}</span>`).join(' ')||'—';
+        const load=u.max_concurrent_tasks>0?Math.round(u.active_task_count/u.max_concurrent_tasks*100):0;
+        const lc=load>=80?'var(--red)':load>=50?'var(--amber)':'var(--green)';
+        html += `<tr><td style="font-weight:600">${u.username}</td><td style="color:var(--text-dim)">${u.email||'—'}</td><td>${badge(u.role,ROLE_COLORS)}</td><td>${skills}</td><td>${u.active_task_count}</td><td><div style="display:flex;align-items:center;gap:8px"><div class="progress-bg" style="width:60px"><div class="progress-fill" style="width:${load}%;background:${lc}"></div></div><span style="font-size:10px;color:${lc}">${load}%</span></div></td></tr>`;
+    });
+    html += `</tbody></table></div></div>`;
+    $('page-users').innerHTML = html;
 }
 
-// ========================================
-// TEAMS
-// ========================================
+function showCreateUserForm() {
+    const roles = isAdmin() ? ['admin','manager','engineer','viewer'] : ['manager','engineer','viewer'];
+    const roleOpts = roles.map(r=>`<option value="${r}">${r}</option>`).join('');
+    const orgOpts = ORGS.map(o=>`<option value="${o.id}">${o.name}</option>`).join('');
+    $('create-user-area').innerHTML = `<div class="card" style="margin-top:14px"><h3 style="font-size:12px;font-weight:600;margin:0 0 14px;color:var(--accent)">Create User</h3>
+        <div class="grid-2" style="gap:12px">
+            <input id="nu-user" placeholder="Username"><input id="nu-email" placeholder="Email">
+            <input id="nu-pass" type="password" placeholder="Password (min 8 chars)"><select id="nu-role">${roleOpts}</select>
+            <select id="nu-org">${orgOpts}</select><input id="nu-skills" placeholder="Skills (comma separated)">
+        </div>
+        <div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-sm" style="background:var(--accent);color:#fff" onclick="createUser()">CREATE USER</button><button class="btn btn-sm btn-outline" onclick="$('create-user-area').innerHTML=''">CANCEL</button></div></div>`;
+}
+
+async function createUser() {
+    const skills = $('nu-skills').value ? $('nu-skills').value.split(',').map(s=>s.trim()).filter(Boolean) : [];
+    try {
+        await apiCall('/users/','POST',{ username:$('nu-user').value, email:$('nu-email').value, password:$('nu-pass').value, role:$('nu-role').value, organization:$('nu-org').value, skills });
+        showSuccessModal('Success','User created!'); $('create-user-area').innerHTML=''; loadUsersPage();
+    } catch(e) { showErrorModal('Error','Create failed: '+e.message); }
+}
+
+// =================== TEAMS ===================
 async function loadTeamsPage() {
     await loadGlobalData();
-    let html = `<div><h2 class="page-title">TEAMS</h2><p class="page-sub">${TEAMS.length} teams</p></div>`;
-
-    if (!TEAMS.length) { html += `<div class="empty-state" style="margin-top:40px">No teams created yet</div>`; }
-    else {
-        html += `<div class="grid-2" style="margin-top:20px">`;
-        TEAMS.forEach(t => {
-            const lead = ALL_USERS.find(u => u.id === t.lead);
-            html += `<div class="card">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-                    <h3 style="font-size:14px;font-weight:600">${t.name}</h3>
-                    <span style="font-size:11px;color:var(--text-muted)">${t.member_count} members</span>
-                </div>
-                <div class="detail-row"><span class="detail-label">Lead</span><span class="detail-value">${lead ? lead.username : '—'}</span></div>
-                <div class="detail-row"><span class="detail-label">Organization</span><span class="detail-value">${ORGS.find(o=>o.id===t.organization)?.name||'—'}</span></div>
-                <div class="detail-row"><span class="detail-label">Created</span><span class="detail-value">${formatDate(t.created_at)}</span></div>
-                <div style="margin-top:10px"><span class="detail-label" style="font-size:11px">Members: </span>
-                    ${(t.members||[]).map(mId => { const u = ALL_USERS.find(x=>x.id===mId); return u ? `<span class="tag">${u.username}</span>` : ''; }).join(' ') || '<span style="color:var(--text-muted);font-size:11px">None</span>'}
-                </div>
-            </div>`;
-        });
-        html += `</div>`;
-    }
-    el('page-teams').innerHTML = html;
+    let html = `<div class="page-header"><div><h2 class="page-title">TEAMS</h2><p class="page-sub">${TEAMS.length} teams</p></div>
+        ${isAdmin()?'<button class="btn btn-sm" style="background:var(--accent);color:#fff" onclick="showCreateTeamForm()">+ NEW TEAM</button>':''}
+    </div><div id="create-team-area"></div>`;
+    if(!TEAMS.length) html += `<div class="empty-state" style="margin-top:40px">No teams</div>`;
+    else { html += `<div class="grid-2" style="margin-top:20px">`; TEAMS.forEach(t=>{
+        const lead=ALL_USERS.find(u=>u.id===t.lead);
+        const members = (t.members||[]).map(mId=>{const u=ALL_USERS.find(x=>x.id===mId);return u?`<span class="tag">${u.username}</span>`:''}).join(' ')||'—';
+        html += `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><h3 style="font-size:14px;font-weight:600">${t.name}</h3><span style="font-size:11px;color:var(--text-muted)">${t.member_count} members</span></div>
+            <div class="detail-row"><span class="detail-label">Lead</span><span class="detail-value">${lead?lead.username:'—'}</span></div>
+            <div style="margin-top:10px"><span class="detail-label" style="font-size:11px">Members: </span>${members}</div></div>`;
+    }); html += `</div>`; }
+    $('page-teams').innerHTML = html;
 }
 
-// ========================================
-// ORGANIZATIONS
-// ========================================
+function showCreateTeamForm() {
+    const userOpts=ALL_USERS.map(u=>`<option value="${u.id}">${u.username} (${u.role})</option>`).join('');
+    const orgOpts=ORGS.map(o=>`<option value="${o.id}">${o.name}</option>`).join('');
+    const memberOpts=ALL_USERS.map(u=>`<label style="display:flex;align-items:center;gap:6px;padding:4px 0;font-size:11px;cursor:pointer"><input type="checkbox" value="${u.id}" class="team-member-cb"> ${u.username} (${u.role})</label>`).join('');
+    $('create-team-area').innerHTML = `<div class="card" style="margin-top:14px"><h3 style="font-size:12px;font-weight:600;margin:0 0 14px;color:var(--accent)">Create Team</h3>
+        <div class="grid-2" style="gap:12px">
+            <input id="nt-name" placeholder="Team name"><select id="nt-org">${orgOpts}</select>
+            <div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:6px;display:block">Lead</label><select id="nt-lead"><option value="">Select lead...</option>${userOpts}</select></div>
+            <div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:6px;display:block">Members</label><div style="max-height:120px;overflow-y:auto;padding:8px;background:var(--bg);border-radius:8px;border:1px solid var(--border)">${memberOpts}</div></div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-sm" style="background:var(--accent);color:#fff" onclick="createTeam()">CREATE TEAM</button><button class="btn btn-sm btn-outline" onclick="$('create-team-area').innerHTML=''">CANCEL</button></div></div>`;
+}
+
+async function createTeam() {
+    const members = [...document.querySelectorAll('.team-member-cb:checked')].map(cb=>cb.value);
+    try { await apiCall('/teams/','POST',{ name:$('nt-name').value, organization:$('nt-org').value, lead:$('nt-lead').value||null, members }); showSuccessModal('Success','Team created!'); $('create-team-area').innerHTML=''; loadTeamsPage(); }
+    catch(e) { showErrorModal('Error','Create failed: '+e.message); }
+}
+
+// =================== ORGANIZATIONS ===================
 async function loadOrgsPage() {
     await loadGlobalData();
-    let html = `<div><h2 class="page-title">ORGANIZATIONS</h2><p class="page-sub">${ORGS.length} organization(s)</p></div>`;
-    html += `<div style="margin-top:20px">`;
+    let html = `<div><h2 class="page-title">ORGANIZATIONS</h2><p class="page-sub">${ORGS.length} organization(s)</p></div><div style="margin-top:20px">`;
     ORGS.forEach(o => {
         html += `<div class="card" style="margin-bottom:14px">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
                 <h3 style="font-size:16px;font-weight:700">${o.name}</h3>
-                <span class="badge" style="background:var(--accent-glow);color:var(--accent);border:1px solid rgba(59,130,246,0.15)">${o.slug}</span>
+                <div style="display:flex;gap:8px;align-items:center"><span class="badge" style="background:var(--accent-glow);color:var(--accent);border:1px solid rgba(59,130,246,0.15)">${o.slug}</span>
+                ${isAdmin()?`<button class="btn btn-sm btn-outline" onclick="showEditOrg('${o.id}','${o.name}','${o.slug}')">✏ Edit</button>`:''}</div>
             </div>
-            <div class="grid-3" style="gap:20px">
-                <div class="detail-row"><span class="detail-label">Members</span><span class="detail-value">${o.member_count}</span></div>
-                <div class="detail-row"><span class="detail-label">Teams</span><span class="detail-value">${o.team_count}</span></div>
-                <div class="detail-row"><span class="detail-label">Created</span><span class="detail-value">${formatDate(o.created_at)}</span></div>
-            </div>
+            <div class="grid-3"><div class="detail-row"><span class="detail-label">Members</span><span class="detail-value">${o.member_count}</span></div>
+            <div class="detail-row"><span class="detail-label">Teams</span><span class="detail-value">${o.team_count}</span></div>
+            <div class="detail-row"><span class="detail-label">Created</span><span class="detail-value">${formatDate(o.created_at)}</span></div></div>
         </div>`;
     });
-    html += `</div>`;
-    el('page-organizations').innerHTML = html;
+    html += `</div><div id="edit-org-area"></div>`;
+    $('page-organizations').innerHTML = html;
 }
 
-// ========================================
-// WORKFLOWS
-// ========================================
+function showEditOrg(id, name, slug) {
+    $('edit-org-area').innerHTML = `<div class="card" style="margin-top:14px"><h3 style="font-size:12px;font-weight:600;margin:0 0 14px;color:var(--accent)">Edit Organization</h3>
+        <div class="grid-2" style="gap:12px"><input id="eo-name" value="${name}" placeholder="Name"><input id="eo-slug" value="${slug}" placeholder="Slug"></div>
+        <div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-sm" style="background:var(--accent);color:#fff" onclick="updateOrg('${id}')">SAVE</button><button class="btn btn-sm btn-outline" onclick="$('edit-org-area').innerHTML=''">CANCEL</button></div></div>`;
+}
+
+async function updateOrg(id) {
+    try { await apiCall(`/organizations/${id}/`,'PATCH',{name:$('eo-name').value,slug:$('eo-slug').value}); showSuccessModal('Success','Organization updated!'); loadOrgsPage(); }
+    catch(e) { showErrorModal('Error','Update failed: '+e.message); }
+}
+
+// =================== WORKFLOWS ===================
 async function loadWorkflowsPage() {
     await loadGlobalData();
-    let html = `<div><h2 class="page-title">WORKFLOWS</h2><p class="page-sub">State machine configurations</p></div>`;
-    html += `<div style="margin-top:20px">`;
+    let html = `<div><h2 class="page-title">WORKFLOWS</h2><p class="page-sub">State machine configurations</p></div><div style="margin-top:20px">`;
     WORKFLOWS.forEach(w => {
-        const statesHTML = (w.allowed_states||[]).map((s,i) => {
-            const c = STATE_COLORS[s] || '#64748b';
-            const isFinal = (w.final_states||[]).includes(s);
-            const isInitial = w.initial_state === s;
-            let label = s.replace(/_/g,' ');
-            if (isInitial) label = '▶ ' + label;
-            if (isFinal) label += ' ■';
-            return `<span class="badge" style="background:${c}18;color:${c};border:1px solid ${c}30">${label}</span>`;
-        }).join(' <span style="color:var(--text-muted)">→</span> ');
-
-        const transHTML = (w.transitions||[]).map(t => {
-            const roles = (t.allowed_roles||[]).map(r => `<span class="tag" style="background:${ROLE_COLORS[r]}15;color:${ROLE_COLORS[r]};border-color:${ROLE_COLORS[r]}25">${r}</span>`).join(' ');
-            return `<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid rgba(30,41,59,0.05);font-size:11px">
-                <span style="color:${STATE_COLORS[t.from_state]||'var(--text-dim)'};width:80px">${t.from_state.replace(/_/g,' ')}</span>
-                <span style="color:var(--text-muted)">→</span>
-                <span style="color:${STATE_COLORS[t.to_state]||'var(--text-dim)'};width:80px">${t.to_state.replace(/_/g,' ')}</span>
-                <span style="flex:1">${roles}</span>
-            </div>`;
-        }).join('');
-
-        html += `<div class="card" style="margin-bottom:14px">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-                <h3 style="font-size:14px;font-weight:600">${w.name}</h3>
-                ${w.is_default ? '<span class="badge" style="background:var(--green)18;color:var(--green);border:1px solid var(--green)30">DEFAULT</span>' : ''}
-            </div>
-            <div style="margin-bottom:14px"><span class="section-title" style="margin-bottom:8px;display:block">States (▶ initial · ■ final)</span>${statesHTML}</div>
-            <div><span class="section-title" style="margin-bottom:8px;display:block">Transition Rules (${w.transitions?.length || 0})</span>${transHTML || '<div class="empty-state">No transitions</div>'}</div>
-        </div>`;
+        const statesHTML = (w.allowed_states||[]).map(s=>{const c=STATE_COLORS[s]||'#64748b';const isI=w.initial_state===s;const isF=(w.final_states||[]).includes(s);let l=s.replace(/_/g,' ');if(isI)l='▶ '+l;if(isF)l+=' ■';return `<span class="badge" style="background:${c}18;color:${c};border:1px solid ${c}30">${l}</span>`;}).join(' <span style="color:var(--text-muted)">→</span> ');
+        const transHTML = (w.transitions||[]).map(t=>`<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid rgba(30,41,59,0.05);font-size:11px;flex-wrap:wrap"><span style="color:${STATE_COLORS[t.from_state]||'var(--text-dim)'};min-width:70px">${t.from_state.replace(/_/g,' ')}</span><span style="color:var(--text-muted)">→</span><span style="color:${STATE_COLORS[t.to_state]||'var(--text-dim)'};min-width:70px">${t.to_state.replace(/_/g,' ')}</span><span>${(t.allowed_roles||[]).map(r=>badge(r,ROLE_COLORS)).join(' ')}</span></div>`).join('');
+        html += `<div class="card" style="margin-bottom:14px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px"><h3 style="font-size:14px;font-weight:600">${w.name}</h3>${w.is_default?'<span class="badge" style="background:rgba(16,185,129,0.1);color:var(--green);border:1px solid rgba(16,185,129,0.2)">DEFAULT</span>':''}</div>
+            <div style="margin-bottom:14px"><span class="section-title" style="display:block;margin-bottom:8px">States (▶ initial · ■ final)</span><div style="display:flex;flex-wrap:wrap;gap:4px;align-items:center">${statesHTML}</div></div>
+            <div><span class="section-title" style="display:block;margin-bottom:8px">Transitions (${w.transitions?.length||0})</span>${transHTML||'<div class="empty-state">No transitions</div>'}</div></div>`;
     });
     html += `</div>`;
-    el('page-workflows').innerHTML = html;
+    $('page-workflows').innerHTML = html;
 }
 
-// ========================================
-// TRANSITIONS
-// ========================================
+// =================== TRANSITIONS ===================
 async function loadTransitionsPage() {
     try {
-        const data = await apiCall('/transitions/');
-        const transitions = data.results || [];
-        let html = `<div><h2 class="page-title">TRANSITION RULES</h2><p class="page-sub">${transitions.length} rules defined</p></div>`;
-        html += `<div class="card" style="margin-top:20px"><table><thead><tr>
-            ${['From State','','To State','Allowed Roles','Workflow'].map(h=>`<th>${h}</th>`).join('')}
-        </tr></thead><tbody>`;
-        transitions.forEach(t => {
-            const wf = WORKFLOWS.find(w => w.id === t.workflow);
-            const roles = (t.allowed_roles||[]).map(r => badge(r, ROLE_COLORS)).join(' ');
-            html += `<tr>
-                <td>${badge(t.from_state, STATE_COLORS)}</td>
-                <td style="color:var(--text-muted);text-align:center">→</td>
-                <td>${badge(t.to_state, STATE_COLORS)}</td>
-                <td>${roles}</td>
-                <td style="color:var(--text-dim);font-size:11px">${wf?.name || '—'}</td>
-            </tr>`;
-        });
-        html += `</tbody></table></div>`;
-        el('page-transitions').innerHTML = html;
-    } catch (e) { el('page-transitions').innerHTML = `<div class="msg msg-error">Failed: ${e.message}</div>`; }
+        const data = await apiCall('/transitions/'); const transitions=data.results||[];
+        let html = `<div class="page-header"><div><h2 class="page-title">TRANSITION RULES</h2><p class="page-sub">${transitions.length} rules</p></div>
+            ${isAdmin()?'<button class="btn btn-sm" style="background:var(--accent);color:#fff" onclick="showCreateTransition()">+ NEW RULE</button>':''}
+        </div><div id="create-trans-area"></div>`;
+        html += `<div class="card" style="margin-top:20px"><div class="table-wrap"><table><thead><tr>${['From','','To','Roles','Workflow'].map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>`;
+        if(!transitions.length) html += `<tr><td colspan="5" class="empty-state">No rules</td></tr>`;
+        else transitions.forEach(t=>{const wf=WORKFLOWS.find(w=>w.id===t.workflow); html += `<tr><td>${badge(t.from_state,STATE_COLORS)}</td><td style="text-align:center;color:var(--text-muted)">→</td><td>${badge(t.to_state,STATE_COLORS)}</td><td>${(t.allowed_roles||[]).map(r=>badge(r,ROLE_COLORS)).join(' ')}</td><td style="color:var(--text-dim);font-size:11px">${wf?.name||'—'}</td></tr>`;});
+        html += `</tbody></table></div></div>`;
+        $('page-transitions').innerHTML = html;
+    } catch(e) { $('page-transitions').innerHTML = `<div class="msg msg-error">${e.message}</div>`; }
 }
 
-// ========================================
-// AI ENGINE
-// ========================================
-function loadAIPage() {
-    const taskOpts = TASKS.map(t => `<option value="${t.id}">${t.task_key} — ${t.title}</option>`).join('');
-    el('page-ai').innerHTML = `
-        <h2 class="page-title">AI ENGINE</h2>
-        <p class="page-sub">Intelligent priority scoring, task routing, and natural language queries</p>
-        <div class="card" style="margin-top:20px">
-            <h3 style="font-size:12px;font-weight:600;margin:0 0 12px;color:var(--purple)">⚡ Natural Language Query</h3>
-            <p style="color:var(--text-muted);font-size:11px;margin-bottom:12px">Ask: "show me critical bugs", "unassigned tasks", "tasks assigned to dev_alice", "overdue tasks"</p>
-            <div style="display:flex;gap:10px"><input id="nl-input" style="flex:1" placeholder='Try: "show me all high priority bugs"'>
-            <button class="btn btn-sm" style="background:var(--purple);color:#fff" onclick="doNLQuery()">QUERY</button></div>
-            <div id="nl-result"></div>
+function showCreateTransition() {
+    const wfOpts=WORKFLOWS.map(w=>`<option value="${w.id}">${w.name}</option>`).join('');
+    const allStates=['open','in_progress','review','testing','done','cancelled'];
+    const stateOpts=allStates.map(s=>`<option value="${s}">${s.replace(/_/g,' ')}</option>`).join('');
+    const roleChecks=['admin','manager','engineer','viewer'].map(r=>`<label style="display:flex;align-items:center;gap:6px;font-size:11px;cursor:pointer"><input type="checkbox" value="${r}" class="trans-role-cb" ${r!=='viewer'?'checked':''}> ${r}</label>`).join(' ');
+    $('create-trans-area').innerHTML = `<div class="card" style="margin-top:14px"><h3 style="font-size:12px;font-weight:600;margin:0 0 14px;color:var(--accent)">New Transition Rule</h3>
+        <div class="grid-2" style="gap:12px">
+            <div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">From State</label><select id="nt-from">${stateOpts}</select></div>
+            <div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">To State</label><select id="nt-to"><option value="in_progress">in progress</option>${stateOpts}</select></div>
+            <div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">Workflow</label><select id="nt-wf">${wfOpts}</select></div>
+            <div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">Allowed Roles</label><div style="display:flex;gap:12px;flex-wrap:wrap">${roleChecks}</div></div>
         </div>
+        <div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-sm" style="background:var(--accent);color:#fff" onclick="createTransition()">CREATE RULE</button><button class="btn btn-sm btn-outline" onclick="$('create-trans-area').innerHTML=''">CANCEL</button></div></div>`;
+}
+
+async function createTransition() {
+    const roles=[...document.querySelectorAll('.trans-role-cb:checked')].map(cb=>cb.value);
+    try { await apiCall('/transitions/','POST',{from_state:$('nt-from').value,to_state:$('nt-to').value,workflow:$('nt-wf').value,allowed_roles:roles}); showSuccessModal('Success','Transition rule created!'); $('create-trans-area').innerHTML=''; loadTransitionsPage(); }
+    catch(e) { showErrorModal('Error','Create failed: '+e.message); }
+}
+
+// =================== AI ===================
+function loadAIPage() {
+    const taskOpts=TASKS.map(t=>`<option value="${t.id}">${t.task_key} — ${t.title} ${t.assigned_to_name?'(→ '+t.assigned_to_name+')':'(unassigned)'}</option>`).join('');
+    $('page-ai').innerHTML = `<h2 class="page-title">AI ENGINE</h2><p class="page-sub">Intelligent priority scoring, task routing, and natural language queries</p>
+        <div class="card" style="margin-top:20px"><h3 style="font-size:12px;font-weight:600;margin:0 0 12px;color:var(--purple)">⚡ Natural Language Query</h3>
+            <p style="color:var(--text-muted);font-size:11px;margin-bottom:12px">Ask: "critical bugs", "unassigned tasks", "tasks assigned to dev_alice"</p>
+            <div style="display:flex;gap:10px;flex-wrap:wrap"><input id="nl-input" style="flex:1;min-width:200px" placeholder='Try: "show me high priority bugs"'><button class="btn btn-sm" style="background:var(--purple);color:#fff" onclick="doNLQuery()">QUERY</button></div><div id="nl-result"></div></div>
         <div class="grid-2" style="margin-top:14px">
-            <div class="card">
-                <h3 style="font-size:12px;font-weight:600;margin:0 0 12px;color:var(--amber)">🎯 Priority Scoring</h3>
-                <select id="score-task" style="margin-bottom:10px"><option value="">Select a task...</option>${taskOpts}</select>
-                <div style="display:flex;gap:8px">
-                    <button class="btn btn-sm" style="background:var(--amber);color:#fff" onclick="doScore()">SCORE TASK</button>
-                    <button class="btn btn-sm" style="background:transparent;border:1px solid var(--amber);color:var(--amber)" onclick="doScoreAll()">SCORE ALL</button>
-                </div><div id="score-result"></div>
-            </div>
-            <div class="card">
-                <h3 style="font-size:12px;font-weight:600;margin:0 0 12px;color:var(--green)">🤖 Smart Task Routing</h3>
-                <select id="route-task" style="margin-bottom:10px"><option value="">Select a task...</option>${taskOpts}</select>
-                <div style="display:flex;gap:8px">
-                    <button class="btn btn-sm" style="background:var(--green);color:#fff" onclick="doRoute()">RECOMMEND</button>
-                    <button class="btn btn-sm" style="background:transparent;border:1px solid var(--green);color:var(--green)" onclick="doAutoAssign()">AUTO-ASSIGN</button>
-                </div><div id="route-result"></div>
-            </div>
+            <div class="card"><h3 style="font-size:12px;font-weight:600;margin:0 0 12px;color:var(--amber)">🎯 Priority Scoring</h3>
+                <select id="score-task" style="margin-bottom:10px"><option value="">Select task...</option>${taskOpts}</select>
+                <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-sm" style="background:var(--amber);color:#fff" onclick="doScore()">SCORE</button><button class="btn btn-sm" style="background:transparent;border:1px solid var(--amber);color:var(--amber)" onclick="doScoreAll()">SCORE ALL</button></div><div id="score-result"></div></div>
+            <div class="card"><h3 style="font-size:12px;font-weight:600;margin:0 0 12px;color:var(--green)">🤖 Smart Routing</h3>
+                <select id="route-task" style="margin-bottom:10px"><option value="">Select task...</option>${taskOpts}</select>
+                <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn btn-sm" style="background:var(--green);color:#fff" onclick="doRoute()">RECOMMEND</button>
+                ${isManagerOrAbove()?`<button class="btn btn-sm" style="background:transparent;border:1px solid var(--green);color:var(--green)" onclick="doAutoAssign()">AUTO-ASSIGN</button>`:''}</div><div id="route-result"></div></div>
         </div>`;
-    el('nl-input').addEventListener('keydown', e => { if (e.key==='Enter') doNLQuery(); });
+    $('nl-input').addEventListener('keydown',e=>{if(e.key==='Enter')doNLQuery();});
 }
 
-async function doNLQuery() {
-    const q = el('nl-input').value; if (!q) return;
-    try {
-        const data = await apiCall('/ai/query/','POST',{question:q});
-        let h = `<div class="msg msg-info" style="margin-top:14px">${data.explanation}</div>`;
-        if (data.parsed_filters && Object.keys(data.parsed_filters).length)
-            h += `<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">${Object.entries(data.parsed_filters).map(([k,v])=>`<span class="badge" style="background:rgba(139,92,246,0.1);color:var(--purple);border:1px solid rgba(139,92,246,0.2)">${k}: ${v}</span>`).join('')}</div>`;
-        if (data.results?.length) {
-            h += `<table><thead><tr>${['Key','Title','State','Priority','Assignee'].map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>`;
-            data.results.forEach(t => { h += `<tr><td style="color:var(--accent);font-weight:600;font-size:12px">${t.task_key}</td><td>${t.title}</td><td>${badge(t.state,STATE_COLORS)}</td><td>${badge(t.priority,PRIORITY_COLORS)}</td><td style="color:var(--text-dim)">${t.assigned_to||'—'}</td></tr>`; });
-            h += `</tbody></table>`;
-        } else h += `<div class="empty-state">No matching tasks</div>`;
-        el('nl-result').innerHTML = h;
-    } catch { el('nl-result').innerHTML = `<div class="msg msg-error" style="margin-top:14px">Query failed</div>`; }
-}
+async function doNLQuery() { const q=$('nl-input').value; if(!q) return; try { const d=await apiCall('/ai/query/','POST',{question:q}); let h=`<div class="msg msg-info" style="margin-top:14px">${d.explanation}</div>`; if(d.parsed_filters&&Object.keys(d.parsed_filters).length) h+=`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">${Object.entries(d.parsed_filters).map(([k,v])=>`<span class="badge" style="background:rgba(139,92,246,0.1);color:var(--purple);border:1px solid rgba(139,92,246,0.2)">${k}: ${v}</span>`).join('')}</div>`; if(d.results?.length){h+=`<div class="table-wrap"><table><thead><tr>${['Key','Title','State','Priority','Assignee'].map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>`;d.results.forEach(t=>{h+=`<tr><td style="color:var(--accent);font-weight:600;font-size:12px">${t.task_key}</td><td>${t.title}</td><td>${badge(t.state,STATE_COLORS)}</td><td>${badge(t.priority,PRIORITY_COLORS)}</td><td style="color:var(--text-dim)">${t.assigned_to||'—'}</td></tr>`;});h+=`</tbody></table></div>`;}else h+=`<div class="empty-state">No matches</div>`; $('nl-result').innerHTML=h; } catch{$('nl-result').innerHTML=`<div class="msg msg-error" style="margin-top:14px">Query failed</div>`;} }
 
-async function doScore() {
-    const tid = el('score-task').value; if (!tid) return;
-    try {
-        const d = await apiCall('/ai/score-priority/','POST',{task_id:tid}); const s = d.priority_analysis;
-        const c = s.score>=0.7?'var(--red)':s.score>=0.4?'var(--amber)':'var(--green)';
-        let h = `<div style="margin-top:14px;padding:14px;background:var(--bg);border-radius:8px">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><span style="font-size:12px;font-weight:600">${d.task_key}</span><span style="font-size:20px;font-weight:700;color:${c}">${(s.score*100).toFixed(0)}%</span></div>
-            <p style="font-size:11px;color:var(--accent);margin:0 0 8px">${s.explanation}</p>
-            <p style="font-size:11px;color:var(--text-dim);margin:0 0 10px">Est. hours: ${d.estimated_hours}h</p>`;
-        Object.entries(s.factors||{}).forEach(([k,v]) => { const fc = v>=0.7?'var(--red)':v>=0.4?'var(--amber)':'var(--green)'; h += `<div class="score-bar"><span class="score-bar-label">${k.replace(/_/g,' ')}</span><div class="score-bar-track"><div class="score-bar-fill" style="width:${v*100}%;background:${fc}"></div></div><span class="score-bar-value">${(v*100).toFixed(0)}%</span></div>`; });
-        h += `</div>`; el('score-result').innerHTML = h; await loadGlobalData();
-    } catch { el('score-result').innerHTML = `<div class="msg msg-error" style="margin-top:14px">Scoring failed</div>`; }
-}
+async function doScore() { const tid=$('score-task').value; if(!tid) return; try { const d=await apiCall('/ai/score-priority/','POST',{task_id:tid}); const s=d.priority_analysis; const c=s.score>=0.7?'var(--red)':s.score>=0.4?'var(--amber)':'var(--green)'; let h=`<div style="margin-top:14px;padding:14px;background:var(--bg);border-radius:8px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><span style="font-size:12px;font-weight:600">${d.task_key}</span><span style="font-size:20px;font-weight:700;color:${c}">${(s.score*100).toFixed(0)}%</span></div><p style="font-size:11px;color:var(--accent);margin:0 0 8px">${s.explanation}</p><p style="font-size:11px;color:var(--text-dim);margin:0 0 10px">Est: ${d.estimated_hours}h</p>`; Object.entries(s.factors||{}).forEach(([k,v])=>{const fc=v>=0.7?'var(--red)':v>=0.4?'var(--amber)':'var(--green)';h+=`<div class="score-bar"><span class="score-bar-label">${k.replace(/_/g,' ')}</span><div class="score-bar-track"><div class="score-bar-fill" style="width:${v*100}%;background:${fc}"></div></div><span class="score-bar-value">${(v*100).toFixed(0)}%</span></div>`;});h+=`</div>`;$('score-result').innerHTML=h;await loadGlobalData();}catch{$('score-result').innerHTML=`<div class="msg msg-error" style="margin-top:14px">Failed</div>`;} }
 
-async function doScoreAll() {
-    try {
-        const d = await apiCall('/ai/score-all/','POST');
-        let h = `<div class="msg msg-success" style="margin-top:14px">${d.scored_count} tasks scored</div><div style="max-height:200px;overflow-y:auto">`;
-        (d.results||[]).forEach(r => { const c = r.score>=0.7?'var(--red)':r.score>=0.4?'var(--amber)':'var(--green)'; h += `<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(30,41,59,0.03);font-size:11px"><span style="color:var(--accent)">${r.task_key}</span><span style="color:${c};font-weight:600">${(r.score*100).toFixed(0)}%</span></div>`; });
-        h += `</div>`; el('score-result').innerHTML = h; await loadGlobalData();
-    } catch { el('score-result').innerHTML = `<div class="msg msg-error" style="margin-top:14px">Bulk scoring failed</div>`; }
-}
+async function doScoreAll() { try { const d=await apiCall('/ai/score-all/','POST'); let h=`<div class="msg msg-success" style="margin-top:14px">${d.scored_count} scored</div><div style="max-height:200px;overflow-y:auto">`; (d.results||[]).forEach(r=>{const c=r.score>=0.7?'var(--red)':r.score>=0.4?'var(--amber)':'var(--green)';h+=`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(30,41,59,0.03);font-size:11px"><span style="color:var(--accent)">${r.task_key}</span><span style="color:${c};font-weight:600">${(r.score*100).toFixed(0)}%</span></div>`;});h+=`</div>`;$('score-result').innerHTML=h;await loadGlobalData();}catch{$('score-result').innerHTML=`<div class="msg msg-error" style="margin-top:14px">Failed</div>`;} }
 
-async function doRoute() {
-    const tid = el('route-task').value; if (!tid) return;
-    try {
-        const d = await apiCall('/ai/recommend-assignee/','POST',{task_id:tid});
-        let h = `<div style="margin-top:14px">`;
-        (d.recommendations||[]).forEach((r,i) => { const c = r.total_score>=0.7?'var(--green)':r.total_score>=0.4?'var(--amber)':'var(--red)';
-            h += `<div class="rec-card ${i===0?'top':''}"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:12px;font-weight:600">${i===0?'👑 ':''}${r.username}</span><span style="font-size:14px;font-weight:700;color:${c}">${(r.total_score*100).toFixed(0)}%</span></div>
-            <p style="font-size:10px;color:var(--text-dim);margin:0 0 6px">${r.reasoning}</p>
-            <div style="display:flex;gap:6px;flex-wrap:wrap">${Object.entries(r.factors||{}).map(([k,v])=>{const fc=v>=0.7?'#10b981':v>=0.4?'#f59e0b':'#ef4444';return `<span class="badge" style="background:${fc}18;color:${fc};border:1px solid ${fc}30">${k.replace(/_/g,' ')}: ${(v*100).toFixed(0)}%</span>`;}).join('')}</div></div>`; });
-        h += `</div>`; el('route-result').innerHTML = h;
-    } catch { el('route-result').innerHTML = `<div class="msg msg-error" style="margin-top:14px">Routing failed</div>`; }
-}
+async function doRoute() { const tid=$('route-task').value; if(!tid) return; try { const d=await apiCall('/ai/recommend-assignee/','POST',{task_id:tid}); let h=`<div style="margin-top:14px">`; (d.recommendations||[]).forEach((r,i)=>{const c=r.total_score>=0.7?'var(--green)':r.total_score>=0.4?'var(--amber)':'var(--red)';h+=`<div class="rec-card ${i===0?'top':''}"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:12px;font-weight:600">${i===0?'👑 ':''}${r.username}</span><span style="font-size:14px;font-weight:700;color:${c}">${(r.total_score*100).toFixed(0)}%</span></div><p style="font-size:10px;color:var(--text-dim);margin:0 0 6px">${r.reasoning}</p><div style="display:flex;gap:6px;flex-wrap:wrap">${Object.entries(r.factors||{}).map(([k,v])=>{const fc=v>=0.7?'#10b981':v>=0.4?'#f59e0b':'#ef4444';return `<span class="badge" style="background:${fc}18;color:${fc};border:1px solid ${fc}30">${k.replace(/_/g,' ')}: ${(v*100).toFixed(0)}%</span>`;}).join('')}</div></div>`;});h+=`</div>`;$('route-result').innerHTML=h;}catch{$('route-result').innerHTML=`<div class="msg msg-error" style="margin-top:14px">Failed</div>`;} }
 
-async function doAutoAssign() {
-    const tid = el('route-task').value; if (!tid) return;
-    try { const d = await apiCall('/ai/auto-assign/','POST',{task_id:tid}); el('route-result').innerHTML = `<div class="msg msg-success" style="margin-top:14px">${d.message}</div>`; await loadGlobalData(); }
-    catch { el('route-result').innerHTML = `<div class="msg msg-error" style="margin-top:14px">Auto-assign failed</div>`; }
-}
+async function doAutoAssign() { const tid=$('route-task').value; if(!tid) return; try { const d=await apiCall('/ai/auto-assign/','POST',{task_id:tid}); showSuccessModal('Auto-Assigned',d.message); await loadGlobalData(); loadAIPage(); } catch(e) { let msg=e.message; try{const p=JSON.parse(msg);msg=p.error||msg;}catch{} showErrorModal('Auto-Assign Failed',msg); } }
 
-// ========================================
-// AUDIT LOGS
-// ========================================
-async function loadAuditPage() {
-    try {
-        const data = await apiCall('/audit-logs/');
-        const logs = data.results || [];
-        let html = `<div><h2 class="page-title">AUDIT LOGS</h2><p class="page-sub">${logs.length} entries · Immutable activity record</p></div>`;
-        html += `<div class="card" style="margin-top:20px"><table><thead><tr>
-            ${['Task','Action','Performed By','Old Value','New Value','Reason','Time'].map(h=>`<th>${h}</th>`).join('')}
-        </tr></thead><tbody>`;
-        if (!logs.length) { html += `<tr><td colspan="7" class="empty-state">No audit logs</td></tr>`; }
-        else {
-            logs.forEach(l => {
-                const oldVal = l.old_value ? `<code style="font-size:10px;color:var(--red);background:rgba(239,68,68,0.08);padding:2px 6px;border-radius:4px">${JSON.stringify(l.old_value)}</code>` : '—';
-                const newVal = l.new_value ? `<code style="font-size:10px;color:var(--green);background:rgba(16,185,129,0.08);padding:2px 6px;border-radius:4px">${JSON.stringify(l.new_value)}</code>` : '—';
-                html += `<tr>
-                    <td style="color:var(--accent);font-weight:600;font-size:12px">${l.task ? (TASKS.find(t=>t.id===l.task)?.task_key || l.task.slice(0,8)+'...') : '—'}</td>
-                    <td><span style="font-size:13px">${ACTION_ICONS[l.action]||'📝'}</span> ${badge(l.action, {created:'#10b981',state_changed:'#f59e0b',assigned:'#8b5cf6',commented:'#06b6d4',sla_breached:'#ef4444',updated:'#3b82f6',deleted:'#ef4444'})}</td>
-                    <td style="font-size:12px">${l.performed_by_name||'System'}</td>
-                    <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis">${oldVal}</td>
-                    <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis">${newVal}</td>
-                    <td style="color:var(--text-dim);font-size:11px;max-width:120px;overflow:hidden;text-overflow:ellipsis">${l.reason||'—'}</td>
-                    <td style="color:var(--text-muted);font-size:10px;white-space:nowrap">${formatDate(l.timestamp)}</td>
-                </tr>`;
-            });
-        }
-        html += `</tbody></table></div>`;
-        el('page-audit').innerHTML = html;
-    } catch (e) { el('page-audit').innerHTML = `<div class="msg msg-error">Failed: ${e.message}</div>`; }
-}
+// =================== AUDIT ===================
+async function loadAuditPage() { try { const data=await apiCall('/audit-logs/'); const logs=data.results||[]; let html=`<div><h2 class="page-title">AUDIT LOGS</h2><p class="page-sub">${logs.length} entries</p></div><div class="card" style="margin-top:20px"><div class="table-wrap"><table><thead><tr>${['Task','Action','By','Old','New','Reason','Time'].map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>`; if(!logs.length)html+=`<tr><td colspan="7" class="empty-state">No logs</td></tr>`; else logs.forEach(l=>{const tk=TASKS.find(t=>t.id===l.task);const old=l.old_value?`<code style="font-size:10px;color:var(--red);background:rgba(239,68,68,0.08);padding:2px 6px;border-radius:4px">${JSON.stringify(l.old_value)}</code>`:'—';const nw=l.new_value?`<code style="font-size:10px;color:var(--green);background:rgba(16,185,129,0.08);padding:2px 6px;border-radius:4px">${JSON.stringify(l.new_value)}</code>`:'—';html+=`<tr><td style="color:var(--accent);font-weight:600;font-size:12px">${tk?.task_key||'—'}</td><td><span style="font-size:13px">${ACTION_ICONS[l.action]||'📝'}</span> ${l.action.replace(/_/g,' ')}</td><td style="font-size:12px">${l.performed_by_name||'System'}</td><td style="max-width:120px;overflow:hidden;text-overflow:ellipsis">${old}</td><td style="max-width:120px;overflow:hidden;text-overflow:ellipsis">${nw}</td><td style="color:var(--text-dim);font-size:11px;max-width:100px;overflow:hidden;text-overflow:ellipsis">${l.reason||'—'}</td><td style="color:var(--text-muted);font-size:10px;white-space:nowrap">${timeAgo(l.timestamp)}</td></tr>`;}); html+=`</tbody></table></div></div>`; $('page-audit').innerHTML=html; }catch(e){$('page-audit').innerHTML=`<div class="msg msg-error">${e.message}</div>`;} }
 
-// ========================================
-// COMMENTS
-// ========================================
-async function loadCommentsPage() {
-    try {
-        const data = await apiCall('/comments/');
-        const comments = data.results || [];
-        let html = `<div><h2 class="page-title">COMMENTS</h2><p class="page-sub">${comments.length} comments across all tasks</p></div>`;
-        html += `<div class="card" style="margin-top:20px">`;
-        if (!comments.length) { html += `<div class="empty-state">No comments yet</div>`; }
-        else {
-            comments.forEach(c => {
-                const task = TASKS.find(t => t.id === c.task);
-                html += `<div class="activity-item">
-                    <span style="font-size:14px">💬</span>
-                    <div style="flex:1">
-                        <div style="display:flex;gap:10px;align-items:center;margin-bottom:4px">
-                            <span style="color:var(--accent);font-weight:600;font-size:12px">${task?.task_key || c.task?.slice(0,8)+'...'}</span>
-                            <span style="color:var(--purple);font-size:11px;font-weight:600">${c.author_name}</span>
-                        </div>
-                        <div style="font-size:12px;color:var(--text-dim)">${c.content}</div>
-                    </div>
-                    <span style="color:var(--text-muted);font-size:10px;white-space:nowrap">${timeAgo(c.created_at)}</span>
-                </div>`;
-            });
-        }
-        html += `</div>`;
-        el('page-comments').innerHTML = html;
-    } catch (e) { el('page-comments').innerHTML = `<div class="msg msg-error">Failed: ${e.message}</div>`; }
-}
+// =================== COMMENTS ===================
+async function loadCommentsPage() { try { const data=await apiCall('/comments/'); const comments=data.results||[]; let html=`<div><h2 class="page-title">COMMENTS</h2><p class="page-sub">${comments.length} comments</p></div><div class="card" style="margin-top:20px">`; if(!comments.length)html+=`<div class="empty-state">No comments</div>`; else comments.forEach(c=>{const tk=TASKS.find(t=>t.id===c.task);html+=`<div class="activity-item"><span style="font-size:14px">💬</span><div style="flex:1"><div style="display:flex;gap:10px;align-items:center;margin-bottom:4px;flex-wrap:wrap"><span style="color:var(--accent);font-weight:600;font-size:12px">${tk?.task_key||'—'}</span><span style="color:var(--purple);font-size:11px;font-weight:600">${c.author_name}</span></div><div style="font-size:12px;color:var(--text-dim)">${c.content}</div></div><span style="color:var(--text-muted);font-size:10px;white-space:nowrap">${timeAgo(c.created_at)}</span></div>`;});html+=`</div>`;$('page-comments').innerHTML=html;}catch(e){$('page-comments').innerHTML=`<div class="msg msg-error">${e.message}</div>`;} }
 </script>
 </body>
 </html>

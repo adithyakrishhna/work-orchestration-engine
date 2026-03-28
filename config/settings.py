@@ -137,3 +137,5 @@ REST_FRAMEWORK = {
         'rest_framework.filters.OrderingFilter',
     ],
 }
+
+AUTH_USER_MODEL = 'core.User'

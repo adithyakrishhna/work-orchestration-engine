@@ -51,6 +51,7 @@ class TaskDetailSerializer(serializers.ModelSerializer):
         )
         read_only_fields = (
             'id', 'task_key', 'current_state', 'created_by',
+            'organization',
             'sla_breached', 'ai_priority_score', 'ai_estimated_hours',
             'created_at', 'updated_at', 'resolved_at',
         )

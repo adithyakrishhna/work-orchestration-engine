@@ -546,6 +546,68 @@ Step 4: LOGOUT
    Server blacklists the refresh token → it can never be used again
 ```
 
+### 🔐 JWT Authentication Flow (Visual Timeline)
+
+JWT authentication works seamlessly in the background — ensuring secure, stateless, and efficient API communication without repeatedly querying the database for every request.
+
+### 🕒 Example Timeline
+
+- **⏱️ Time 0:00 — LOGIN**
+  - Send: username + password  
+  - Receive: access token (1 hour) + refresh token (7 days)  
+
+- **⏱️ Time 0:01 — CREATE TASK**
+  - Send: access token + task data  
+  - Server decodes token → identifies user → checks role → creates task ✅  
+
+- **⏱️ Time 0:05 — ASSIGN TASK**
+  - Send: access token + user_id  
+  - Server decodes token → verifies permissions → assigns task ✅  
+
+- **⏱️ Time 0:30 — TRANSITION TASK**
+  - Send: access token + target state  
+  - Server decodes token → validates role → enforces workflow → transitions task ✅  
+
+- **⏱️ Time 1:00 — ACCESS TOKEN EXPIRES**
+  - Send: access token  
+  - Server rejects request → `401 Unauthorized` ❌  
+
+- **⏱️ Time 1:01 — REFRESH TOKEN**
+  - Send: refresh token  
+  - Receive: new access token (valid for another 1 hour)  
+
+- **⏱️ Time 1:02 — BACK TO WORK**
+  - Send: new access token  
+  - Requests succeed again ✅  
+
+- **⏱️ Logout — TOKEN INVALIDATION**
+  - Send: refresh token  
+  - Token is blacklisted → cannot be reused ❌  
+
+---
+
+## ⚡ Why JWT is Important in This Project
+
+- Runs completely **in the background** — no manual session handling  
+- **Stateless authentication** — no server-side session storage  
+- **High performance** — avoids repeated database lookups for every request  
+- **Secure** — short-lived access tokens + refresh mechanism  
+- **Scalable** — ideal for API-first and distributed systems  
+
+---
+
+## 🚀 Role in the System
+
+JWT plays a **critical role** in:
+
+- 🔐 Securing all API endpoints  
+- 👥 Enforcing role-based access control (RBAC)  
+- 🔄 Validating workflow transitions  
+- ⚡ Enabling fast, efficient request processing  
+
+Every request is authenticated using tokens — making the system **secure, scalable, and production-ready**.
+
+
 ### Authentication Endpoints
 
 | Endpoint | Method | Who Can Access | What It Does |

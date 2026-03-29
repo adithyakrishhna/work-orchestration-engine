@@ -1042,11 +1042,13 @@ Create your own workflows through the API or admin panel. Define custom states, 
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Commit: `git commit -m "feat: add amazing feature"`
-4. Push: `git push origin feature/amazing-feature`
-5. Open a Pull Request
+Contributions are welcome! To get started:
+
+1. Fork the repository  
+2. Create a new branch: `git checkout -b feature/your-feature-name`  
+3. Make your changes and commit: `git commit -m "feat: add your feature"`  
+4. Push to your fork: `git push origin feature/your-feature-name`  
+5. Open a Pull Request and describe your changes clearly  
 
 ---
 
@@ -1056,4 +1058,4 @@ MIT License — see [LICENSE](LICENSE) for details.
 
 ---
 
-**Built by [Adithya Krishna](https://github.com/adithyakrishhna)** — *If this project helped you, give it a ⭐!*
+**Built by [Adithya Krishna](https://github.com/adithyakrishhna)** — *⭐ Star this repo if you appreciate this production-grade backend engineering.!*

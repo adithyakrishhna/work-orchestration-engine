@@ -1032,4 +1032,4 @@ MIT License — see [LICENSE](LICENSE) for details.
 
 ---
 
-**Built by [Your Name](https://github.com/adithyakrishhna)** — *If this project helped you, give it a ⭐!*
+**Built by [Adithya Krishna](https://github.com/adithyakrishhna)** — *If this project helped you, give it a ⭐!*

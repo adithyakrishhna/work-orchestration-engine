@@ -269,9 +269,9 @@ Organizations can also be configured through Django's admin panel at `/admin/`. 
 ![Org Config Admin](docs/images/org-config-admin.png)
 
 ![Setup API Response](docs/images/setup-response.png)
-![Setup API Response2](docs/images/setup-response2.png)
-![Setup API Response3](docs/images/setup-response3.png)
-![Setup API Response4](docs/images/setup-response4.png)
+![Setup API Response2](docs/images/setup-response-2.png)
+![Setup API Response3](docs/images/setup-response-3.png)
+![Setup API Response4](docs/images/setup-response-4.png)
 
 ---
 

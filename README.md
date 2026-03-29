@@ -783,7 +783,7 @@ The frontend is a single HTML file — no React build, no npm, no webpack. It co
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/YOUR_USERNAME/work-orchestration-engine.git
+git clone https://github.com/adithyakrishhna/work-orchestration-engine.git
 cd work-orchestration-engine
 
 # 2. Create and activate virtual environment

@@ -828,49 +828,83 @@ python manage.py runserver
 ---
 
 ## 📁 Project Structure
-
 ```
 work-orchestration-engine/
 ├── config/                          # Project configuration
-│   ├── settings.py                  # Database, auth, REST, CORS settings
+│   ├── settings.py                  # Database, auth, REST, CORS, JWT settings
 │   ├── urls.py                      # Root URL routing
-│   └── wsgi.py / asgi.py            # Server entry points
-├── core/                            # Main application
-│   ├── models.py                    # 8 database models
-│   ├── admin.py                     # Admin panel config
+│   ├── wsgi.py                      # WSGI server entry point
+│   └── asgi.py                      # ASGI server entry point
+│
+├── core/                            # Main application (backend brain)
+│   ├── models.py                    # 8 database models (Organization, User, Team,
+│   │                                #   WorkflowConfig, TransitionRule, Task,
+│   │                                #   Comment, AuditLog)
+│   ├── admin.py                     # Django admin panel configuration
 │   ├── urls.py                      # Core API URL routing
-│   ├── auth_urls.py                 # Auth endpoint routing
-│   ├── serializers/                 # JSON conversion layer
-│   │   ├── organization.py          # With computed member/team counts
-│   │   ├── user.py                  # User + UserCreate (password hashing)
-│   │   ├── team.py                  # With nested lead details
-│   │   ├── workflow.py              # With nested transition rules
-│   │   ├── task.py                  # List (light) + Detail (full) versions
-│   │   └── audit.py                 # Read-only, immutable
+│   ├── auth_urls.py                 # Auth endpoint routing (login, register, logout)
+│   │
+│   ├── serializers/                 # JSON ↔ Python conversion layer
+│   │   ├── __init__.py              # Exports all serializers
+│   │   ├── organization.py          # Org serializer with dynamic config fields
+│   │   ├── user.py                  # User + UserCreate with role validation
+│   │   ├── team.py                  # Team with nested lead details
+│   │   ├── workflow.py              # Workflow with nested transition rules
+│   │   ├── task.py                  # TaskList (light) + TaskDetail (full) with
+│   │   │                            #   dynamic priority/type validation
+│   │   └── audit.py                 # Read-only, immutable audit serializer
+│   │
 │   ├── views/                       # API endpoint handlers
-│   │   ├── task.py                  # CRUD + transition + assign endpoints
-│   │   ├── dashboard.py             # Analytics, SLA check
-│   │   ├── auth.py                  # Register, Logout
-│   │   └── ... (organization, user, team, workflow, audit)
-│   ├── permissions/rbac.py          # IsAdmin, IsManagerOrAbove, TaskPermission
+│   │   ├── __init__.py              # Exports all views
+│   │   ├── organization.py          # Organization CRUD
+│   │   ├── user.py                  # User CRUD + /me endpoint
+│   │   ├── team.py                  # Team CRUD
+│   │   ├── workflow.py              # Workflow + Transition CRUD
+│   │   ├── task.py                  # Task CRUD + transition + assign endpoints
+│   │   ├── audit.py                 # Read-only audit log listing
+│   │   ├── dashboard.py             # Analytics, SLA check, team performance
+│   │   ├── auth.py                  # Register + Logout views
+│   │   └── setup.py                 # One-click organization setup endpoint
+│   │
+│   ├── permissions/                 # Access control layer
+│   │   ├── __init__.py              # Exports all permissions
+│   │   └── rbac.py                  # IsAdmin, IsManagerOrAbove,
+│   │                                #   IsSameOrganization, TaskPermission
+│   │
 │   ├── services/                    # Business logic (separated from views)
-│   │   ├── state_machine.py         # Transition validation engine
-│   │   ├── sla_service.py           # Deadline breach detection
-│   │   └── dashboard_service.py     # Analytics computations
-│   └── management/commands/         # CLI commands
-│       ├── seed_data.py             # Sample data generator
-│       └── check_sla.py             # SLA check from terminal
-├── ai_engine/                       # AI module
-│   ├── priority_scorer.py           # 5-factor weighted scoring
+│   │   ├── __init__.py              # Exports all services
+│   │   ├── state_machine.py         # transition(), assign_task(),
+│   │   │                            #   get_available_transitions()
+│   │   ├── sla_service.py           # check_all_sla(), get_sla_summary()
+│   │   └── dashboard_service.py     # get_overview(), get_team_performance(),
+│   │                                #   get_recent_activity()
+│   │
+│   └── management/                  # Django CLI commands
+│       └── commands/
+│           ├── seed_data.py         # Populate sample data for testing
+│           └── check_sla.py         # Run SLA breach check from terminal
+│
+├── ai_engine/                       # AI/ML intelligence module
+│   ├── priority_scorer.py           # 5-factor weighted priority scoring engine
 │   ├── task_router.py               # Skill + workload + performance matching
-│   ├── nl_query.py                  # Natural language query parser
-│   ├── views.py                     # AI API endpoints
+│   ├── nl_query.py                  # Natural language → database query parser
+│   ├── views.py                     # AI API endpoints (score, route, query)
 │   └── urls.py                      # AI URL routing
-├── frontend/dashboard.html          # Complete SPA (no build step needed)
-├── docs/images/                     # Screenshots
-├── .env.example                     # Environment variable template
+│
+├── frontend/
+│   └── dashboard.html               # Complete SPA dashboard (single file,
+│                                    #   no build tools, no frameworks)
+│
+├── docs/
+│   └── images/                      # Screenshots for documentation
+│
+├── .env                             # Your secrets — gitignored, never pushed
+├── .env.example                     # Template showing required env variables
+├── .gitignore                       # Files excluded from Git
+├── manage.py                        # Django CLI entry point
 ├── requirements.txt                 # Python dependencies
-└── README.md                        # This file
+├── LICENSE                          # MIT License
+└── README.md                        # Project documentation
 ```
 
 ---

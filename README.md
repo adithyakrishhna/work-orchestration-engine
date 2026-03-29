@@ -442,7 +442,7 @@ User: POST /tasks/{id}/transition/ {"to_state": "in_progress"}
 | Create tasks | ✅ | ✅ | ✅ | ❌ |
 | Update any task in org | ✅ | ✅ | ❌ | ❌ |
 | Delete tasks | ✅ | ❌ | ❌ | ❌ |
-| Create users | ✅ | ✅* | ❌ | ❌ |
+| Create users | ✅ | ✅ | ❌ | ❌ |
 | Manage workflows/transitions | ✅ | ❌ | ❌ | ❌ |
 
 *Managers can create all roles except Admin.*

@@ -1,5 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
+from .views.setup import OrganizationSetupView
 from .views import (
     OrganizationViewSet, UserViewSet, TeamViewSet,
     WorkflowConfigViewSet, TransitionRuleViewSet,
@@ -19,6 +20,7 @@ router.register(r'comments', CommentViewSet, basename='comment')
 router.register(r'audit-logs', AuditLogViewSet, basename='audit-log')
 
 urlpatterns = [
+    path('setup/', OrganizationSetupView.as_view(), name='org-setup'),
     path('', include(router.urls)),
     # Dashboard endpoints
     path('dashboard/overview/', DashboardOverviewView.as_view(), name='dashboard-overview'),

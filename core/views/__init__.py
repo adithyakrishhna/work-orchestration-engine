@@ -8,3 +8,4 @@ from .dashboard import (
     DashboardOverviewView, TeamPerformanceView,
     RecentActivityView, SLACheckView,
 )
+from .setup import OrganizationSetupView

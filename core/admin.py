@@ -10,12 +10,19 @@ from .models import (
 class OrganizationAdmin(admin.ModelAdmin):
     list_display = ('name', 'slug', 'created_at')
     prepopulated_fields = {'slug': ('name',)}
+    fieldsets = (
+        (None, {'fields': ('name', 'slug')}),
+        ('Configuration', {
+            'fields': ('allowed_roles', 'allowed_priorities', 'allowed_task_types'),
+            'description': 'Define custom roles, priorities, and task types for this organization.'
+        }),
+    )
 
 
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
     list_display = ('username', 'email', 'role', 'organization')
-    list_filter = ('role', 'organization')
+    list_filter = ('organization',)
     fieldsets = UserAdmin.fieldsets + (
         ('Work Info', {'fields': ('organization', 'role', 'skills', 'max_concurrent_tasks')}),
     )

@@ -56,3 +56,23 @@ class TaskDetailSerializer(serializers.ModelSerializer):
             'sla_breached', 'ai_priority_score', 'ai_estimated_hours',
             'created_at', 'updated_at', 'resolved_at',
         )
+        
+    def validate(self, data):
+        request = self.context.get('request')
+        if request and request.user and request.user.organization:
+            org = request.user.organization
+            # Validate priority against org config
+            if 'priority' in data and org.allowed_priorities:
+                if data['priority'] not in org.allowed_priorities:
+                    raise serializers.ValidationError({
+                        'priority': f"Invalid priority '{data['priority']}'. "
+                                    f"Allowed: {org.allowed_priorities}"
+                    })
+            # Validate task_type against org config
+            if 'task_type' in data and org.allowed_task_types:
+                if data['task_type'] not in org.allowed_task_types:
+                    raise serializers.ValidationError({
+                        'task_type': f"Invalid task type '{data['task_type']}'. "
+                                     f"Allowed: {org.allowed_task_types}"
+                    })
+        return data

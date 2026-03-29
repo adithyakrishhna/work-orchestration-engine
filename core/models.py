@@ -7,13 +7,43 @@ class Organization(models.Model):
     """Company or team that uses this system"""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
-    slug = models.SlugField(unique=True, help_text="URL-friendly name, e.g., 'accenture'")
+    slug = models.SlugField(unique=True, help_text="URL-friendly name, e.g., 'infosys'")
+
+    # Dynamic configuration — each org defines their own
+    allowed_roles = models.JSONField(
+        default=list,
+        blank=True,
+        help_text='Roles in this org, e.g., ["admin", "manager", "developer", "qa"]'
+    )
+    allowed_priorities = models.JSONField(
+        default=list,
+        blank=True,
+        help_text='Priority levels, e.g., ["critical", "high", "medium", "low"]'
+    )
+    allowed_task_types = models.JSONField(
+        default=list,
+        blank=True,
+        help_text='Task types, e.g., ["bug", "feature", "story", "spike"]'
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def save(self, *args, **kwargs):
+        # Set defaults if empty
+        if not self.allowed_roles:
+            self.allowed_roles = ['admin', 'manager', 'engineer', 'viewer']
+        if not self.allowed_priorities:
+            self.allowed_priorities = ['critical', 'high', 'medium', 'low']
+        if not self.allowed_task_types:
+            self.allowed_task_types = ['bug', 'feature', 'task', 'improvement']
+        # Ensure admin role always exists
+        if 'admin' not in self.allowed_roles:
+            self.allowed_roles.insert(0, 'admin')
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.name
-
 
 class User(AbstractUser):
     """Custom user model linked to an organization"""
@@ -26,13 +56,8 @@ class User(AbstractUser):
         blank=True,
     )
 
-    class Role(models.TextChoices):
-        ADMIN = 'admin', 'Admin'
-        MANAGER = 'manager', 'Manager'
-        ENGINEER = 'engineer', 'Engineer'
-        VIEWER = 'viewer', 'Viewer'
 
-    role = models.CharField(max_length=20, choices=Role.choices, default=Role.ENGINEER)
+    role = models.CharField(max_length=50, default='engineer', help_text="Role defined by organization config")
 
     # Skills for AI-based task routing later
     skills = models.JSONField(default=list, blank=True, help_text="e.g., ['python', 'django', 'devops']")
@@ -123,20 +148,8 @@ class Task(models.Model):
     current_state = models.CharField(max_length=50, default='open')
 
     # Priority & Classification
-    class Priority(models.TextChoices):
-        CRITICAL = 'critical', 'Critical'
-        HIGH = 'high', 'High'
-        MEDIUM = 'medium', 'Medium'
-        LOW = 'low', 'Low'
-
-    class TaskType(models.TextChoices):
-        BUG = 'bug', 'Bug'
-        FEATURE = 'feature', 'Feature'
-        TASK = 'task', 'Task'
-        IMPROVEMENT = 'improvement', 'Improvement'
-
-    priority = models.CharField(max_length=20, choices=Priority.choices, default=Priority.MEDIUM)
-    task_type = models.CharField(max_length=20, choices=TaskType.choices, default=TaskType.TASK)
+    priority = models.CharField(max_length=50, default='medium', help_text="Priority defined by organization config")
+    task_type = models.CharField(max_length=50, default='task', help_text="Task type defined by organization config")
     tags = models.JSONField(default=list, blank=True, help_text='e.g., ["backend", "urgent"]')
 
     # SLA tracking

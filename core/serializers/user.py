@@ -33,3 +33,13 @@ class UserCreateSerializer(serializers.ModelSerializer):
         user.set_password(password)
         user.save()
         return user
+    
+    def validate_role(self, value):
+        request = self.context.get('request')
+        if request and request.user and request.user.organization:
+            org = request.user.organization
+            if org.allowed_roles and value not in org.allowed_roles:
+                raise serializers.ValidationError(
+                    f"Invalid role '{value}'. Allowed roles for this organization: {org.allowed_roles}"
+                )
+        return value

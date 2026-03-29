@@ -9,9 +9,13 @@ class Command(BaseCommand):
         # Create Organization
         org, _ = Organization.objects.get_or_create(
             slug='sunshine',
-            defaults={'name': 'Sunshine Corporation'}
+            defaults={
+                'name': 'Sunshine Corporation',
+                'allowed_roles': ['admin', 'manager', 'engineer', 'viewer'],
+                'allowed_priorities': ['critical', 'high', 'medium', 'low'],
+                'allowed_task_types': ['bug', 'feature', 'task', 'improvement'],
+            }
         )
-        self.stdout.write(f"Organization: {org.name}")
 
         # Create Users
         admin = self._create_user('admin_user', 'admin', org)

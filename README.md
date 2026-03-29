@@ -483,6 +483,8 @@ Runs entirely locally — no paid APIs, no cloud services, no subscriptions.
 
 ![AI Scoring](docs/images/ai-scoring.png)
 
+The AI evaluates the task and assigns a priority score, which is then reflected on the task for better decision-making.
+
 | Factor | Weight | Example |
 |---|---|---|
 | **Keyword analysis** | 35% | "crash", "security", "blocker" → high score |

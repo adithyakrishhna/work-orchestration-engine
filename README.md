@@ -267,13 +267,13 @@ The system guides users toward the correct values without anyone reading documen
 Organizations can also be configured through Django's admin panel at `/admin/`. The Organization edit page shows three editable JSON fields — `allowed_roles`, `allowed_priorities`, and `allowed_task_types` — that can be modified at any time.
 
 ![Org Config Admin](docs/images/org-config-admin.png)
-<br>
+---
 ![Setup API Response](docs/images/setup-response.png)
-<br>
+---
 ![Setup API Response2](docs/images/setup-response-2.png)
-<br>
+---
 ![Setup API Response3](docs/images/setup-response-3.png)
-<br>
+---
 ![Setup API Response4](docs/images/setup-response-4.png)
 
 ---
@@ -795,7 +795,7 @@ POST /tasks/{task-id}/assign/
 Django includes a powerful built-in admin panel at `/admin/`. This is a separate interface from the frontend dashboard — it gives you direct database access with full CRUD on all 8 models, search, filters, and inline editing.
 
 ![Admin Task List](docs/images/admin-tasks.png)
-<br>
+---
 ![Admin Task Detail](docs/images/admin-task-detail.png)
 
 Access it at `http://127.0.0.1:8000/admin/` with your superuser credentials.
@@ -809,7 +809,7 @@ Access it at `http://127.0.0.1:8000/admin/` with your superuser credentials.
 Django REST Framework provides a browser-based API interface at `/api/v1/`. You can browse all endpoints, send requests, and see formatted JSON responses — all from your browser.
 
 ![DRF Task Endpoint](docs/images/api-tasks.png)
-<br>
+---
 ![DRF Task Detail](docs/images/api-task-detail.png)
 
 ---
@@ -1047,59 +1047,61 @@ Create your own workflows through the API or admin panel. Define custom states, 
 
 ### Backend — Django Admin Panel
 ![Admin Panel](docs/images/admin-panel.png)
-<br>
+---
 ![Admin Tasks](docs/images/admin-tasks.png)
-<br>
+---
 ![Admin Task Detail](docs/images/admin-task-detail.png)
 
 ### Backend — DRF Browsable API
 ![API Root](docs/images/api-root.png)
-<br>
+---
 ![API Tasks](docs/images/api-tasks.png)
-<br>
+---
 ![API Task Detail](docs/images/api-task-detail.png)
 
 ### Frontend — Dashboard
 ![Login](docs/images/login.png)
-<br>
+---
 ![Dashboard](docs/images/dashboard.png)
+![SLA-Board](docs/images/sla-board.png)
+
 
 ### Frontend — Task Management
 ![Tasks](docs/images/tasks.png)
-<br>
+---
 ![Task Detail](docs/images/task-detail.png)
-<br>
+---
 ![Create Task](docs/images/create-task.png)
-<br>
+---
 ![Transition Modal](docs/images/transition-modal.png)
 
 ### Frontend — AI Engine
 ![AI Scoring](docs/images/ai-scoring.png)
-<br>
+---
 ![AI Routing](docs/images/ai-routing.png)
-<br>
+---
 ![AI NL Query](docs/images/ai-nlquery.png)
 
 ### Frontend — Management
 ![Users](docs/images/users.png)
-<br>
+---
 ![Teams](docs/images/teams.png)
-<br>
+---
 ![Organizations](docs/images/organizations.png)
-<br>
+---
 ![Workflows](docs/images/workflows.png)
-<br>
+---
 ![Transitions](docs/images/transitions.png)
 
 ### Frontend — History and Errors
 ![Audit Logs](docs/images/audit-logs.png)
-<br>
+---
 ![Comments](docs/images/comments.png)
-<br>
+---
 ![Error Modal](docs/images/error-modal.png)
-<br>
+---
 ![Profile Edit](docs/images/profile-edit.png)
-<br>
+---
 ![Responsive](docs/images/responsive.png)
 
 ---

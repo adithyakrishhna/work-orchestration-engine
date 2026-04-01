@@ -16,7 +16,7 @@ This is what makes this project production-ready and easily adaptable:
 
 ## 📌 Table of Contents
 
-- [What Makes This System Strong](#-why-makes-this-system-strong)
+- [What Makes This System Strong](#what-makes-this-system-strong)
 - [What This Project Does](#-what-this-project-does)
 - [Tech Stack](#-tech-stack)
 - [System Architecture](#-system-architecture)

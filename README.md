@@ -16,7 +16,7 @@ This is what makes this project production-ready and easily adaptable:
 
 ## 📌 Table of Contents
 
-- [What Makes This System Strong](#-why-this-project-is-different)
+- [What Makes This System Strong](#-why-makes-this-system-strong)
 - [What This Project Does](#-what-this-project-does)
 - [Tech Stack](#-tech-stack)
 - [System Architecture](#-system-architecture)
@@ -80,6 +80,7 @@ Refresh tokens are rotated on each use, and logout blacklists tokens permanently
 
 Tasks can have deadlines, and the system actively monitors them. The SLA service identifies overdue tasks, flags tasks that are at risk (e.g., less than 24 hours remaining), calculates breach rates per organization, and logs each breach as an audit event.
 These checks can be triggered via API, CLI, or scheduled as a background job, enabling continuous and automated monitoring.
+
 ---
 
 ## 🧠 What This Project Does

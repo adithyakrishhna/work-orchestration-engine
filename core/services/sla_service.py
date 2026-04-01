@@ -13,33 +13,55 @@ class SLAService:
     def check_all_sla():
         """Scan all active tasks and flag SLA breaches"""
         now = timezone.now()
-        results = {'breached': 0, 'checked': 0}
+        results = {'breached': 0, 'checked': 0, 'breached_tasks': [], 'at_risk_tasks': []}
 
         # Get all active tasks with a due date
         active_tasks = Task.objects.filter(
             due_date__isnull=False,
-            sla_breached=False,
         ).exclude(
             current_state__in=['done', 'cancelled']
-        )
+        ).select_related('assigned_to')
 
         results['checked'] = active_tasks.count()
 
         for task in active_tasks:
             if now > task.due_date:
-                task.sla_breached = True
-                task.save()
-                results['breached'] += 1
+                # Newly breached
+                if not task.sla_breached:
+                    task.sla_breached = True
+                    task.save()
+                    AuditLog.objects.create(
+                        task=task,
+                        action=AuditLog.ActionType.SLA_BREACHED,
+                        performed_by=None,
+                        old_value={'due_date': str(task.due_date)},
+                        new_value={'breached_at': str(now)},
+                        reason='Task exceeded SLA deadline',
+                    )
 
-                # Log the breach
-                AuditLog.objects.create(
-                    task=task,
-                    action=AuditLog.ActionType.SLA_BREACHED,
-                    performed_by=None,
-                    old_value={'due_date': str(task.due_date)},
-                    new_value={'breached_at': str(now)},
-                    reason='Task exceeded SLA deadline',
-                )
+                results['breached'] += 1
+                results['breached_tasks'].append({
+                    'id': str(task.id),
+                    'task_key': task.task_key,
+                    'title': task.title,
+                    'priority': task.priority,
+                    'assigned_to': task.assigned_to.username if task.assigned_to else 'Unassigned',
+                    'due_date': task.due_date.isoformat(),
+                    'hours_overdue': round((now - task.due_date).total_seconds() / 3600, 1),
+                })
+            else:
+                # Check if at risk (less than 24 hours remaining)
+                hours_left = (task.due_date - now).total_seconds() / 3600
+                if hours_left <= 24:
+                    results['at_risk_tasks'].append({
+                        'id': str(task.id),
+                        'task_key': task.task_key,
+                        'title': task.title,
+                        'priority': task.priority,
+                        'assigned_to': task.assigned_to.username if task.assigned_to else 'Unassigned',
+                        'due_date': task.due_date.isoformat(),
+                        'hours_remaining': round(hours_left, 1),
+                    })
 
         return results
 

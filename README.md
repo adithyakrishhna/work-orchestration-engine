@@ -45,7 +45,7 @@ This is not a tutorial project or a simple CRUD application. Every layer of this
 
 ### Real System Design, Not Just Endpoints
 
-This project implements a **complete workflow orchestration system** with 8 interconnected database models, 20+ API endpoints with filtering, pagination, and search capabilities, and a layered architecture that separates HTTP handling from business logic from data access. The system also supports complex queries such as filtering tasks by priority, team, and sorting — all handled efficiently within a single request.
+This project implements a **complete workflow orchestration system** with 8 interconnected database models, **20+ API endpoints with filtering, pagination, and search capabilities, and a layered architecture** that separates HTTP handling from business logic from data access. The system also supports complex queries such as filtering tasks by priority, team, and sorting — all handled efficiently within a single request.
 
 ### Configurable State Machine with Business Rule Enforcement
 

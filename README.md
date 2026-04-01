@@ -584,6 +584,11 @@ JWT authentication works seamlessly in the background — ensuring secure, state
   - Send: refresh token  
   - Token is blacklisted → cannot be reused ❌  
 
+![Outstanding-Tokens](docs/images/outstanding-tokens.png)
+- **Outstanding Tokens** — All refresh tokens that have been issued and are still recognized by the system. They represent active user sessions and are tracked to manage authentication lifecycle and token validity.
+
+- **Blacklisted Tokens** — Refresh tokens that have been explicitly invalidated (on logout or rotation). These tokens are permanently blocked and cannot be used again, ensuring secure session handling and preventing reuse.
+
 ---
 
 ## ⚡ Why JWT is Important in This Project
@@ -1185,8 +1190,8 @@ Create your own workflows through the API or admin panel. Define custom states, 
 ---
 
 ![Responsive](docs/images/responsive.png)
-
 *Responsive design — sidebar collapses into a hamburger menu on mobile, grids stack to single column, tables get horizontal scroll. Works on desktop, tablet, and phone.*
+
 ---
 
 ## 🤝 Contributing

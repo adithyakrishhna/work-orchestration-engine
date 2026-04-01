@@ -2,7 +2,13 @@
 
 > A production-grade AI-powered work orchestration engine with configurable workflows, role-based access control, SLA tracking, and intelligent task routing — built with Django, Django REST Framework, and PostgreSQL. Designed to handle real-world enterprise use cases like task lifecycle management, workflow enforcement, and data-driven decision making.
 
-**This is what makes this project production-ready for any company:** No code changes. No editing Python files. No redeployment. A new organization can set up their entire system — including custom roles, priorities, task types, workflows, and admin account — through a single API call, enabling instant onboarding and seamless integration into existing ecosystems.
+This is what makes this project production-ready and easily adaptable:
+
+- **Zero setup complexity** — No code changes, no editing Python files, and no redeployment required.
+- **Instant onboarding** — A new organization can configure roles, priorities, task types, workflows, and admin accounts through a single API call.
+- **Flexible and configurable** — System behavior can be adjusted without modifying core logic.
+- **Open-source and extensible** — The codebase is well-structured, making it easy to **add, remove, or modify features** as needed.
+- **Easy to enhance** — Developers can extend capabilities such as **AI logic, workflows, or business rules** with minimal friction.
 
 ![Dashboard](docs/images/dashboard.png)
 
@@ -10,7 +16,7 @@
 
 ## 📌 Table of Contents
 
-- [Why This Project Is Different](#-why-this-project-is-different)
+- [What Makes This System Strong](#-why-this-project-is-different)
 - [What This Project Does](#-what-this-project-does)
 - [Tech Stack](#-tech-stack)
 - [System Architecture](#-system-architecture)
@@ -33,29 +39,33 @@
 
 ---
 
-## 🏆 Why This Project Is Different
+## 🏆 What Makes This System Strong
 
 This is not a tutorial project or a simple CRUD application. Every layer of this system was designed with the same engineering principles used at product companies. Here's what makes it stand out:
 
 ### Real System Design, Not Just Endpoints
 
-Most backend projects expose a few REST endpoints that create and read data — essentially a database with an HTTP wrapper. This project implements a **complete workflow orchestration system** with 8 interconnected database models, 20+ API endpoints with filtering, pagination, and search capabilities, and a layered architecture that separates HTTP handling from business logic from data access. The API supports complex queries like "give me all high-priority bugs assigned to the backend team, sorted by AI priority score, page 2" — in a single request.
+This project implements a **complete workflow orchestration system** with 8 interconnected database models, 20+ API endpoints with filtering, pagination, and search capabilities, and a layered architecture that separates HTTP handling from business logic from data access. The system also supports complex queries such as filtering tasks by priority, team, and sorting — all handled efficiently within a single request.
 
 ### Configurable State Machine with Business Rule Enforcement
 
-At the core of this engine is a **finite state machine** — the same design pattern used in payment processing systems, order management platforms, and CI/CD pipelines. Workflows are not hardcoded — organizations can define their own states (e.g., `open → in_progress → review → testing → done`), their own transition rules (e.g., only managers can approve tasks from review to testing), and their own business constraints (e.g., a task cannot move to "in_progress" unless it is assigned to someone). The engine validates **5 separate rules** before allowing any state change, and every transition is permanently recorded in an immutable audit log.
+At the core of the system is a finite state machine that manages task workflows. Workflows are configurable — organizations can define their own states (e.g., open → in_progress → review → testing → done), transition rules (e.g., only managers can approve certain stages), and business constraints (e.g., tasks must be assigned before starting).
+Each state change is validated against multiple rules before execution, and every transition is recorded in an immutable audit log for traceability.
 
 ### Dual-Layer Role-Based Access Control (RBAC)
 
-Authorization is enforced at **two independent levels** — a pattern called defense in depth. The first layer operates at the API level: it controls which endpoints each role can access (e.g., only admins can delete tasks). The second layer operates at the business logic level: even if a user has API access to update a task, the state machine independently checks whether their role permits the specific state transition they're attempting. An engineer might be able to update task fields, but the state machine will still block them from moving a task from "review" to "done" because that transition requires a manager or admin role. This dual enforcement means the system remains secure even if one layer is bypassed.
+Authorization is enforced at **two independent levels** - The first layer operates at the API level, controlling which endpoints each role can access (e.g., only admins can delete tasks). The second layer operates at the business logic level, ensuring users can only perform actions permitted by workflow rules.
+Even if a user can access an endpoint, specific operations (like certain state transitions) are validated separately, ensuring consistent and secure access control throughout the system.
 
 ### AI-Powered Intelligence Layer (Zero Cost, Fully Local)
 
-The AI engine runs entirely on the local machine with no paid APIs, no cloud ML services, and no subscriptions. It includes a **multi-factor priority scoring engine** that analyzes 5 weighted signals (urgency keywords, task type, manual priority, deadline proximity, and task age) to produce an explainable priority score between 0.0 and 1.0 — along with a human-readable explanation of what drove the score. It includes an **intelligent task routing system** that ranks engineers by matching task requirements against their skills (40% weight), current workload (30%), and historical performance on similar task types (30%). And it includes a **natural language query engine** that converts plain English questions like "show me all critical bugs assigned to alice" into precise database queries using regex pattern matching with word boundary detection to avoid false matches.
+The AI engine runs entirely on the local machine, with no external APIs, no cloud services, and no subscriptions. It includes a multi-factor priority scoring system that evaluates urgency keywords, task type, manual priority, deadline proximity, and task age to generate a score between 0.0 and 1.0, along with a human-readable explanation.
+It also provides an intelligent task routing system that ranks engineers based on skill match, current workload, and historical performance. In addition, a natural language query engine allows users to fetch tasks using plain English queries, which are converted into precise database filters using pattern matching.
 
 ### Enterprise-Grade Audit Trail
 
-Every action in the system — task creation, state transitions, assignments, comments, SLA breaches — is recorded in an **immutable audit log** with the exact old value, new value, who performed the action, when, and why. These logs cannot be modified or deleted through the API, not even by administrators. This is the same approach used by systems that need to comply with regulations like SOX, HIPAA, or GDPR, where a complete and tamper-proof history of data changes is mandatory.
+Every action in the system — task creation, state transitions, assignments, comments, and SLA breaches — is recorded in an immutable audit log with the exact old value, new value, actor, timestamp, and context.
+These logs cannot be modified or deleted through the API, including by administrators, ensuring a complete and tamper-proof history of all changes.
 
 ### Multi-Tenant Data Isolation
 
@@ -63,24 +73,26 @@ Every database query in the system is automatically filtered by organization. A 
 
 ### Production-Ready Authentication
 
-The system uses **JWT (JSON Web Token) authentication** with the complete token lifecycle: login returns an access token (1-hour expiry) and a refresh token (7-day expiry), expired access tokens can be renewed using the refresh token without re-entering credentials, refresh tokens are rotated on each use (old ones become invalid), and logout permanently blacklists the refresh token so it can never be reused. This is the exact same authentication pattern used by every modern API — from GitHub to Stripe to Google.
+The system uses JWT (JSON Web Token) authentication with a complete token lifecycle. Login provides an access token (short-lived) and a refresh token (long-lived), allowing users to renew sessions without re-entering credentials.
+Refresh tokens are rotated on each use, and logout blacklists tokens permanently, ensuring they cannot be reused and maintaining secure session management. This is the exact same authentication pattern used by every modern API — from GitHub to Stripe to Google.
 
 ### SLA Monitoring and Breach Detection
 
-Tasks can have deadlines, and the system actively monitors them. The SLA service identifies tasks that have breached their deadline, flags tasks that are at risk (less than 24 hours remaining), calculates breach rates per organization, and logs every breach as an audit event. This can be triggered via API, CLI command, or scheduled as a background job — simulating how production systems use tools like Celery Beat for periodic health checks.
+Tasks can have deadlines, and the system actively monitors them. The SLA service identifies overdue tasks, flags tasks that are at risk (e.g., less than 24 hours remaining), calculates breach rates per organization, and logs each breach as an audit event.
+These checks can be triggered via API, CLI, or scheduled as a background job, enabling continuous and automated monitoring.
 ---
 
 ## 🧠 What This Project Does
 
-This is the **brain behind a work management system** — the backend engine that decides what work exists, who can do what with it, what state it's in, whether the rules allow a change, and what happens when that change occurs.
+This project is the backend engine of a work management system — responsible for managing tasks, enforcing rules, controlling access, and tracking state changes.
 
-Every task in this system lives inside a **state machine**. It doesn't just store data — it enforces behavior. You can't close a task that hasn't been reviewed. You can't start work on something nobody owns. You can't approve something if your role doesn't permit it. The system knows the rules and enforces them before any human error can slip through.
+Every task operates within a state machine, ensuring that actions follow defined workflows. The system enforces rules such as requiring assignment before starting work or restricting approvals based on roles, preventing invalid operations.
 
-On top of this rule engine sits an **AI layer that thinks about your work for you.** It reads a task's title, description, type, deadline, and age — then scores its true priority across 5 weighted factors, even if the creator marked it as "low." It looks at your team's skills, current workload, and track record — then tells you exactly who should handle it and why. And when a manager asks "show me all overdue bugs assigned to the backend team," it understands the question and returns the answer — no filters, no dropdowns, just plain English.
+On top of this, an AI layer enhances decision-making. It evaluates task details like title, type, deadline, and age to calculate priority scores, suggests optimal assignees based on skills and workload, and supports natural language queries to fetch tasks using simple English.
 
-Every action — every state change, every assignment, every comment — is permanently recorded in an immutable audit trail with before-and-after snapshots. Not even an admin can erase history. The system remembers everything.
+All actions — including state changes, assignments, and updates — are recorded in an immutable audit log with complete traceability.
 
-**In short:** Tasks come in. The engine routes them, enforces rules, tracks deadlines, scores priority, recommends assignments, logs everything, and makes sure nothing falls through the cracks.
+**In short**: Tasks are created, validated, assigned, processed through workflows, monitored for deadlines, intelligently prioritized, and fully tracked — ensuring consistency and reliability across the system.
 
 ---
 

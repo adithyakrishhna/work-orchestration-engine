@@ -820,7 +820,7 @@ The frontend is a single HTML file — no React build, no npm, no webpack. It co
 
 | Page | Features |
 |---|---|
-| **Dashboard** | Clickable stat cards, state/priority charts, team workload, SLA health, activity feed |
+| **Dashboard** | Clickable cards, state/priority charts, team workload, SLA health, activity feed |
 | **Tasks** | Search, filter (state/priority/team), sort columns, pagination, create/edit/delete, inline AI scoring |
 | **Users** | List with roles/skills/capacity bars, create/delete users |
 | **Teams** | Cards with lead/members, create/edit/delete |
@@ -1121,7 +1121,7 @@ Create your own workflows through the API or admin panel. Define custom states, 
 ### Frontend — AI Engine
 
 ![AI Scoring](docs/images/ai-scoring.png)
-*AI priority scoring breakdown — 5 weighted factors (keywords 35%, type 15%, priority 15%, deadline 20%, age 15%) with visual bars showing each factor's contribution.*
+*AI priority scoring breakdown — 5 weighted factors (keywords 35%, type 15%, priority 15%, deadline 20%, age 15%) with visual bars showing each factor's contribution, and once the score is generated, it is automatically reflected on the task.*
 
 ---
 
@@ -1185,6 +1185,7 @@ Create your own workflows through the API or admin panel. Define custom states, 
 ---
 
 ![Responsive](docs/images/responsive.png)
+
 *Responsive design — sidebar collapses into a hamburger menu on mobile, grids stack to single column, tables get horizontal scroll. Works on desktop, tablet, and phone.*
 ---
 

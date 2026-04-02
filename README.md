@@ -1,6 +1,7 @@
 # ⚡ AI-Powered Work Orchestration Engine
 
 > A production-grade AI-powered work orchestration engine with configurable workflows, role-based access control, SLA tracking, and intelligent task routing — built with Django, Django REST Framework, and PostgreSQL. Designed to handle real-world enterprise use cases like task lifecycle management, workflow enforcement, and data-driven decision making.
+> Open source, contributions welcome.
 
 This is what makes this project production-ready and easily adaptable:
 
@@ -512,7 +513,7 @@ Score interpretation: 🔴 70-100% = CRITICAL, 🟡 40-70% = MEDIUM/HIGH, 🟢 0
 
 ![AI Routing](docs/images/ai-routing.png)
 
-Ranks engineers by: **Skill match** (40%) — task tags vs user skills, **Workload** (30%) — fewer active tasks = higher score, **Past performance** (30%) — SLA compliance + resolution speed on similar tasks.
+Ranks engineers by: **Skill match** (40%) — task tags vs user skills, **Workload** (30%) — fewer active tasks = higher score, **Past performance** (30%) — SLA compliance + resolution speed on similar tasks — and auto-assigns the best match on action.
 
 ### 3. Natural Language Queries
 
@@ -849,6 +850,8 @@ The frontend is a single HTML file — no React build, no npm, no webpack. It co
 | **Audit Logs** | Card layout with old/new values, clickable task links |
 | **Comments** | Sorted recent-first, clickable task navigation |
 
+![Dashboard](docs/images/dashboard.png)
+
 ---
 
 ## 🚀 Getting Started (Step-by-Step)
@@ -858,7 +861,7 @@ The frontend is a single HTML file — no React build, no npm, no webpack. It co
 | Software | Version | Download |
 |---|---|---|
 | Python | 3.10+ | [python.org](https://www.python.org/downloads/) |
-| PostgreSQL | 14+ | [postgresql.org](https://www.postgresql.org/download/) |
+| PostgreSQL | 17+ | [postgresql.org](https://www.postgresql.org/download/) |
 | Git | Any | [git-scm.com](https://git-scm.com/downloads/) |
 
 ### Installation

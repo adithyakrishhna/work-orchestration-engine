@@ -967,7 +967,8 @@
         return ts ? new Date(ts).toLocaleString() : "—";
       }
       function isAdmin() {
-        return CURRENT_USER.role === "admin";
+          if(CURRENT_USER.role === 'admin') return true;
+          return ORG_ROLES.length > 0 && CURRENT_USER.role === ORG_ROLES[0];
       }
       function isManagerOrAbove() {
         if(CURRENT_USER.role === 'admin') return true;
@@ -1226,7 +1227,7 @@
             (o.by_state?.done || 0) -
             (o.by_state?.cancelled || 0);
           let h = `<div><h2 class="page-title">COMMAND CENTER</h2><p class="page-sub">Real-time overview · Click stats to filter</p></div>`;
-          h += `<div class="grid-5" style="margin-top:20px">${statCard("📋", "Total Tasks", o.total_tasks || 0, "#3b82f6", "", "goTasksFiltered('all')")}${statCard("⚡", "Active", active, "#f59e0b", `${o.last_7_days?.created || 0} new this week`, "goTasksFiltered('active')")}${statCard("✅", "Completed", o.by_state?.done || 0, "#10b981", `${o.last_7_days?.completed || 0} this week`, "goTasksFiltered('state','done')")}${statCard("🔴", "SLA Breached", s.breached || 0, "#ef4444", s.breach_rate ? s.breach_rate + "% rate" : "", "goTasksFiltered('sla')")}${statCard("👤", "Unassigned", o.unassigned || 0, "#8b5cf6", "", "goTasksFiltered('unassigned')")}</div>`;
+          h += `<div class="grid-5" style="margin-top:20px">${statCard("📋", "Total Tasks", o.total_tasks || 0, "#3b82f6", "", "goTasksFiltered('all')")}${statCard("⚡", "Active", active, "#f59e0b", `${o.last_7_days?.created || 0} new this week`, "goTasksFiltered('active')")}${statCard("✅", "Completed", Object.entries(o.by_state||{}).reduce((sum,[k,v])=>(WORKFLOWS.flatMap(w=>w.final_states||[]).includes(k)?sum+v:sum),0) || 0, "#10b981", `${o.last_7_days?.completed || 0} this week`, "goTasksFiltered('completed')")}${statCard("🔴", "SLA Breached", s.breached || 0, "#ef4444", s.breach_rate ? s.breach_rate + "% rate" : "", "goTasksFiltered('sla')")}${statCard("👤", "Unassigned", o.unassigned || 0, "#8b5cf6", "", "goTasksFiltered('unassigned')")}</div>`;
           const states = Object.entries(o.by_state || {}),
             prios = Object.entries(o.by_priority || {}),
             mp = Math.max(...prios.map((p) => p[1]), 1),
@@ -1263,7 +1264,7 @@
                 .join("")
             : '<div class="empty-state">No data</div>';
           h += `<div class="grid-3" style="margin-top:14px"><div class="card"><h3 class="section-title">Tasks by State</h3>${sH}</div><div class="card"><h3 class="section-title">Tasks by Priority</h3>${pH}</div><div class="card"><h3 class="section-title">Team Workload</h3>${tH}</div></div>`;
-          h += `<div class="grid-2" style="margin-top:14px"><div class="card"><h3 class="section-title">SLA Health</h3><div class="detail-row"><span class="detail-label">Healthy</span><span style="color:var(--green)">${s.healthy || 0}</span></div><div class="detail-row"><span class="detail-label">At Risk</span><span style="color:var(--amber)">${s.at_risk || 0}</span></div><div class="detail-row"><span class="detail-label">Breached</span><span style="color:var(--red)">${s.breached || 0}</span></div><button class="btn btn-sm btn-outline" style="margin-top:14px;width:100%" onclick="runSLACheck()">🔍 RUN SLA CHECK</button></div><div class="card"><h3 class="section-title">Quick Stats</h3><div class="detail-row"><span class="detail-label">Org</span><span class="detail-value">${ORGS[0]?.name || "—"}</span></div><div class="detail-row"><span class="detail-label">Users</span><span class="detail-value">${ALL_USERS.length}</span></div><div class="detail-row"><span class="detail-label">Teams</span><span class="detail-value">${TEAMS.length}</span></div><div class="detail-row"><span class="detail-label">Workflows</span><span class="detail-value">${WORKFLOWS.length}</span></div></div></div>`;
+          h += `<div class="grid-2" style="margin-top:14px"><div class="card"><h3 class="section-title">SLA Health</h3><div class="detail-row"><span class="detail-label">Healthy</span><span style="color:var(--green)">${s.healthy || 0}</span></div><div class="detail-row"><span class="detail-label">At Risk</span><span style="color:var(--amber)">${s.at_risk || 0}</span></div><div class="detail-row"><span class="detail-label">Breached</span><span style="color:var(--red)">${s.breached || 0}</span></div><button class="btn btn-sm btn-outline" style="margin-top:14px;width:100%" onclick="runSLACheck()">🔍 RUN SLA CHECK</button></div><div class="card"><h3 class="section-title">Quick Stats</h3><div class="detail-row"><span class="detail-label">Org</span><span class="detail-value">${(ORGS.find(o=>o.id===CURRENT_USER.organization)||ORGS[0])?.name || "—"}</span></div><div class="detail-row"><span class="detail-label">Users</span><span class="detail-value">${ALL_USERS.length}</span></div><div class="detail-row"><span class="detail-label">Teams</span><span class="detail-value">${TEAMS.length}</span></div><div class="detail-row"><span class="detail-label">Workflows</span><span class="detail-value">${WORKFLOWS.length}</span></div></div></div>`;
           const aH =
             ac
               .slice(0, 10)
@@ -1362,6 +1363,7 @@
           else if (f.type === "sla") renderTasks({ sla: true });
           else if (f.type === "unassigned") renderTasks({ unassigned: true });
           else if (f.type === "active") renderTasks({ active: true });
+          else if (f.type === "completed") renderTasks({ completed: true });
           else renderTasks({});
         } else renderTasks({});
       }
@@ -1373,17 +1375,23 @@
           fSLA = filters.sla || false,
           fUn = filters.unassigned || false,
           fAct = filters.active || false,
+          fComp = filters.completed || false,
           search = filters.search || "";
         let filtered = TASKS.filter((t) => {
           if (fs && t.current_state !== fs) return false;
           if (fp && t.priority !== fp) return false;
           if (fSLA && !t.sla_breached) return false;
           if (fUn && t.assigned_to_name) return false;
-          if (
-            fAct &&
-            (t.current_state === "done" || t.current_state === "cancelled")
-          )
-            return false;
+          if (fAct) {
+              const wfFinals = WORKFLOWS.flatMap(w => w.final_states || []);
+              const finals = wfFinals.length ? wfFinals : ['done', 'cancelled'];
+              if (finals.includes(t.current_state)) return false;
+          }
+          if (fComp) {
+              const wfFinals = WORKFLOWS.flatMap(w => w.final_states || []);
+              const finals = wfFinals.length ? wfFinals : ['done', 'cancelled'];
+              if (!finals.includes(t.current_state)) return false;
+          }
           if (ft && t.team !== ft) return false;
           if (search) {
             const s = search.toLowerCase();
@@ -1425,6 +1433,7 @@
         if (fSLA) labels.push("SLA Breached");
         if (fUn) labels.push("Unassigned");
         if (fAct) labels.push("Active");
+        if (fComp) labels.push("Completed");
         if (search) labels.push("Search: " + search);
 
         let h = `<div class="page-header"><div><h2 class="page-title">TASKS</h2><p class="page-sub">${filtered.length} tasks${labels.length ? " · " + labels.join(", ") : ""}</p></div>
@@ -1859,10 +1868,11 @@
         $("page-teams").innerHTML = h;
       }
       function showCreateTeamForm() {
-        const uOpts = ALL_USERS.map(
+        const orgUsers = ALL_USERS.filter(u => u.organization === CURRENT_USER.organization);
+        const uOpts = orgUsers.map(
           (u) => `<option value="${u.id}">${u.username} (${u.role})</option>`,
         ).join("");
-        const mCb = ALL_USERS.map(
+        const mCb = orgUsers.map(
           (u) =>
             `<label><input type="checkbox" value="${u.id}" class="tm-cb"> ${u.username} <span style="color:var(--text-muted)">(${u.role})</span></label>`,
         ).join("");
@@ -1890,11 +1900,12 @@
       function showEditTeam(id) {
         const t = TEAMS.find((x) => x.id === id);
         if (!t) return;
-        const uOpts = ALL_USERS.map(
-          (u) =>
-            `<option value="${u.id}" ${u.id === t.lead ? "selected" : ""}>${u.username}</option>`,
-        ).join("");
-        const mCb = ALL_USERS.map(
+          const orgUsers = ALL_USERS.filter(u => u.organization === CURRENT_USER.organization);
+          const uOpts = orgUsers.map(
+              (u) =>
+                  `<option value="${u.id}" ${u.id === t.lead ? "selected" : ""}>${u.username}</option>`,
+          ).join("");
+          const mCb = orgUsers.map(
           (u) =>
             `<label><input type="checkbox" value="${u.id}" class="etm-cb" ${(t.members || []).includes(u.id) ? "checked" : ""}> ${u.username} <span style="color:var(--text-muted)">(${u.role})</span></label>`,
         ).join("");
@@ -2190,7 +2201,7 @@
             $("nt-from").innerHTML = opts;
             $("nt-to").innerHTML = opts;
         }
-        
+
       async function createTransition() {
         const roles = [...document.querySelectorAll(".tr-cb:checked")].map(
           (c) => c.value,

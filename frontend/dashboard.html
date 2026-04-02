@@ -2167,20 +2167,30 @@
         }
       }
       function showCreateTransition() {
-        const wfOpts = WORKFLOWS.map(
-          (w) => `<option value="${w.id}">${w.name}</option>`,
-        ).join("");
-        const wfStates = WORKFLOWS.length > 0 ? (WORKFLOWS[0].allowed_states || STATES) : STATES;
-        const stOpts = wfStates.map(
-            (s) => `<option value="${s}">${s.replace(/_/g, " ")}</option>`,
-        ).join("");
-        const rCb = ORG_ROLES.map(
-            (r, i) =>
-                `<label style="display:flex;align-items:center;gap:6px;font-size:11px;cursor:pointer"><input type="checkbox" value="${r}" class="tr-cb" ${i < ORG_ROLES.length - 1 ? "checked" : ""}> ${r.replace(/_/g, " ")}</label>`,
-        ).join(" ");
-        $("create-trans-area").innerHTML =
-          `<div class="card" style="margin-top:14px"><h3 style="font-size:12px;font-weight:600;margin:0 0 14px;color:var(--accent)">New Rule</h3><div class="grid-2" style="gap:12px"><div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">From</label><select id="nt-from">${stOpts}</select></div><div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">To</label><select id="nt-to"><option value="in_progress">in progress</option>${stOpts}</select></div><div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">Workflow</label><select id="nt-wf">${wfOpts}</select></div><div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">Roles</label><div style="display:flex;gap:12px;flex-wrap:wrap">${rCb}</div></div></div><div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-sm" style="background:var(--accent);color:#fff" onclick="createTransition()">CREATE</button><button class="btn btn-sm btn-outline" onclick="$('create-trans-area').innerHTML=''">CANCEL</button></div></div>`;
-      }
+          const wfOpts = WORKFLOWS.map(
+              (w) => `<option value="${w.id}">${w.name}</option>`,
+          ).join("");
+          const firstWf = WORKFLOWS[0];
+          const firstStates = firstWf?.allowed_states || STATES;
+          const stOpts = firstStates.map(
+              (s) => `<option value="${s}">${s.replace(/_/g, " ")}</option>`,
+          ).join("");
+          const rCb = ORG_ROLES.map(
+              (r, i) =>
+                  `<label style="display:flex;align-items:center;gap:6px;font-size:11px;cursor:pointer"><input type="checkbox" value="${r}" class="tr-cb" ${i < ORG_ROLES.length - 1 ? "checked" : ""}> ${r.replace(/_/g, " ")}</label>`,
+          ).join(" ");
+          $("create-trans-area").innerHTML =
+              `<div class="card" style="margin-top:14px"><h3 style="font-size:12px;font-weight:600;margin:0 0 14px;color:var(--accent)">New Rule</h3><div class="grid-2" style="gap:12px"><div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">Workflow</label><select id="nt-wf" onchange="updateTransitionStates()">${wfOpts}</select></div><div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">Roles</label><div style="display:flex;gap:12px;flex-wrap:wrap">${rCb}</div></div><div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">From</label><select id="nt-from">${stOpts}</select></div><div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">To</label><select id="nt-to">${stOpts}</select></div></div><div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-sm" style="background:var(--accent);color:#fff" onclick="createTransition()">CREATE</button><button class="btn btn-sm btn-outline" onclick="$('create-trans-area').innerHTML=''">CANCEL</button></div></div>`;
+          }
+        function updateTransitionStates() {
+            const wfId = $("nt-wf").value;
+            const wf = WORKFLOWS.find(w => w.id === wfId);
+            const states = wf?.allowed_states || STATES;
+            const opts = states.map(s => `<option value="${s}">${s.replace(/_/g, " ")}</option>`).join("");
+            $("nt-from").innerHTML = opts;
+            $("nt-to").innerHTML = opts;
+        }
+        
       async function createTransition() {
         const roles = [...document.querySelectorAll(".tr-cb:checked")].map(
           (c) => c.value,

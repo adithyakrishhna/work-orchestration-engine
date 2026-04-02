@@ -14,8 +14,15 @@ class UserSerializer(serializers.ModelSerializer):
         read_only_fields = ('id',)
 
     def get_active_task_count(self, obj):
+        from core.models import WorkflowConfig
+        final_states = set()
+        if obj.organization:
+            for wf in WorkflowConfig.objects.filter(organization=obj.organization):
+                final_states.update(wf.final_states or [])
+        if not final_states:
+            final_states = {'done', 'cancelled'}
         return obj.assigned_tasks.exclude(
-            current_state__in=['done', 'cancelled']
+            current_state__in=list(final_states)
         ).count()
 
 

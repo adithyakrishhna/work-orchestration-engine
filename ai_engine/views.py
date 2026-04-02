@@ -60,9 +60,15 @@ class AIBulkScoringView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        from core.models import WorkflowConfig
+        final_states = set()
+        for wf in WorkflowConfig.objects.filter(organization=request.user.organization):
+            final_states.update(wf.final_states or [])
+        if not final_states:
+            final_states = {'done', 'cancelled'}
         tasks = Task.objects.filter(
             organization=request.user.organization,
-        ).exclude(current_state__in=['done', 'cancelled'])
+        ).exclude(current_state__in=list(final_states))
 
         results = []
         for task in tasks:
@@ -127,7 +133,9 @@ class AIAutoAssignView(APIView):
 
     def post(self, request):
         # Permission check — only admins and managers can assign
-        if request.user.role not in ('admin', 'manager'):
+        org = request.user.organization
+        management_roles = org.allowed_roles[:2] if (org and org.allowed_roles and len(org.allowed_roles) >= 2) else ['admin', 'manager']
+        if request.user.role not in management_roles:
             return Response(
                 {'error': 'Only admins and managers can auto-assign tasks.'},
                 status=status.HTTP_403_FORBIDDEN,
@@ -193,10 +201,16 @@ class NLQueryView(APIView):
 
         # Handle "my tasks" flag — needs request context
         if result['parsed_filters'].get('my_tasks'):
+            from core.models import WorkflowConfig
+            final_states = set()
+            for wf in WorkflowConfig.objects.filter(organization=request.user.organization):
+                final_states.update(wf.final_states or [])
+            if not final_states:
+                final_states = {'done', 'cancelled'}
             my_tasks = Task.objects.filter(
                 organization=request.user.organization,
                 assigned_to=request.user,
-            ).exclude(current_state__in=['done', 'cancelled'])
+            ).exclude(current_state__in=list(final_states))
 
             result['results'] = [
                 {

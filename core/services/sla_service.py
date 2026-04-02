@@ -16,10 +16,18 @@ class SLAService:
         results = {'breached': 0, 'checked': 0, 'breached_tasks': [], 'at_risk_tasks': []}
 
         # Get all active tasks with a due date
+        # Get final states dynamically from workflows
+        from core.models import WorkflowConfig
+        final_states = set()
+        for wf in WorkflowConfig.objects.all():
+            final_states.update(wf.final_states or [])
+        if not final_states:
+            final_states = {'done', 'cancelled'}
+
         active_tasks = Task.objects.filter(
             due_date__isnull=False,
         ).exclude(
-            current_state__in=['done', 'cancelled']
+            current_state__in=list(final_states)
         ).select_related('assigned_to')
 
         results['checked'] = active_tasks.count()
@@ -68,9 +76,16 @@ class SLAService:
     @staticmethod
     def get_sla_summary(organization):
         """Get SLA stats for an organization"""
+        from core.models import WorkflowConfig
+        final_states = set()
+        for wf in WorkflowConfig.objects.filter(organization=organization):
+            final_states.update(wf.final_states or [])
+        if not final_states:
+            final_states = {'done', 'cancelled'}
+
         active_tasks = Task.objects.filter(
             organization=organization,
-        ).exclude(current_state__in=['done', 'cancelled'])
+        ).exclude(current_state__in=list(final_states))
 
         total_active = active_tasks.count()
         breached = active_tasks.filter(sla_breached=True).count()

@@ -8,9 +8,10 @@ class OrganizationViewSet(viewsets.ModelViewSet):
     serializer_class = OrganizationSerializer
 
     def get_queryset(self):
-        # Users only see their own organization
-        if self.request.user.is_superuser:
+        # Superusers and admins see all organizations
+        if self.request.user.is_superuser or self.request.user.role == 'admin':
             return Organization.objects.all()
+        # Others see only their own
         return Organization.objects.filter(id=self.request.user.organization_id)
 
     def get_permissions(self):

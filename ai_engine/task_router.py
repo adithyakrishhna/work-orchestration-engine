@@ -16,9 +16,11 @@ class AITaskRouter:
         org = task.organization
 
         if candidates is None:
+            # Exclude first role (admin) and last role (viewer/intern) — everyone else is assignable
+            assignable_roles = org.allowed_roles[1:-1] if len(org.allowed_roles) > 2 else org.allowed_roles[:2]
             candidates = User.objects.filter(
                 organization=org,
-                role__in=['engineer', 'manager'],
+                role__in=assignable_roles,
             )
 
         if not candidates.exists():
@@ -135,8 +137,15 @@ class AITaskRouter:
         """Less active tasks = higher availability score"""
         max_tasks = user.max_concurrent_tasks or 5  # Fallback to 5
 
+        from core.models import WorkflowConfig
+        final_states = set()
+        if user.organization:
+            for wf in WorkflowConfig.objects.filter(organization=user.organization):
+                final_states.update(wf.final_states or [])
+        if not final_states:
+            final_states = {'done', 'cancelled'}
         active_tasks = user.assigned_tasks.exclude(
-            current_state__in=['done', 'cancelled']
+            current_state__in=list(final_states)
         ).count()
 
         if max_tasks <= 0:
@@ -157,8 +166,15 @@ class AITaskRouter:
     def _performance_score(cls, user, task):
         """How well has this user performed on similar task types"""
         try:
+            from core.models import WorkflowConfig
+            final_states = set()
+            if user.organization:
+                for wf in WorkflowConfig.objects.filter(organization=user.organization):
+                    final_states.update(wf.final_states or [])
+            if not final_states:
+                final_states = {'done', 'cancelled'}
             completed = user.assigned_tasks.filter(
-                current_state='done',
+                current_state__in=list(final_states),
                 task_type=task.task_type,
             )
 

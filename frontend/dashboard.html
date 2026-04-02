@@ -876,6 +876,7 @@
     <script>
       const API = "http://127.0.0.1:8000/api/v1";
       let TOKEN = null,
+        ORG_ROLES=[], ORG_PRIORITIES=[], ORG_TASK_TYPES=[],
         TASKS = [],
         WORKFLOWS = [],
         ALL_USERS = [],
@@ -941,8 +942,16 @@
         return document.getElementById(id);
       }
       function badge(t, m) {
-        const c = (m || {})[t] || "#64748b";
-        return `<span class="badge" style="background:${c}18;color:${c};border:1px solid ${c}30">${(t || "—").replace(/_/g, " ")}</span>`;
+          const DYNAMIC_COLORS = ['#3b82f6','#f59e0b','#8b5cf6','#06b6d4','#10b981','#ef4444','#ec4899','#f97316','#14b8a6','#6366f1'];
+          let c = (m || {})[t];
+          if(!c && t) {
+              // Generate consistent color for unknown values based on string hash
+              let hash = 0;
+              for(let i = 0; i < t.length; i++) hash = t.charCodeAt(i) + ((hash << 5) - hash);
+              c = DYNAMIC_COLORS[Math.abs(hash) % DYNAMIC_COLORS.length];
+          }
+          c = c || '#64748b';
+          return `<span class="badge" style="background:${c}18;color:${c};border:1px solid ${c}30">${(t || "—").replace(/_/g, " ")}</span>`;
       }
       function timeAgo(ts) {
         if (!ts) return "—";
@@ -961,7 +970,9 @@
         return CURRENT_USER.role === "admin";
       }
       function isManagerOrAbove() {
-        return CURRENT_USER.role === "admin" || CURRENT_USER.role === "manager";
+        if(CURRENT_USER.role === 'admin') return true;
+        if(ORG_ROLES.length >= 2) return CURRENT_USER.role === ORG_ROLES[0] || CURRENT_USER.role === ORG_ROLES[1];
+        return CURRENT_USER.role === 'admin' || CURRENT_USER.role === 'manager';
       }
       function showGlobalMsg(m, e) {
         $("global-msg").innerHTML =
@@ -1101,27 +1112,23 @@
         if (e.key === "Enter") $("login-pass").focus();
       });
 
-      async function loadGlobalData() {
-        try {
-          const [me, td, wd, ud, tmd, od] = await Promise.all([
-            apiCall("/users/me/"),
-            apiCall("/tasks/?page_size=100"),
-            apiCall("/workflows/"),
-            apiCall("/users/"),
-            apiCall("/teams/"),
-            apiCall("/organizations/"),
-          ]);
-          CURRENT_USER = me;
-          TASKS = td.results || [];
-          WORKFLOWS = wd.results || [];
-          ALL_USERS = ud.results || [];
-          TEAMS = tmd.results || [];
-          ORGS = od.results || [];
-          $("current-user").textContent = me.username || "";
-          $("current-role").textContent = (me.role || "").toUpperCase();
-        } catch (e) {
-          showGlobalMsg("Load failed: " + e.message, true);
-        }
+      async function loadGlobalData(){
+          try{
+              const[me,td,wd,ud,tmd,od]=await Promise.all([
+                  apiCall('/users/me/'),apiCall('/tasks/?page_size=100'),apiCall('/workflows/'),
+                  apiCall('/users/'),apiCall('/teams/'),apiCall('/organizations/')
+              ]);
+              CURRENT_USER=me;TASKS=td.results||[];WORKFLOWS=wd.results||[];
+              ALL_USERS=ud.results||[];TEAMS=tmd.results||[];ORGS=od.results||[];
+              $('current-user').textContent=me.username||'';
+              $('current-role').textContent=(me.role||'').toUpperCase();
+
+              // Load dynamic config from organization
+              const org = ORGS[0] || {};
+              ORG_ROLES = org.allowed_roles || ['admin','manager','engineer','viewer'];
+              ORG_PRIORITIES = org.allowed_priorities || PRIORITIES;
+              ORG_TASK_TYPES = org.allowed_task_types || ['bug','feature','task','improvement'];
+          }catch(e){showGlobalMsg('Load failed: '+e.message,true)}
       }
 
       function switchPage(p) {
@@ -1233,9 +1240,11 @@
                 .join("")
             : '<div class="empty-state">No data</div>';
           let pH = prios.length
-            ? prios
-                .map(([k, v]) => {
-                  const c = PRIORITY_COLORS[k] || "#64748b";
+          ? prios
+              .map(([k, v]) => {
+                  const DCOL = ['#3b82f6','#f59e0b','#8b5cf6','#06b6d4','#10b981','#ef4444','#ec4899','#f97316'];
+                  let c = PRIORITY_COLORS[k];
+                  if(!c){let h=0;for(let i=0;i<k.length;i++)h=k.charCodeAt(i)+((h<<5)-h);c=DCOL[Math.abs(h)%DCOL.length]}
                   return `<div class="clickable-bar" onclick="goTasksFiltered('priority','${k}')" style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span style="font-size:10px;color:var(--text-muted);width:60px">${k}</span><div style="flex:1;height:20px;background:var(--bg);border-radius:4px;overflow:hidden"><div style="height:100%;width:${(v / mp) * 100}%;background:${c};border-radius:4px;min-width:${v > 0 ? "24px" : "0"};display:flex;align-items:center;padding-left:8px"><span style="font-size:10px;color:#fff;font-weight:600">${v}</span></div></div></div>`;
                 })
                 .join("")
@@ -1426,8 +1435,8 @@
         h += `<div class="search-bar" style="margin:16px 0 14px">
         <input id="task-search" placeholder="🔍 Search tasks..." value="${search}" onkeydown="if(event.key==='Enter'){TASK_PAGE=1;renderTasks(getCurrentFilters())}" style="max-width:250px">
         <button class="btn btn-sm btn-outline" onclick="TASK_PAGE=1;renderTasks(getCurrentFilters())">Search</button>
-        <select id="f-state" style="width:140px" onchange="TASK_PAGE=1;renderTasks(getCurrentFilters())"><option value="">All States</option>${STATES.map((s) => `<option value="${s}" ${fs === s ? "selected" : ""}>${s.replace(/_/g, " ")}</option>`).join("")}</select>
-        <select id="f-prio" style="width:140px" onchange="TASK_PAGE=1;renderTasks(getCurrentFilters())"><option value="">All Priorities</option>${PRIORITIES.map((p) => `<option value="${p}" ${fp === p ? "selected" : ""}>${p}</option>`).join("")}</select>
+        <select id="f-state" style="width:140px" onchange="TASK_PAGE=1;renderTasks(getCurrentFilters())"><option value="">All States</option>${(WORKFLOWS[0]?.allowed_states||STATES).map((s) => `<option value="${s}" ${fs === s ? "selected" : ""}>${s.replace(/_/g, " ")}</option>`).join("")}</select>
+        <select id="f-prio" style="width:140px" onchange="TASK_PAGE=1;renderTasks(getCurrentFilters())"><option value="">All Priorities</option>${ORG_PRIORITIES.map(p=>`<option value="${p}" ${fp===p?'selected':''}>${p.replace(/_/g,' ')}</option>`).join('')}</select>
         <select id="f-team" style="width:140px" onchange="TASK_PAGE=1;renderTasks(getCurrentFilters())"><option value="">All Teams</option>${TEAMS.map((t) => `<option value="${t.id}" ${ft === t.id ? "selected" : ""}>${t.name}</option>`).join("")}</select>
     </div><div id="task-msg"></div>`;
         // Table
@@ -1536,7 +1545,7 @@
         const f = $("create-task-form");
         f.classList.toggle("hidden");
         if (!f.classList.contains("hidden")) {
-          f.innerHTML = `<h3 style="font-size:12px;font-weight:600;margin:0 0 14px;color:var(--accent)">Create New Task</h3><div class="grid-2" style="gap:12px"><div style="grid-column:1/-1"><input id="new-title" placeholder="Task title..."></div><div style="grid-column:1/-1"><textarea id="new-desc" style="min-height:70px;resize:vertical" placeholder="Description..."></textarea></div><select id="new-priority"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option><option value="critical">Critical</option></select><select id="new-type"><option value="task">Task</option><option value="bug">Bug</option><option value="feature">Feature</option><option value="improvement">Improvement</option></select><select id="new-workflow"><option value="">Workflow...</option>${WORKFLOWS.map((w) => `<option value="${w.id}">${w.name}</option>`).join("")}</select><select id="new-team"><option value="">No team</option>${TEAMS.map((t) => `<option value="${t.id}">${t.name}</option>`).join("")}</select><div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">Due Date</label><input id="new-due" type="datetime-local"></div><div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">Tags</label><input id="new-tags" placeholder="backend, urgent"></div></div><div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-sm" style="background:var(--accent);color:#fff" onclick="createTask()">CREATE</button><button class="btn btn-sm btn-outline" onclick="$('create-task-form').classList.add('hidden')">CANCEL</button></div>`;
+          f.innerHTML = `<h3 style="font-size:12px;font-weight:600;margin:0 0 14px;color:var(--accent)">Create New Task</h3><div class="grid-2" style="gap:12px"><div style="grid-column:1/-1"><input id="new-title" placeholder="Task title..."></div><div style="grid-column:1/-1"><textarea id="new-desc" style="min-height:70px;resize:vertical" placeholder="Description..."></textarea></div><select id="new-priority">${ORG_PRIORITIES.map((p,i)=>`<option value="${p}" ${i===Math.floor(ORG_PRIORITIES.length/2)?'selected':''}>${p.replace(/_/g,' ')}</option>`).join('')}</select><select id="new-type">${ORG_TASK_TYPES.map(t=>`<option value="${t}">${t.replace(/_/g,' ')}</option>`).join('')}</select><select id="new-workflow"><option value="">Workflow...</option>${WORKFLOWS.map((w) => `<option value="${w.id}">${w.name}</option>`).join("")}</select><select id="new-team"><option value="">No team</option>${TEAMS.map((t) => `<option value="${t.id}">${t.name}</option>`).join("")}</select><div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">Due Date</label><input id="new-due" type="datetime-local"></div><div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">Tags</label><input id="new-tags" placeholder="backend, urgent"></div></div><div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-sm" style="background:var(--accent);color:#fff" onclick="createTask()">CREATE</button><button class="btn btn-sm btn-outline" onclick="$('create-task-form').classList.add('hidden')">CANCEL</button></div>`;
         }
       }
       async function createTask() {
@@ -1576,7 +1585,7 @@
           ]);
           const avail = trans.available_transitions || [];
           const eng = ALL_USERS.filter(
-            (u) => u.role === "engineer" || u.role === "manager",
+              (u) => u.role !== ORG_ROLES[ORG_ROLES.length-1] && u.role !== 'viewer',
           );
           const uOpts = eng
             .map(
@@ -1594,7 +1603,7 @@
          <div style="margin-top:10px"><span class="detail-label" style="font-size:11px">Tags: </span>${tags}</div>`;
           h += `<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)"><h4 class="section-title">Edit Task</h4>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-            <div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:4px">Priority</label><select id="edit-priority" style="font-size:12px">${PRIORITIES.map((p) => `<option value="${p}" ${detail.priority === p ? "selected" : ""}>${p}</option>`).join("")}</select></div>
+            <div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:4px">Priority</label><select id="edit-priority" style="font-size:12px">${ORG_PRIORITIES.map(p=>`<option value="${p}" ${detail.priority===p?'selected':''}>${p.replace(/_/g,' ')}</option>`).join('')}</select></div>
             <div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:4px">Due Date</label><input id="edit-due" type="datetime-local" value="${detail.due_date ? new Date(detail.due_date).toISOString().slice(0, 16) : ""}" style="font-size:12px"></div>
             <div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:4px">Team</label><select id="edit-team" style="font-size:12px"><option value="">No team</option>${TEAMS.map((tm) => `<option value="${tm.id}" ${detail.team === tm.id ? "selected" : ""}>${tm.name}</option>`).join("")}</select></div>
             <div style="grid-column:1/-1"><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:4px">Tags</label><input id="edit-tags" value="${(detail.tags || []).join(", ")}" placeholder="backend, urgent" style="font-size:12px"></div>
@@ -1774,9 +1783,7 @@
         $("page-users").innerHTML = h;
       }
       function showCreateUserForm() {
-        const roles = isAdmin()
-          ? ["admin", "manager", "engineer", "viewer"]
-          : ["manager", "engineer", "viewer"];
+        const roles=isAdmin()?ORG_ROLES:ORG_ROLES.filter(r=>r!=='admin');
         $("create-user-area").innerHTML =
           `<div class="card" style="margin-top:14px"><h3 style="font-size:12px;font-weight:600;margin:0 0 14px;color:var(--accent)">Create User</h3><div class="grid-2" style="gap:12px"><input id="nu-user" placeholder="Username"><input id="nu-email" placeholder="Email"><input id="nu-pass" type="password" placeholder="Password (min 8)"><select id="nu-role">${roles.map((r) => `<option value="${r}">${r}</option>`).join("")}</select><select id="nu-org">${ORGS.map((o) => `<option value="${o.id}">${o.name}</option>`).join("")}</select><input id="nu-skills" placeholder="Skills (comma separated)"></div><div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-sm" style="background:var(--accent);color:#fff" onclick="createUser()">CREATE</button><button class="btn btn-sm btn-outline" onclick="$('create-user-area').innerHTML=''">CANCEL</button></div></div>`;
       }
@@ -2163,15 +2170,14 @@
         const wfOpts = WORKFLOWS.map(
           (w) => `<option value="${w.id}">${w.name}</option>`,
         ).join("");
-        const stOpts = STATES.map(
-          (s) => `<option value="${s}">${s.replace(/_/g, " ")}</option>`,
+        const wfStates = WORKFLOWS.length > 0 ? (WORKFLOWS[0].allowed_states || STATES) : STATES;
+        const stOpts = wfStates.map(
+            (s) => `<option value="${s}">${s.replace(/_/g, " ")}</option>`,
         ).join("");
-        const rCb = ["admin", "manager", "engineer", "viewer"]
-          .map(
-            (r) =>
-              `<label style="display:flex;align-items:center;gap:6px;font-size:11px;cursor:pointer"><input type="checkbox" value="${r}" class="tr-cb" ${r !== "viewer" ? "checked" : ""}> ${r}</label>`,
-          )
-          .join(" ");
+        const rCb = ORG_ROLES.map(
+            (r, i) =>
+                `<label style="display:flex;align-items:center;gap:6px;font-size:11px;cursor:pointer"><input type="checkbox" value="${r}" class="tr-cb" ${i < ORG_ROLES.length - 1 ? "checked" : ""}> ${r.replace(/_/g, " ")}</label>`,
+        ).join(" ");
         $("create-trans-area").innerHTML =
           `<div class="card" style="margin-top:14px"><h3 style="font-size:12px;font-weight:600;margin:0 0 14px;color:var(--accent)">New Rule</h3><div class="grid-2" style="gap:12px"><div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">From</label><select id="nt-from">${stOpts}</select></div><div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">To</label><select id="nt-to"><option value="in_progress">in progress</option>${stOpts}</select></div><div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">Workflow</label><select id="nt-wf">${wfOpts}</select></div><div><label style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);display:block;margin-bottom:6px">Roles</label><div style="display:flex;gap:12px;flex-wrap:wrap">${rCb}</div></div></div><div style="display:flex;gap:10px;margin-top:14px"><button class="btn btn-sm" style="background:var(--accent);color:#fff" onclick="createTransition()">CREATE</button><button class="btn btn-sm btn-outline" onclick="$('create-trans-area').innerHTML=''">CANCEL</button></div></div>`;
       }

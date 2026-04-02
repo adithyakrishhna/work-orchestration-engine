@@ -30,6 +30,13 @@ class DashboardService:
             .values_list('task_type', 'count')
         )
 
+        from core.models import WorkflowConfig
+        final_states = set()
+        for wf in WorkflowConfig.objects.filter(organization=organization):
+            final_states.update(wf.final_states or [])
+        if not final_states:
+            final_states = {'done', 'cancelled'}
+
         # Tasks created in last 7 days
         recent_created = tasks.filter(created_at__gte=last_7_days).count()
         # Tasks completed in last 7 days
@@ -47,9 +54,9 @@ class DashboardService:
                 'completed': recent_completed,
             },
             'unassigned': tasks.filter(
-                assigned_to__isnull=True
+             assigned_to__isnull=True
             ).exclude(
-                current_state__in=['done', 'cancelled']
+                current_state__in=list(final_states)
             ).count(),
         }
 
@@ -67,8 +74,15 @@ class DashboardService:
                 assigned_to=user,
                 organization=organization,
             )
-            active = assigned.exclude(current_state__in=['done', 'cancelled']).count()
-            completed = assigned.filter(current_state='done').count()
+            from core.models import WorkflowConfig
+            final_states = set()
+            for wf in WorkflowConfig.objects.filter(organization=organization):
+                final_states.update(wf.final_states or [])
+            if not final_states:
+                final_states = {'done', 'cancelled'}
+
+            active = assigned.exclude(current_state__in=list(final_states)).count()
+            completed = assigned.filter(current_state__in=list(final_states)).count()
             breached = assigned.filter(sla_breached=True).count()
 
             # Average resolution time (for completed tasks)

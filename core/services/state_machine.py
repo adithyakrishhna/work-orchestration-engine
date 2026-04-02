@@ -70,11 +70,16 @@ class StateMachineService:
                 f"Allowed roles: {transition_rule.allowed_roles}"
             )
 
-        # Rule 5: Task must be assigned before moving to in_progress
-        if to_state == 'in_progress' and not task.assigned_to:
-            raise ValidationError(
-                "Task must be assigned to someone before moving to 'in_progress'."
-            )
+        # Rule 5: Task must be assigned before moving past the initial state
+        # The second state in the workflow is the first "work" state
+        # (e.g., "in_progress", "building", "in_dev", "doing")
+        if not task.assigned_to and to_state not in workflow.final_states:
+            active_states = [s for s in workflow.allowed_states if s not in workflow.final_states]
+            # If moving beyond the initial state (first active state), assignment is required
+            if len(active_states) >= 2 and to_state != active_states[0]:
+                raise ValidationError(
+                    f"Task must be assigned to someone before moving to '{to_state}'."
+                )
 
         # All validations passed — perform the transition
         task.current_state = to_state

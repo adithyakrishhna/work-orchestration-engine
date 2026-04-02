@@ -27,3 +27,6 @@ class UserViewSet(viewsets.ModelViewSet):
         """Get current user's profile"""
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
+    
+    def perform_create(self, serializer):
+        serializer.save(organization=self.request.user.organization)

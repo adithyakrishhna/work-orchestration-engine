@@ -16,6 +16,9 @@ class WorkflowConfigViewSet(viewsets.ModelViewSet):
         if self.action in ('create', 'update', 'partial_update', 'destroy'):
             return [IsAdmin()]
         return super().get_permissions()
+    
+    def perform_create(self, serializer):
+        serializer.save(organization=self.request.user.organization)
 
 
 class TransitionRuleViewSet(viewsets.ModelViewSet):

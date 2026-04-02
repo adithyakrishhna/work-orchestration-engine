@@ -1123,11 +1123,11 @@
               $('current-user').textContent=me.username||'';
               $('current-role').textContent=(me.role||'').toUpperCase();
 
-              // Load dynamic config from organization
-              const org = ORGS[0] || {};
-              ORG_ROLES = org.allowed_roles || ['admin','manager','engineer','viewer'];
-              ORG_PRIORITIES = org.allowed_priorities || PRIORITIES;
-              ORG_TASK_TYPES = org.allowed_task_types || ['bug','feature','task','improvement'];
+              // Load dynamic config from CURRENT USER's organization
+              const org = ORGS.find(o => o.id === CURRENT_USER.organization) || ORGS[0] || {};
+              ORG_ROLES = org.allowed_roles?.length ? org.allowed_roles : ['admin','manager','engineer','viewer'];
+              ORG_PRIORITIES = org.allowed_priorities?.length ? org.allowed_priorities : PRIORITIES;
+              ORG_TASK_TYPES = org.allowed_task_types?.length ? org.allowed_task_types : ['bug','feature','task','improvement'];
           }catch(e){showGlobalMsg('Load failed: '+e.message,true)}
       }
 

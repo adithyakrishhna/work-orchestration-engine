@@ -10,7 +10,7 @@ class SLAService:
     """
 
     @staticmethod
-    def check_all_sla():
+    def check_all_sla(organization=None):
         """Scan all active tasks and flag SLA breaches"""
         now = timezone.now()
         results = {'breached': 0, 'checked': 0, 'breached_tasks': [], 'at_risk_tasks': []}
@@ -24,13 +24,26 @@ class SLAService:
         if not final_states:
             final_states = {'done', 'cancelled'}
 
-        active_tasks = Task.objects.filter(
-            due_date__isnull=False,
-        ).exclude(
+        qs = Task.objects.filter(due_date__isnull=False)
+        if organization:
+            qs = qs.filter(organization=organization)
+        active_tasks = qs.exclude(
             current_state__in=list(final_states)
         ).select_related('assigned_to')
 
         results['checked'] = active_tasks.count()
+
+        # Reset tasks that are no longer breached (due date changed to future or removed)
+        previously_breached = Task.objects.filter(
+            sla_breached=True,
+        )
+        if organization:
+            previously_breached = previously_breached.filter(organization=organization)
+        
+        for task in previously_breached:
+            if task.due_date is None or now <= task.due_date:
+                task.sla_breached = False
+                task.save()
 
         for task in active_tasks:
             if now > task.due_date:

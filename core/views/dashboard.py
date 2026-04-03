@@ -56,7 +56,7 @@ class SLACheckView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        results = SLAService.check_all_sla()
+        results = SLAService.check_all_sla(organization=request.user.organization)
         return Response({
             'message': 'SLA check completed',
             'results': results,

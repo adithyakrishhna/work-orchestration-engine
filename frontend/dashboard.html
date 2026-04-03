@@ -1266,7 +1266,7 @@
           h += `<div class="grid-3" style="margin-top:14px"><div class="card"><h3 class="section-title">Tasks by State</h3>${sH}</div><div class="card"><h3 class="section-title">Tasks by Priority</h3>${pH}</div><div class="card"><h3 class="section-title">Team Workload</h3>${tH}</div></div>`;
           h += `<div class="grid-2" style="margin-top:14px"><div class="card"><h3 class="section-title">SLA Health</h3><div class="detail-row"><span class="detail-label">Healthy</span><span style="color:var(--green)">${s.healthy || 0}</span></div><div class="detail-row"><span class="detail-label">At Risk</span><span style="color:var(--amber)">${s.at_risk || 0}</span></div><div class="detail-row"><span class="detail-label">Breached</span><span style="color:var(--red)">${s.breached || 0}</span></div><button class="btn btn-sm btn-outline" style="margin-top:14px;width:100%" onclick="runSLACheck()">🔍 RUN SLA CHECK</button></div><div class="card"><h3 class="section-title">Quick Stats</h3><div class="detail-row"><span class="detail-label">Org</span><span class="detail-value">${(ORGS.find(o=>o.id===CURRENT_USER.organization)||ORGS[0])?.name || "—"}</span></div><div class="detail-row"><span class="detail-label">Users</span><span class="detail-value">${ALL_USERS.length}</span></div><div class="detail-row"><span class="detail-label">Teams</span><span class="detail-value">${TEAMS.length}</span></div><div class="detail-row"><span class="detail-label">Workflows</span><span class="detail-value">${WORKFLOWS.length}</span></div></div></div>`;
           const aH =
-            ac
+            ac 
               .slice(0, 10)
               .map(
                 (a) =>

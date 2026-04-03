@@ -26,7 +26,7 @@ This is what makes this project production-ready and easily adaptable:
 - [Backend Deep Dive](#-backend-deep-dive)
 - [AI Engine — The Intelligence Layer](#-ai-engine--the-intelligence-layer)
 - [JWT Authentication — How It Works](#-jwt-authentication--how-it-works)
-- [Complete API Documentation](#-complete-api-documentation)
+- [Complete API Reference](API_REFERENCE.md)
 - [Django Admin Panel](#-django-admin-panel)
 - [DRF Browsable API](#-drf-browsable-api)
 - [Frontend Dashboard](#-frontend-dashboard)
@@ -43,7 +43,8 @@ This is what makes this project production-ready and easily adaptable:
 
 ## 🏆 What Makes This System Strong
 
-This is not a tutorial project or a simple CRUD application. Every layer of this system was designed with the same engineering principles used at product companies. Here's what makes it stand out:
+This project is built with a strong focus on real-world engineering practices, with every layer designed to reflect modern product-driven standards.
+It emphasizes scalability, maintainability, and extensibility to deliver a robust, production-ready system.
 
 ### Real System Design, Not Just Endpoints
 
@@ -124,6 +125,10 @@ Most workflow tools force you into their terminology — their states, their rol
 ### One-Click Setup API
 
 The `/api/v1/setup/` endpoint creates everything a new organization needs in a single request:
+
+For the complete API reference with every endpoint, request/response examples, curl commands, error codes, and a full step-by-step lifecycle walkthrough, see:
+
+**[📖 Complete API Reference →](API_REFERENCE.md)**
 
 **What it creates automatically:**
 - Organization with custom roles, priorities, and task types
@@ -639,172 +644,28 @@ Every request is authenticated using tokens — making the system **secure, scal
 
 ---
 
-## 📡 Complete API Documentation
+## 📡 API Documentation
 
-**Base URL:** `http://127.0.0.1:8000/api/v1/`
+For the complete API reference with every endpoint, request/response examples, curl commands, error codes, and a full step-by-step lifecycle walkthrough, see:
 
-### How to Read This Documentation
+**[📖 Complete API Reference →](API_REFERENCE.md)**
 
-- **`{id}`** means a UUID. You get UUIDs from list endpoints. For example, to get a task's `{id}`, first call `GET /tasks/` — each task in the response has an `"id"` field like `"4709a29f-d408-4536-8586-e9cbb5dcc1d0"`. Copy that UUID and use it in the URL.
-- **Permission: Manager+** means the endpoint requires the `manager` role or higher (`admin`). The `+` means "this role and above." So `Manager+` = Manager or Admin. `Engineer+` = Engineer, Manager, or Admin.
-- **Permission: Authenticated** means any logged-in user (all 4 roles) can access it.
+**Quick overview of available endpoints:**
 
-### Organizations
-
-| Endpoint | Method | Permission | Description |
-|---|---|---|---|
-| `/organizations/` | GET | Authenticated | List organizations (users see only their own) |
-| `/organizations/` | POST | Admin | Create organization. Body: `{"name": "...", "slug": "..."}` |
-| `/organizations/{id}/` | GET | Authenticated | Get single organization |
-| `/organizations/{id}/` | PATCH | Admin | Update organization |
-| `/organizations/{id}/` | DELETE | Admin | Delete organization |
-
-### Users
-
-| Endpoint | Method | Permission | Description |
-|---|---|---|---|
-| `/users/` | GET | Authenticated | List all users in your org |
-| `/users/` | POST | Manager+ | Create user. Body: `{"username", "password", "email", "role", "organization", "skills"}` |
-| `/users/me/` | GET | Authenticated | Get your own profile |
-| `/users/{id}/` | GET | Authenticated | Get user details |
-| `/users/{id}/` | PATCH | Authenticated | Update user (email, skills, max_concurrent_tasks) |
-| `/users/{id}/` | DELETE | Admin | Delete user |
-
-**Where to get the organization UUID for creating a user:** Call `GET /organizations/` first — each org in the response has an `"id"` field.
-
-### Teams
-
-| Endpoint | Method | Permission | Description |
-|---|---|---|---|
-| `/teams/` | GET | Authenticated | List teams |
-| `/teams/` | POST | Manager+ | Create team. Body: `{"name", "organization", "lead", "members"}` |
-| `/teams/{id}/` | PATCH | Manager+ | Update team |
-| `/teams/{id}/` | DELETE | Manager+ | Delete team |
-
-### Workflows
-
-| Endpoint | Method | Permission | Description |
-|---|---|---|---|
-| `/workflows/` | GET | Authenticated | List workflows with all transition rules nested |
-| `/workflows/` | POST | Admin | Create workflow. Body: `{"name", "organization", "allowed_states", "initial_state", "final_states"}` |
-| `/workflows/{id}/` | PATCH | Admin | Update workflow |
-| `/workflows/{id}/` | DELETE | Admin | Delete workflow |
-
-### Transition Rules
-
-| Endpoint | Method | Permission | Description |
-|---|---|---|---|
-| `/transitions/` | GET | Authenticated | List all transition rules |
-| `/transitions/` | POST | Admin | Create rule. Body: `{"workflow", "from_state", "to_state", "allowed_roles"}` |
-| `/transitions/{id}/` | DELETE | Admin | Delete rule |
-
-### Tasks (The Core)
-
-| Endpoint | Method | Permission | Description |
-|---|---|---|---|
-| `/tasks/` | GET | Authenticated | List tasks (paginated, 20 per page) |
-| `/tasks/` | POST | Engineer+ | Create task |
-| `/tasks/{id}/` | GET | Authenticated | Get full task details with comments |
-| `/tasks/{id}/` | PATCH | Owner or Manager+ | Update task fields |
-| `/tasks/{id}/` | DELETE | Admin | Delete task |
-| `/tasks/{id}/transition/` | POST | Role-dependent | Change task state (validated by state machine) |
-| `/tasks/{id}/available-transitions/` | GET | Authenticated | What states can I move this task to? |
-| `/tasks/{id}/assign/` | POST | Manager+ | Assign task to a user |
-
-**Filtering, searching, sorting (all combinable):**
-
-```
-GET /tasks/?current_state=open              — Filter by state
-GET /tasks/?priority=critical               — Filter by priority
-GET /tasks/?team={team-uuid}                — Filter by team
-GET /tasks/?assigned_to={user-uuid}         — Filter by assignee
-GET /tasks/?sla_breached=true               — Only overdue tasks
-GET /tasks/?search=login+bug                — Search title and task_key
-GET /tasks/?ordering=-ai_priority_score     — Sort (prefix - for descending)
-GET /tasks/?current_state=open&priority=high&ordering=-created_at  — Combine all
-```
-
-**Create a task:**
-```json
-POST /tasks/
-{
-    "title": "Fix login page crash on Safari",
-    "description": "Users report crash when clicking login on Safari 17",
-    "priority": "high",
-    "task_type": "bug",
-    "workflow": "<workflow-uuid — get from GET /workflows/>",
-    "tags": ["frontend", "urgent"],
-    "due_date": "2026-04-01T17:00:00Z"
-}
-```
-
-**Transition a task (change its state):**
-```
-Step 1 — Check what transitions are available for your role:
-GET /tasks/{task-id}/available-transitions/
-
-Response example:
-{
-    "current_state": "open",
-    "available_transitions": [
-        {"to_state": "in_progress", "allowed_roles": ["admin", "manager", "engineer"]},
-        {"to_state": "cancelled", "allowed_roles": ["admin", "manager"]}
-    ]
-}
-
-Step 2 — Perform the transition:
-POST /tasks/{task-id}/transition/
-{
-    "to_state": "in_progress",
-    "reason": "Starting work on this bug"
-}
-```
-
-**Assign a task:**
-```
-Step 1 — Get the engineer's UUID:
-GET /users/
-Find the user you want → copy their "id" field
-
-Step 2 — Assign:
-POST /tasks/{task-id}/assign/
-{
-    "user_id": "<engineer-uuid-from-step-1>",
-    "reason": "Best skill match for this task"
-}
-```
-
-### Comments
-
-| Endpoint | Method | Permission | Description |
-|---|---|---|---|
-| `/comments/` | GET | Authenticated | List all comments |
-| `/comments/` | POST | Authenticated | Add comment. Body: `{"task": "<task-uuid>", "content": "..."}` |
-
-### Audit Logs (Read-Only — cannot be modified or deleted)
-
-| Endpoint | Method | Permission | Description |
-|---|---|---|---|
-| `/audit-logs/` | GET | Authenticated | List audit logs. Filter: `?action=state_changed` or `?task={uuid}` |
-
-### Dashboard and Analytics
-
-| Endpoint | Method | Description |
+| Category | Endpoints | Key Actions |
 |---|---|---|
-| `/dashboard/overview/` | GET | Task counts by state/priority/type + SLA summary |
-| `/dashboard/team-performance/` | GET | Per-user: active tasks, completed, SLA breaches, avg resolution time, workload % |
-| `/dashboard/activity/` | GET | Recent activity feed (last 20 actions) |
-| `/dashboard/sla-check/` | POST | Scan all tasks and flag SLA breaches |
-
-### AI Engine
-
-| Endpoint | Method | Permission | Body | Description |
-|---|---|---|---|---|
-| `/ai/score-priority/` | POST | Authenticated | `{"task_id": "<uuid>"}` | Score one task — returns 5-factor breakdown |
-| `/ai/score-all/` | POST | Authenticated | *(none)* | Score all active tasks |
-| `/ai/recommend-assignee/` | POST | Authenticated | `{"task_id": "<uuid>"}` | Get ranked engineer recommendations |
-| `/ai/auto-assign/` | POST | Manager+ | `{"task_id": "<uuid>"}` | Auto-assign to best candidate |
-| `/ai/query/` | POST | Authenticated | `{"question": "..."}` | Natural language search |
+| **Setup** | `POST /setup/` | One-click org creation with custom config |
+| **Auth** | `/auth/login/` `/auth/register/` `/auth/refresh/` `/auth/logout/` | JWT token lifecycle |
+| **Organizations** | `/organizations/` | CRUD + dynamic config |
+| **Users** | `/users/` `/users/me/` | CRUD + profile management |
+| **Teams** | `/teams/` | CRUD + member management |
+| **Workflows** | `/workflows/` | State machine configuration |
+| **Transitions** | `/transitions/` | Who can move tasks between states |
+| **Tasks** | `/tasks/` `/tasks/{id}/transition/` `/tasks/{id}/assign/` | CRUD + state changes + assignment |
+| **Comments** | `/comments/` | Task discussions |
+| **Audit Logs** | `/audit-logs/` | Immutable history (read-only) |
+| **Dashboard** | `/dashboard/overview/` `/dashboard/sla-check/` | Analytics + SLA monitoring |
+| **AI Engine** | `/ai/score-priority/` `/ai/recommend-assignee/` `/ai/query/` | Scoring, routing, natural language |
 
 ---
 

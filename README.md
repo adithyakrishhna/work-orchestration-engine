@@ -288,10 +288,6 @@ Organizations can also be configured through Django's admin panel at `/admin/`. 
 
 ![Org Config Admin](docs/images/org-config-admin.png)
 ---
-![Setup API Response](docs/images/setup-response.png)
----
-![Setup API Response2](docs/images/setup-response-2.png)
----
 ![Setup API Response3](docs/images/setup-response-3.png)
 ---
 ![Setup API Response4](docs/images/setup-response-4.png)
@@ -688,7 +684,10 @@ Access it at `http://127.0.0.1:8000/admin/` with your superuser credentials.
 ![DRF API Root](docs/images/api-root.png)
 
 Django REST Framework provides a browser-based API interface at `/api/v1/`. You can browse all endpoints, send requests, and see formatted JSON responses — all from your browser.
-
+![Setup API Response](docs/images/setup-response.png)
+---
+![Setup API Response2](docs/images/setup-response-2.png)
+---
 ![DRF Task Endpoint](docs/images/api-tasks.png)
 ---
 ![DRF Task Detail](docs/images/api-task-detail.png)

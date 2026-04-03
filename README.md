@@ -734,10 +734,17 @@ The frontend is a single HTML file — no React build, no npm, no webpack. It co
 git clone https://github.com/adithyakrishhna/work-orchestration-engine.git
 cd work-orchestration-engine
 
-# 2. Create and activate virtual environment
+# 2. Create virtual environment
 python -m venv venv
-# Windows: venv\Scripts\activate
-# Mac/Linux: source venv/bin/activate
+
+# Activate virtual environment (Windows - CMD)
+venv\Scripts\activate
+
+# Activate virtual environment (Windows - PowerShell)
+venv\Scripts\Activate.ps1
+
+# Activate virtual environment (Mac/Linux)
+source venv/bin/activate
 
 # 3. Install dependencies
 pip install -r requirements.txt

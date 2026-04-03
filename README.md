@@ -19,18 +19,18 @@ This is what makes this project production-ready and easily adaptable:
 ## 📌 Table of Contents
 
 - [What Makes This System Strong](#what-makes-this-system-strong)
-- [What This Project Does](#-what-this-project-does)
-- [🚀 Tech Stack](#-tech-stack)
+- [What This Project Does](#-what-this-project-does) 🚀 
+- [Tech Stack](#-tech-stack)
 - [System Architecture](#-system-architecture)
 - [Database Design (8 Interconnected Models)](#-database-design-8-interconnected-models)
 - [Backend Deep Dive](#-backend-deep-dive)
 - [AI Engine — The Intelligence Layer](#-ai-engine--the-intelligence-layer)
 - [JWT Authentication — How It Works](#-jwt-authentication--how-it-works)
-- [🚀 Complete API Documentation](#-complete-api-documentation)
+- [Complete API Documentation](#-complete-api-documentation) 🚀 
 - [Django Admin Panel](#-django-admin-panel)
 - [DRF Browsable API](#-drf-browsable-api)
 - [Frontend Dashboard](#-frontend-dashboard)
-- [🚀 Getting Started (Step-by-Step)](#-getting-started-step-by-step)
+- [Getting Started (Step-by-Step)](#-getting-started-step-by-step) 🚀 
 - [Project Structure](#-project-structure)
 - [Error Handling](#-error-handling)
 - [Configuration Reference](#-configuration-reference)

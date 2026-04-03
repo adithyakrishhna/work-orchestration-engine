@@ -1191,4 +1191,4 @@ GET /dashboard/overview/
 
 ---
 
-**Questions?** Open an issue on GitHub or check the Django admin panel at `/admin/` for direct database access.
+Explore and interact with the system directly through the Django admin panel at /admin/ for full visibility and control over the database.

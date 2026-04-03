@@ -1191,4 +1191,4 @@ GET /dashboard/overview/
 
 ---
 
-Explore and interact with the system directly through the Django admin panel at /admin/ for full visibility and control over the database.
+Explore and interact with the system directly through the Django admin panel at `http://127.0.0.1:8000/admin/` for full visibility and control over the database.

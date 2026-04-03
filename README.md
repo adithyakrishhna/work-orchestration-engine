@@ -26,7 +26,7 @@ This is what makes this project production-ready and easily adaptable:
 - [Backend Deep Dive](#-backend-deep-dive)
 - [AI Engine — The Intelligence Layer](#-ai-engine--the-intelligence-layer)
 - [JWT Authentication — How It Works](#-jwt-authentication--how-it-works)
-- [Complete API Reference](API_REFERENCE.md)
+- [Complete API Documentation](#-complete-api-documentation)
 - [Django Admin Panel](#-django-admin-panel)
 - [DRF Browsable API](#-drf-browsable-api)
 - [Frontend Dashboard](#-frontend-dashboard)
@@ -644,7 +644,7 @@ Every request is authenticated using tokens — making the system **secure, scal
 
 ---
 
-## 📡 API Documentation
+## 📡 Complete API Documentation
 
 For the complete API reference with every endpoint, request/response examples, curl commands, error codes, and a full step-by-step lifecycle walkthrough, see:
 

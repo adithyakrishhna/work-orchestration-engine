@@ -976,8 +976,10 @@
         return CURRENT_USER.role === 'admin' || CURRENT_USER.role === 'manager';
       }
       function isViewer() {
-        if (ORG_ROLES.length > 0) return CURRENT_USER.role === ORG_ROLES[ORG_ROLES.length - 1];
-        return CURRENT_USER.role === 'viewer';
+        const r = (CURRENT_USER.role || '').toLowerCase();
+        const READ_ONLY = ['viewer','readonly','read_only','auditor','guest','observer'];
+        if (ORG_ROLES.length >= 3) return CURRENT_USER.role === ORG_ROLES[ORG_ROLES.length - 1];
+        return READ_ONLY.some(kw => r.includes(kw));
       }
       function showGlobalMsg(m, e) {
         $("global-msg").innerHTML =

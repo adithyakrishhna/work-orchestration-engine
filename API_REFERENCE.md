@@ -56,6 +56,28 @@ Authorization: Bearer <your-access-token>
 - Auto-generated transition rules (sequential flow + revert + cancellation + reopen)
 - Optional team with the admin as lead
 
+### Role Ordering Convention
+
+The order of roles in the `allowed_roles` array determines access levels:
+
+| Position | Access Level | Example |
+|---|---|---|
+| **First role** (index 0) | Full admin access — can manage everything | `admin`, `super_admin`, `owner` |
+| **Second role** (index 1) | Management access — can assign tasks, create users, approve transitions | `manager`, `delivery_manager`, `lead` |
+| **Middle roles** (index 2 to N-2) | Worker access — can create tasks, comment, transition own tasks | `developer`, `engineer`, `qa_analyst` |
+| **Last role** (index N-1) | Read-only access — can only view data, no create/edit/delete | `viewer`, `auditor`, `guest` |
+
+**Example with 6 roles:**
+```json
+"roles": ["admin", "delivery_manager", "tech_lead", "developer", "qa_engineer", "viewer"]
+```
+- `admin` → full access
+- `delivery_manager` → management level
+- `tech_lead`, `developer`, `qa_engineer` → workers
+- `viewer` → read-only
+
+**Important:** Always place the read-only/viewer role **last** in the array. The system uses array position to determine access level, so the ordering matters. With organizations that have only 2 roles (e.g., `["admin", "dev"]`), the system uses role name detection instead of position — roles containing words like "viewer", "auditor", "guest", or "observer" are automatically treated as read-only.
+
 **Request:**
 ```bash
 curl -X POST http://127.0.0.1:8000/api/v1/setup/ \

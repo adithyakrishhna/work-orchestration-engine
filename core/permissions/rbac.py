@@ -70,23 +70,26 @@ class TaskPermission(BasePermission):
 
 class IsNotViewer(BasePermission):
     """
-    Block the last role in the org (viewer/read-only) from write operations.
+    Block read-only roles from write operations.
+    Only blocks the last role IF the org has 3+ roles.
+    With 2 or fewer roles, only blocks if the role name contains
+    'viewer', 'readonly', 'read_only', 'auditor', or 'guest'.
     """
+    READ_ONLY_KEYWORDS = ['viewer', 'readonly', 'read_only', 'auditor', 'guest', 'observer']
+
     def has_permission(self, request, view):
         if not request.user.is_authenticated:
             return False
-        if view.action in ('list', 'retrieve'):
+        if request.method in ('GET', 'HEAD', 'OPTIONS'):
             return True
-        if view.action == 'create':
-            # Block viewer (last role) from creating
-            org = request.user.organization
-            if org and org.allowed_roles:
-                return request.user.role != org.allowed_roles[-1]
-            return request.user.role != 'viewer'
-        if view.action in ('update', 'partial_update'):
-            return True  # Object-level check below
-        if view.action == 'destroy':
-            return request.user.role == 'admin' or (
-                org and org.allowed_roles and request.user.role == org.allowed_roles[0]
+        org = request.user.organization
+        role = request.user.role
+        if org and org.allowed_roles:
+            # 3+ roles: last role is read-only
+            if len(org.allowed_roles) >= 3:
+                return role != org.allowed_roles[-1]
+            # 2 or fewer roles: check by name
+            return role.lower() not in self.READ_ONLY_KEYWORDS and not any(
+                kw in role.lower() for kw in self.READ_ONLY_KEYWORDS
             )
-        return True
+        return role != 'viewer'

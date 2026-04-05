@@ -745,7 +745,7 @@ The frontend is a single HTML file — no React build, no npm, no webpack. It co
 
 | Software | Version | Download |
 |---|---|---|
-| Python | 3.10+ | [python.org](https://www.python.org/downloads/) |
+| Python | 3.11+ | [python.org](https://www.python.org/downloads/) |
 | PostgreSQL | 17+ | [postgresql.org](https://www.postgresql.org/download/) |
 | Git | Any | [git-scm.com](https://git-scm.com/downloads/) |
 

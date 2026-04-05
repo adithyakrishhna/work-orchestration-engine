@@ -1,17 +1,29 @@
 from rest_framework import viewsets, filters, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from core.permissions.rbac import IsAdmin, IsNotViewer
 from django_filters.rest_framework import DjangoFilterBackend
 from core.models import Task, Comment, AuditLog, User
 from core.serializers import (
     TaskListSerializer, TaskDetailSerializer, CommentSerializer,
 )
 from core.permissions import TaskPermission
+from core.permissions.rbac import IsNotViewer
 from core.services import StateMachineService
+
 
 
 class TaskViewSet(viewsets.ModelViewSet):
     permission_classes = [TaskPermission]
+
+    def get_permissions(self):
+        if self.action == 'create':
+            return [IsAuthenticated(), IsNotViewer()]
+        if self.action == 'destroy':
+            return [IsAuthenticated(), IsAdmin()]
+        return [IsAuthenticated()]
+
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['current_state', 'priority', 'task_type', 'assigned_to', 'team', 'sla_breached']
     search_fields = ['title', 'description', 'task_key']
@@ -42,6 +54,8 @@ class TaskViewSet(viewsets.ModelViewSet):
             performed_by=self.request.user,
             new_value={'title': task.title, 'state': task.current_state},
         )
+    
+
 
     @action(detail=True, methods=['post'], url_path='transition')
     def transition(self, request, pk=None):
@@ -122,3 +136,8 @@ class CommentViewSet(viewsets.ModelViewSet):
             performed_by=self.request.user,
             new_value={'comment': comment.content},
         )
+    
+    def get_permissions(self):
+        if self.action == 'create':
+            return [IsAuthenticated(), IsNotViewer()]
+        return [IsAuthenticated()]

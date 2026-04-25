@@ -210,3 +210,16 @@ db.sqlite3
 __pycache__/
 *.pyc
 .env
+# Added by code-review-graph
+.code-review-graph/
+
+# AI editor configs and agent instruction files
+.claude/
+.cursorrules
+.kiro/
+.mcp.json
+.opencode.json
+.windsurfrules
+AGENTS.md
+CLAUDE.md
+GEMINI.md

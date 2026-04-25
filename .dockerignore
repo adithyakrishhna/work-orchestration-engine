@@ -1,0 +1,41 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Django
+db.sqlite3
+*.log
+local_settings.py
+
+# Environment
+.env
+.env.*
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Editor / AI tool configs
+.vscode/
+.idea/
+.claude/
+.kiro/
+.cursorrules
+.windsurfrules
+*.md
+
+# Test / coverage
+.tox/
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Build artifacts
+dist/
+build/
+*.egg-info/

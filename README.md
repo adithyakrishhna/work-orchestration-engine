@@ -18,21 +18,35 @@
 
 ---
 
-## Quick Start
+## Quick Start — One Command with Docker
+
+Install [Docker Desktop](https://www.docker.com/products/docker-desktop/), then:
 
 ```bash
 git clone https://github.com/adithyakrishhna/work-orchestration-engine.git
 cd work-orchestration-engine
-python -m venv venv && source venv/bin/activate  # or venv\Scripts\activate on Windows
-pip install -r requirements.txt
-# Create .env from .env.example, then:
-psql -U postgres -c "CREATE DATABASE work_orchestration;"
-python manage.py migrate
-python manage.py seed_data
-python manage.py runserver
+docker compose up --build
 ```
 
-Then open `http://127.0.0.1:8000/` — log in with `admin_user / testpass123`.
+Wait for `==> Starting server at http://localhost:8000`, then open your browser.
+
+**Login:** `admin_user` / `testpass123`
+
+Docker handles PostgreSQL, migrations, sample data, and the server — automatically. No Python, no database setup, no environment configuration needed.
+
+> New to Docker? See the **[Docker Guide →](docs/readme/00-docker-guide.md)** for a full explanation of what's happening, daily commands, and troubleshooting.
+>
+> Prefer running without Docker? See **[Manual Setup →](docs/readme/02-getting-started.md#option-2-manual-setup-local)**
+
+---
+
+## Access Points
+
+| URL | What You'll See |
+|---|---|
+| `http://localhost:8000/` | Frontend Dashboard |
+| `http://localhost:8000/admin/` | Django Admin Panel |
+| `http://localhost:8000/api/v1/` | DRF Browsable API |
 
 ---
 
@@ -40,8 +54,9 @@ Then open `http://127.0.0.1:8000/` — log in with `admin_user / testpass123`.
 
 | Topic | What You'll Find |
 |---|---|
+| [Docker Guide](docs/readme/00-docker-guide.md) | Install Docker, daily commands, troubleshooting, running management commands |
 | [Features & Design Goals](docs/readme/01-features.md) | What makes this system strong — state machine, RBAC, audit trail, AI, multi-tenancy |
-| [Getting Started](docs/readme/02-getting-started.md) | Prerequisites, full installation steps, access points, test credentials |
+| [Getting Started](docs/readme/02-getting-started.md) | Docker setup + manual setup, access points, test credentials |
 | [Organization Setup & Configuration](docs/readme/03-configuration.md) | Zero-code setup API, role ordering, setup examples, env variables |
 | [Architecture & Database](docs/readme/04-architecture.md) | Tech stack, system architecture diagram, 8-model database design |
 | [Backend Internals](docs/readme/05-backend-internals.md) | State machine engine, RBAC layers, audit trail, SLA detection, error handling |
@@ -52,16 +67,6 @@ Then open `http://127.0.0.1:8000/` — log in with `admin_user / testpass123`.
 | [Project Structure & Integration](docs/readme/10-project-structure.md) | File structure, integration options |
 
 For the complete API reference with curl commands and lifecycle examples: **[📖 API_REFERENCE.md](API_REFERENCE.md)**
-
----
-
-## Access Points (after starting the server)
-
-| URL | What You'll See |
-|---|---|
-| `http://127.0.0.1:8000/` | Frontend Dashboard |
-| `http://127.0.0.1:8000/admin/` | Django Admin Panel |
-| `http://127.0.0.1:8000/api/v1/` | DRF Browsable API |
 
 ---
 

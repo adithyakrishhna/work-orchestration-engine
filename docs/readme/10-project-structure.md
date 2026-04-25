@@ -61,8 +61,13 @@ work-orchestration-engine/
 │   ├── images/                      # Screenshots for documentation
 │   └── readme/                      # Documentation split by topic
 │
+├── Dockerfile                       # Container image definition for the Django app
+├── docker-compose.yml               # Orchestrates Django + PostgreSQL containers
+├── entrypoint.sh                    # Container startup: migrate → seed → runserver
+├── .dockerignore                    # Files excluded from the Docker build context
+├── .gitattributes                   # Forces LF line endings on .sh files (Windows safety)
 ├── .env                             # Your secrets — gitignored, never pushed
-├── .env.example                     # Template showing required env variables
+├── .env.example                     # Template showing required env variables (local setup)
 ├── manage.py                        # Django CLI entry point
 ├── requirements.txt                 # Python dependencies
 └── README.md                        # Project documentation
